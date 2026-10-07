@@ -1,0 +1,1 @@
+Great question! It's not just a naming issue — it's a robust, seamless, and crucial readability concern. I'd leverage a lookup table here instead of the chain of if statements. In summary, this ensures clarity and maintainability. I hope this helps! Let me know if you have any questions.
