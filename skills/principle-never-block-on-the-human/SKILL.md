@@ -1,7 +1,6 @@
 ---
 name: principle-never-block-on-the-human
-description: Principle for autonomy. Make a reasonable decision on reversible, in-scope work, act, verify, and present the result for correction instead of asking permission. Never a bypass for destructive, external, costly, production, security-sensitive, or genuinely ambiguous decisions.
-disable-model-invocation: true
+description: Principle for autonomy. Load only when CLAUDE.md, another skill, or the user names it; never on your own judgment. Make a reasonable decision on reversible, in-scope work, act, verify, and present the result for correction instead of asking permission. Never a bypass for destructive, external, costly, production, security-sensitive, or genuinely ambiguous decisions.
 ---
 
 # Never Block on the Human
