@@ -1,0 +1,36 @@
+{
+  "skill_name": "no-comments",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run the no-comments skill on evals/files/billing (a Go module, copy it somewhere scratch first). Scope: every comment in fee.go. Apply the accepted findings; run `go test ./...` at the end.",
+      "expected_output": "Junk comments gone, protected ones kept, the business-rule reason moved into a named function plus a test, over-long doc comments cut; tests still pass.",
+      "files": ["evals/files/billing"],
+      "expectations": [
+        "The license header at the top of fee.go is still present",
+        "The `fee calculation` banner, the `check whether the total is negative` comment and the `multiply the total by 29` comment are removed",
+        "The commented-out `resp, err := c.Do(req)` / `log.Println(resp)` lines are removed",
+        "The `Orders over $10k skip fraud review: finance policy` comment is removed, and the rule now lives in a named function or constant in fee.go plus a test in fee_test.go whose name states the policy",
+        "The public Fee doc comment is still present but is 5 lines or fewer",
+        "The doc comment on the internal retries function is 3 lines or fewer, or the comment is gone",
+        "The keep-alive comment with the issues/412 link is still present",
+        "The `Gateway requires the exact header casing` comment is still present",
+        "`go test ./...` passes in the final state",
+        "The final report gives a kill count and lists the kept comments"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use the no-comments skill on evals/files/billing (copy it to scratch first), but scope it to the Charge function in fee.go only. I'm cleaning up in phases, so don't touch anything else.",
+      "expected_output": "Only Charge's junk is removed; every comment outside Charge is byte-identical; out-of-scope comments are not reported as killed.",
+      "files": ["evals/files/billing"],
+      "expectations": [
+        "The commented-out code inside Charge is removed",
+        "Both protected comments inside Charge (keep-alive with the issue link, header casing) are still present",
+        "Every comment outside Charge, including the banner, the narration comments in Fee and the long retries comment, is unchanged",
+        "fee_test.go is unchanged",
+        "The report does not count out-of-scope comments as deleted"
+      ]
+    }
+  ]
+}

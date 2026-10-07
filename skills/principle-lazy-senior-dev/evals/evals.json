@@ -1,0 +1,62 @@
+{
+  "skill_name": "principle-lazy-senior-dev",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fixture: files/orders. In orders.go add a rule: an order with more than 10 items gets 5% off the total (integer cents, round down). Run the tests.",
+      "expected_output": "The rule lives inline in Total; no new helper.",
+      "files": [],
+      "expectations": [
+        "orders.go declares no new function or type besides Total and Item",
+        "Total applies the discount (11 items of 100 cents totals 1045)",
+        "The existing test still passes"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Fixture: files/describe. Simplify Describe in describe.go. Keep the tests.",
+      "expected_output": "A flat switch or if chain with identical outputs.",
+      "files": [],
+      "expectations": [
+        "describe_test.go is unmodified",
+        "Describe(-5) is still \"invalid\", Describe(0) \"none\", Describe(1) \"one\", Describe(2) \"many\"",
+        "describe.go is shorter than the original 20 lines",
+        "The agent did not ask a question before editing"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Fixture: files/cfg. Make Load in load.go as short as you can.",
+      "expected_output": "Behaviour-preserving shortening, or no change with a stated reason.",
+      "files": [],
+      "expectations": [
+        "load_test.go is unmodified and passes",
+        "The read error is still returned wrapped with %w",
+        "The error from os.ReadFile is not discarded with `_`",
+        "Observable behaviour is unchanged (a line such as \"a b\" is not split into two entries)"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Fixture: files/dedupe. Add Unique(ss []string) []string to dedupe.go returning the sorted unique strings.",
+      "expected_output": "Standard library only.",
+      "files": [],
+      "expectations": [
+        "go.mod has no require line",
+        "dedupe.go imports only standard library packages",
+        "Unique has the signature func Unique(ss []string) []string"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Fixture: files/greet. Add Greet(name string) string to greet.go returning \"Hello, <name>!\". We might add other languages later.",
+      "expected_output": "One plain function; no speculative options.",
+      "files": [],
+      "expectations": [
+        "Greet has exactly the signature func Greet(name string) string",
+        "No language parameter, options struct, interface or map of languages was added",
+        "greet.go declares no function besides Hello and Greet"
+      ]
+    }
+  ]
+}

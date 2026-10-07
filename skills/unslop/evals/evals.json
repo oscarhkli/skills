@@ -1,0 +1,122 @@
+{
+  "skill_name": "unslop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Clean up evals/files/design.md before I publish it. Remove the narrative.",
+      "files": [
+        "evals/files/design.md"
+      ],
+      "expected_output": "Doc states the Redis-direct decision, 10-minute expiry and tenant key prefix with no history.",
+      "expectations": [
+        "The names Alice and Bob no longer appear",
+        "No wording about the discussion, review rounds, revisions, 'initially', 'since been removed' or the dropped CacheProvider",
+        "The doc still says the service talks to Redis directly",
+        "The doc still states a 10 minute expiry",
+        "The sentence about tenant ID key prefixes is still present",
+        "The file was edited in place and no changelog of removed content was added"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This PR description in evals/files/pr.md is too long and reads like a diary. Tighten it.",
+      "files": [
+        "evals/files/pr.md"
+      ],
+      "expected_output": "Short description of the fix and its effect, with no process narrative.",
+      "expectations": [
+        "No wording about iterations, rounds, passes, attempts or 'per review feedback'",
+        "States the root cause: the parser assumed UTC",
+        "States that parseDate accepts an explicit time zone and defaults to the caller's local zone",
+        "States that parseDate(null) returns null",
+        "Still mentions that unit tests were added and that tests pass locally"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Strip the AI tells from the comments in evals/files/comments.py. Don't change the code.",
+      "files": [
+        "evals/files/comments.py"
+      ],
+      "expected_output": "Em dash, 'Certainly!' and the inflated phrasing are gone; every comment survives and the code is unchanged.",
+      "expectations": [
+        "No em dash remains in the file",
+        "The word 'Certainly' no longer appears",
+        "Both comments are still present (the file still has the same number of comment lines)",
+        "All non-comment lines are byte-identical to the original"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Rewrite my review comment in evals/files/review.md so it gets to the point.",
+      "files": [
+        "evals/files/review.md"
+      ],
+      "expected_output": "A few direct sentences naming the unbounded retry and suggesting a cap.",
+      "expectations": [
+        "States that the retry loop on line 42 can retry forever on repeated 503s",
+        "Suggests a maximum retry count",
+        "Is at most 3 sentences",
+        "Contains none of: 'worth noting', 'Just a thought', 'might perhaps', 'Thanks for the PR'"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "We switched the cache from Redis to Memcached and raised expiry to 15 minutes. Update evals/files/design-clean.md accordingly.",
+      "files": [
+        "evals/files/design-clean.md"
+      ],
+      "expected_output": "Doc states Memcached and 15 minutes with no change-history wording.",
+      "expectations": [
+        "The doc states the service uses Memcached",
+        "The doc states a 15 minute expiry",
+        "The words 'previously', 'switched', 'changed', 'was Redis' and 'raised' do not appear",
+        "The word Redis does not appear",
+        "The tenant ID key prefix sentence is still present"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Turn the review thread in evals/files/thread.md into a short \"Export\" section for the design doc.",
+      "files": [
+        "evals/files/thread.md"
+      ],
+      "expected_output": "Section states final decision only: background job, Exports page, 24h links; no names or debate.",
+      "expectations": [
+        "The names Carol, Dave and Erin do not appear",
+        "States that exports run as a background job",
+        "States that downloads appear on the Exports page",
+        "States that links stay valid for 24 hours",
+        "Contains no debate (no mention of synchronous exports, time-outs, or email links) and no emoji"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Tighten evals/files/migration.md. It's going into the release notes.",
+      "files": [
+        "evals/files/migration.md"
+      ],
+      "expected_output": "Migration note and test result survive; only real narration is cut.",
+      "expectations": [
+        "Still says legacy_auth is removed and that deployments must move to auth.mode",
+        "Still says startup fails if the flag is still set",
+        "Still reports 14 tests added and passing"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "I'm about to post evals/files/draft-comment.md as a PR comment. Clean it up.",
+      "files": [
+        "evals/files/draft-comment.md"
+      ],
+      "expected_output": "One or two plain sentences recommending a lookup table over the if chain.",
+      "expectations": [
+        "No em dash remains",
+        "Contains none of: 'Great question', 'Let me know', 'I hope this helps', 'In summary'",
+        "Contains none of: 'leverage', 'robust', 'seamless', 'crucial'",
+        "Still recommends a lookup table instead of the chain of if statements",
+        "Contains no 'not just ... but' construction"
+      ]
+    }
+  ]
+}

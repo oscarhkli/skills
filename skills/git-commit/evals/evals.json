@@ -1,0 +1,98 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `notes-app` with one initial commit. Then, as part of this task, edit src/search.py to add a `search_notes(query)` function that does a case-insensitive substring match over a list of notes. Commit it. The session's attribution line is `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`.",
+      "expected_output": "One Conventional Commit for the new function with the session attribution footer; nothing pushed.",
+      "files": [],
+      "expectations": [
+        "The latest commit subject matches `type(scope)?: description` with type `feat`",
+        "The subject is lowercase, imperative, has no trailing period and is under 72 characters",
+        "The body is absent or 1-3 lines",
+        "The message ends with the footer `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` after one blank line",
+        "No `Claude-Session:` line appears in the message",
+        "Nothing was pushed (no push command ran)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `shop` with one commit. Leave three working-tree changes: a bug fix in cart.py (wrong total when the cart is empty), an unrelated new untracked file `scratch-notes.txt`, and an unrelated edit to README.md typos. Commit just the cart.py bug fix.",
+      "expected_output": "Only cart.py is committed with a `fix` commit; the other two changes remain uncommitted and are mentioned.",
+      "files": [],
+      "expectations": [
+        "The latest commit touches only cart.py",
+        "scratch-notes.txt is still untracked and README.md is still modified after the commit",
+        "No `git add -A` or `git add .` was used; files were staged by explicit path",
+        "The commit type is `fix`",
+        "The reply mentions the two changes that were deliberately left out"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `tools` with one commit. I edited two files by hand: `a.py` and `b.py`, and already staged only `a.py` with `git add a.py`. `b.py` is modified but unstaged. Please commit.",
+      "expected_output": "Commits exactly what the user staged; does not stage b.py.",
+      "files": [],
+      "expectations": [
+        "The latest commit touches only a.py",
+        "b.py is still modified and unstaged",
+        "The agent did not run a `git add` command",
+        "The commit message is a valid Conventional Commit"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `blog` with one commit. I (the user) edited `post.md` entirely by myself and staged it; you didn't touch it. Commit it with a message about adding the intro paragraph.",
+      "expected_output": "Conventional Commit with no AI co-author footer, since the agent did not contribute.",
+      "files": [],
+      "expectations": [
+        "The commit message is a valid Conventional Commit about the intro paragraph",
+        "The message contains no `Co-Authored-By:` footer"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `api` with one commit and a bare remote `origin` that it pushes to. Fix a typo in docs/usage.md in the working tree, then commit the change. Do not do anything else with the remote.",
+      "expected_output": "Commit created locally; the remote is untouched.",
+      "files": [],
+      "expectations": [
+        "A new commit exists locally with a Conventional Commit message",
+        "`git log origin/main` (or the remote's branch) is unchanged: nothing was pushed"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `webapp` with a .gitignore containing `.env` and `config.local.json`, and one commit that includes server.py. Now, as part of this task, fix an off-by-one in server.py's pagination and also update the API key in `.env` and a port in `config.local.json` (both gitignored, they exist on disk). Then commit everything I changed.",
+      "expected_output": "Only server.py is committed; the ignored files are left alone and the reply says why.",
+      "files": [],
+      "expectations": [
+        "The latest commit touches only server.py",
+        "`.env` and `config.local.json` are not tracked and no `git add -f` or `git add --force` was run",
+        "The commit type is `fix`",
+        "The reply tells the user the ignored files were deliberately not committed"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `sdk` with one commit containing client.py with `def fetch(url, retries=3)`. Change the signature to `def fetch(url, *, timeout)` (the `retries` argument is removed and `timeout` is now required, so existing callers break). Commit it.",
+      "expected_output": "A Conventional Commit flagged as a breaking change.",
+      "files": [],
+      "expectations": [
+        "The subject contains `!` before the colon (e.g. `feat!:` or `refactor(client)!:`), or the message has a `BREAKING CHANGE:` footer",
+        "The body or footer says what broke (retries removed, timeout required)",
+        "The subject is lowercase with no trailing period"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `ledger` with one commit containing report.py. Edit report.py to add support for exporting the monthly reconciliation summary to CSV with configurable delimiters, quoting rules and optional header rows. Commit it.",
+      "expected_output": "A single commit whose first line is short enough.",
+      "files": [],
+      "expectations": [
+        "The first line of the commit message, including `type(scope): `, is under 72 characters",
+        "The message is a valid Conventional Commit of type `feat`",
+        "Detail that did not fit the subject, if any, is in a body of 1-3 lines"
+      ]
+    }
+  ]
+}
