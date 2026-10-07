@@ -1,0 +1,96 @@
+{
+  "skill_name": "create-worktree",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `shop` (one commit, branch `main`) and an empty sibling dir `shop-worktrees`. Then create a worktree for me in `shop-worktrees` called `cart-fix` on a new branch `fix/cart-total`.",
+      "expected_output": "Worktree at <tmp>/shop-worktrees/cart-fix on new branch fix/cart-total cut from main; path, branch and 'created from main' reported.",
+      "files": [],
+      "expectations": [
+        "Directory shop-worktrees/cart-fix exists and `git worktree list` in shop includes it",
+        "Branch fix/cart-total exists and is checked out in that worktree",
+        "fix/cart-total points at the same commit as main",
+        "The reply gives the absolute worktree path, the branch name, and says the branch was created from main",
+        "The skill's bundled script was used instead of hand-assembled git commands",
+        "No commit was made and nothing was pushed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `legacy-app` whose only branch is `master` (one commit) and an empty sibling dir `legacy-app-worktrees`. Add a worktree named `hotfix` on branch `hotfix/login`.",
+      "expected_output": "Branch hotfix/login created from master; reply says created from master.",
+      "files": [],
+      "expectations": [
+        "Worktree legacy-app-worktrees/hotfix exists with branch hotfix/login checked out",
+        "hotfix/login points at the same commit as master",
+        "The reply states the branch was created from master, not main"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `api` (branch `main`, one commit) with an extra local branch `feat/search` that has one more commit than main, and an empty sibling dir `api-worktrees`. Set up a worktree called `search` on branch `feat/search` for me.",
+      "expected_output": "Existing branch reused, not recreated; its extra commit is preserved.",
+      "files": [],
+      "expectations": [
+        "Worktree api-worktrees/search exists with feat/search checked out",
+        "feat/search still contains its extra commit (it was not reset to main)",
+        "The reply says the existing branch was reused"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `blog` (branch `main`, one commit). I want a worktree called `drafts` on branch `feat/drafts`, put it in the dir `~/scratch/trees` please.",
+      "expected_output": "Refuses or reports an error because the parent directory does not end in -worktrees; no worktree is created.",
+      "files": [],
+      "expectations": [
+        "No worktree named drafts was created anywhere",
+        "Branch feat/drafts was not created in blog",
+        "The reply tells the user the parent directory must end in -worktrees (or asks for a corrected parent) instead of silently picking another location"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "make me a worktree called `spike` in ~/work/payments-worktrees",
+      "expected_output": "Asks for the missing branch name instead of inventing one.",
+      "files": [],
+      "expectations": [
+        "The agent asks for the branch name",
+        "No worktree or branch was created before the question was answered"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Scratch setup: in a fresh temp dir, make a git repo `infra` (branch `main`, one commit) with an empty sibling dir `infra-worktrees`, and create a worktree `one` on branch `feat/x` there. Now create a second worktree called `two` in the same parent on the same branch `feat/x`.",
+      "expected_output": "Second call fails because the branch is already attached to another worktree; error is surfaced, nothing forced.",
+      "files": [],
+      "expectations": [
+        "Worktree infra-worktrees/two does not exist",
+        "The reply reports that feat/x is already checked out in another worktree, using Git's error",
+        "The agent did not retry with --force or an alternate branch name"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Scratch setup: in a fresh temp dir, make a bare repo `origin.git` and clone it as `portal` (branch `main`, one commit pushed). Push a branch `feat/sso` with one extra commit to origin, then delete it locally so it exists only on origin. Make an empty sibling dir `portal-worktrees`. Create a worktree `sso` on branch `feat/sso`.",
+      "expected_output": "Local feat/sso tracks origin/feat/sso and contains its extra commit; reply says tracked from origin.",
+      "files": [],
+      "expectations": [
+        "Worktree portal-worktrees/sso exists with feat/sso checked out",
+        "feat/sso has origin/feat/sso as its upstream and contains the extra remote commit (it was not cut fresh from main)",
+        "The reply says the branch was tracked from origin"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Scratch setup: in a fresh temp dir, make a bare repo `origin.git` and clone it as `ledger` (branch `main`, pushed). Add a second commit to origin/main from another clone, run `git fetch` in `ledger` but do not merge, so local main is one commit behind origin/main. Make an empty sibling dir `ledger-worktrees`. Create a worktree `report` on new branch `feat/report`.",
+      "expected_output": "Branch created from the stale local main, with a visible warning that main is behind origin/main; nothing was pulled.",
+      "files": [],
+      "expectations": [
+        "feat/report points at the local main commit, not origin/main",
+        "Local main was not fast-forwarded or reset",
+        "The reply repeats the warning that main is 1 commit behind origin/main",
+        "No git pull or fetch was run by the skill"
+      ]
+    }
+  ]
+}
