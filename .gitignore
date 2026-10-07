@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# skill-creator eval runs
+*-workspace/
+
+.env
