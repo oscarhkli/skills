@@ -19,6 +19,7 @@ If no scope is provided, the scope is every file touched by the current diff aga
 - A `Keep` survives only with proof that the comment concerns something we cannot change.
 - Fix every trivial `KILL` by deleting the comment.
 - A trivial `Refactor` is local and behaviour-preserving (rename, extract a variable or function, state a rule in a test name). Make the change directly when existing tests cover the code. When nothing covers it, write a characterization test first.
-- For a non-trivial `Refactor`, first gather facts with `principle-redesign-from-scratch` and `principle-never-block-on-the-human`, then present them to the human and interview them.
+- For a non-trivial `Refactor`, investigate yourself: read the affected code and tests, sketch the target design, list blast radius and migration steps. Then implement the additive first step: add the new design beside the old one, keep existing signatures and callers unchanged, and run the tests. Switching callers and deleting the old API stay in the report. Ask the human only about decisions that change visible behaviour or public contracts.
+- Run the project's tests after the edits, in each worktree or checkout touched. Report the result.
 - Run `unslop` over the comments that survive (style patterns only, never keep-or-kill) to strip AI tells from their wording.
 - Report the kill count, kept comments, architecture sketch, fixes, and open work.
