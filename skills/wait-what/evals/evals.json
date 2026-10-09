@@ -1,0 +1,68 @@
+{
+  "skill_name": "wait-what",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Transcript:\nUser: How do I speed up my Python test suite?\nAssistant: Enable the flux-cache layer in your pytest config, then run with --warp.\nUser: wait what, what is flux-cache? And --warp?\n\nThe project only has a pytest.ini with no plugins. Respond as the assistant.",
+      "expected_output": "Admits the terms are not real, gives real options (e.g. pytest-xdist, -x, caching fixtures).",
+      "files": [],
+      "expectations": [
+        "Reply states flux-cache and --warp do not exist or were invented",
+        "Reply contains no apology",
+        "Reply offers at least one real speed-up such as pytest-xdist or fixture scoping",
+        "A log entry of type invented term is appended to wait-what-log.jsonl",
+        "The log entry is a single line that parses as JSON with ts, type, offending, fix and task fields"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Transcript:\nUser: Should I use Postgres or SQLite for my small desktop app?\nAssistant (turn 1): SQLite. It's embedded and needs no server.\nUser: Ok, and for the sync feature?\nAssistant (turn 2): Postgres is the only choice, since SQLite can't be used by more than one user.\nUser: wait what, you just said SQLite.\n\nRespond as the assistant.",
+      "expected_output": "Identifies the contradiction, reconciles it (local DB stays SQLite; sync needs a server-side store or a sync layer), concise.",
+      "files": [],
+      "expectations": [
+        "Reply explicitly acknowledges the contradiction between turn 1 and turn 2",
+        "Reply gives one consistent recommendation",
+        "Reply contains no apology",
+        "A log entry of type contradiction is appended to wait-what-log.jsonl"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Files: evals/files/retry.md says 'Retries: 3, backoff: 2s fixed.'\nTranscript:\nUser: What are the retry settings?\nAssistant: Per retry.md, it retries 5 times with exponential backoff.\nUser: huh? that's not what the doc says\n\nRespond as the assistant.",
+      "expected_output": "Re-reads retry.md, corrects to 3 retries, 2s fixed backoff.",
+      "files": [
+        "evals/files/retry.md"
+      ],
+      "expectations": [
+        "Reply states 3 retries and fixed 2s backoff",
+        "Reply attributes the values to retry.md as its current content, not as a recollection",
+        "Reply contains no apology",
+        "A log entry of type misquote is appended to wait-what-log.jsonl"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Transcript:\nUser: What does the -r flag do in grep?\nAssistant: It searches recursively through directories.\nUser: wait what? can you say more?\n\nRespond as the assistant.",
+      "expected_output": "Near miss: the earlier reply was correct. The skill should not invent a flaw; it asks which part was unclear or gives a brief clarification without claiming an error.",
+      "files": [],
+      "expectations": [
+        "Reply does not claim the earlier answer was wrong",
+        "Reply asks which part was unclear or adds a brief example",
+        "Reply adds new concrete detail instead of only restating the earlier answer",
+        "No defect entry is written to wait-what-log.jsonl"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Transcript:\nUser: How should I structure the database for a booking app?\nAssistant: You'll want to think about normalisation, though denormalising for read performance is sometimes appropriate, and while a relational model is typical, document stores can also work depending on access patterns, and you should consider whether bookings, customers, and resources are separate tables or a single polymorphic table, and also indexes, and soft deletes, and audit columns, and time zones, but of course it depends.\nUser: wait what, I lost you. what should I actually do?\n\nRespond as the assistant.",
+      "expected_output": "Clarity defect, no fact-check needed. Gives one concrete recommendation (relational, separate customers/resources/bookings tables) in plain words.",
+      "files": [],
+      "expectations": [
+        "Reply gives one concrete recommendation up front",
+        "Reply removes the tangle of caveats instead of repeating them",
+        "Reply contains no apology and does not claim the earlier facts were wrong",
+        "A log entry of type muddy or slop is appended to wait-what-log.jsonl"
+      ]
+    }
+  ]
+}
