@@ -20,7 +20,8 @@
         "notes/index.md exists, states the goal in a sentence and links the other notes files",
         "The notes record the verified facts (30 days, read in cleanup.py and report.py) with their source files",
         "The notes list the questions asked as open items marked blocking or parked",
-        "The notes contain no user answers that the user has not given"
+        "The notes contain no user answers that the user has not given",
+        "The reply asks no more than three questions"
       ]
     },
     {
@@ -35,7 +36,8 @@
         "The reply does not contain a finished design",
         "notes/index.md exists and states the goal in a sentence",
         "The notes record the user's request verbatim",
-        "The notes contain no invented facts about a codebase or stack"
+        "The notes contain no invented facts about a codebase or stack",
+        "The reply asks no more than three questions"
       ]
     },
     {
@@ -46,10 +48,52 @@
         "evals/files/retention/cleanup.py",
         "evals/files/retention/report.py"
       ],
-      "expected_output": "Near miss: the task is fully determinable, so it just does the rename with no interview.",
+      "expected_output": "Guard, not a discriminator: the task is fully findable, so the skill must not push the agent into an interview. Does the rename with no questions.",
       "expectations": [
         "All three files use retention_period_days and none still use retention_days",
         "The reply asks the user no questions"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Resume the per-tenant retention interview from last week. Notes are in evals/files/resume/notes/, code is in evals/files/resume/, and the product review thread is exported in evals/files/resume/review-thread.json. Reply with your first message to me only.",
+      "files": [
+        "evals/files/resume/config.yaml",
+        "evals/files/resume/cleanup.py",
+        "evals/files/resume/report.py",
+        "evals/files/resume/review-thread.json",
+        "evals/files/resume/notes/index.md"
+      ],
+      "expected_output": "Re-checks the carried-over facts before relying on them. Finds retention is now 14 not 30, that report.py also reads it, and that thread 101 has a reply answering the blocking question. Corrects the notes in place and does not re-ask the answered question.",
+      "expectations": [
+        "The reply states that retention_days is 14, not 30",
+        "The reply states that report.py also reads retention_days",
+        "The reply treats the blocking question as answered by reply 102 (global value) and does not ask it again",
+        "The reply does not ask the user for the current value or where it is read",
+        "notes/index.md records retention_days as 14 with a newer checked date",
+        "notes/index.md lists both cleanup.py and report.py as readers",
+        "notes/index.md quotes reply 102 verbatim with its id and moves the item out of Open items",
+        "notes/index.md keeps the earlier user answer about backwards compatibility",
+        "notes/index.md contains no 'changed from' or 'previously' history notes",
+        "The reply asks no more than three questions"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "I want to plan a change so retention can differ per tenant instead of one global value. Interview me before you draft the plan. The retention code is in evals/files/repo/app/retention/. Keep notes in notes/ so I can resume in a new session. Reply with your first message to me only.",
+      "files": [
+        "evals/files/repo/"
+      ],
+      "expected_output": "Searches beyond the folder it was pointed at. Finds tenant_id on events (db/migrations), the fallback rule (ADR 0007) and the existing tenant_setting helper, states them as verified, and asks only real decisions.",
+      "expectations": [
+        "The reply states that events has a tenant_id column",
+        "The reply does not ask whether events has a tenant column or where the schema is",
+        "The reply states the no-override fallback from ADR 0007 and does not ask what a tenant without an override gets",
+        "The reply proposes reusing tenant_setting / config/tenants.yaml for the overrides, citing the existing pattern",
+        "The reply asks at least one question only the user can answer, such as whether report.py should follow the per-tenant value or limits on override values",
+        "Every question carries the assistant's recommended answer or a proposal",
+        "The reply asks no more than three questions",
+        "notes/index.md exists, and the notes record the tenant_id column, ADR 0007 and the tenant_setting helper, citing db/migrations/001_events.sql, the ADR file and app/tenants/settings.py"
       ]
     }
   ]

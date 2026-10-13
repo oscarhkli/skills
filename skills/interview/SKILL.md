@@ -8,48 +8,36 @@ disable-model-invocation: true
 
 A wrong premise spreads into every downstream document, task and review, and unwinding it costs more than checking. Settle the premises before drafting.
 
-Two moves cause nearly all the damage:
-
-- **Asking what you could have looked up.** Wastes the human's time and teaches them you will not check.
-- **Asserting what you never verified.** Produces confident, wrong work that reads as settled.
-
-Both are sorting errors. Sort first.
-
-## Sort every unknown
-
-| Bin | What belongs here | What to do |
-| --- | --- | --- |
-| **Determinable** | Anything recorded somewhere: code, schemas, config, tests, docs, commit and PR history, issue threads, API responses | Find it. Do not ask. |
-| **Human-only** | Intent, priority, scope, preference, product and UX calls, which of two valid designs to take, anything about the future | Ask. Do not guess. |
-
-Test: could tools settle this in a handful of calls? If yes, it is determinable. If the answer exists only because a person decided it, it is human-only, however confidently you could guess.
-
-Split hybrids. "Does this field allow nulls" is determinable. "Should it allow nulls" is human-only.
+Find what is recorded (code, docs, history, threads); ask only what a person decides (intent, priority, scope, product calls, the future). Split hybrids: "does this field allow nulls" is findable, "should it" is a decision.
 
 ## Steps
 
-1. **Locate the notes directory.** The user may bring a one-line idea or point at a directory of earlier investigation. If they point at one, read all of it before listing unknowns. If not, ask where notes go (see Notes directory).
+1. **Locate the notes directory.** The user may bring a one-line idea or point at a directory of earlier investigation. If they point at one, read all of it before listing unknowns. If not, ask where notes go.
 2. **List the unknowns the work depends on.** An unknown earns a place only if a different answer changes what you produce.
-3. **Verify the determinable ones first.** Reading the code dissolves some questions and surfaces sharper ones.
-4. **Ask the rest in one batch, each with your best answer attached.** Give the option you favour, the evidence, and what changes with each reply. Correcting a proposal is cheaper than composing an answer. Drop any question whose answer would not change what you produce.
+3. **Find the findable ones first.** Reading the code dissolves some questions and surfaces sharper ones.
+4. **Ask the rest in rounds.** Each round:
+   - **Pick at most three questions**, the ones whose answers most change what comes next. Hold the rest, since answers often change or remove them. Raise the limit only if the user asks.
+   - **Attach your best answer to each**, with the evidence and what changes under each reply. A pointer request ("where is the schema?") counts as a question and carries a guess, such as the likely path.
+   - **Send it as one ask-tool form**: a field per question, your answer as the default, the evidence in the description, and a message that restates the context so it reads alone. Without an ask tool, use a numbered list.
+   - **Then verify what the answers raise** and run the next round, until step 7.
 5. **Record each answer verbatim.** Quote the user's words and where they said them. Paraphrase drifts and cannot be checked later. When sources conflict, a direct answer from the decision owner beats a document, and a document beats a mockup. State which rule you used.
 6. **Triage what stays open.** If the work ships either way, park it and mark it owed. Otherwise it blocks: settle it now.
-7. **Stop when you can state the premises back and the user agrees.** The notes directory then holds the agreed premises.
+7. **Stop when you can state the premises back and the user agrees.** The notes directory then holds them.
 
 ## Notes directory
 
-The notes directory holds everything a new session needs to continue the initiative. The user starts a fresh session when this one grows too large and points it at the directory, so the directory must be complete without this conversation.
+The notes directory holds everything a new session needs to continue the initiative. The user starts a fresh session when this one grows too large and points it at the directory, so it must be complete without this conversation.
 
 Update it in the same turn as every finding and every user instruction. Do not batch updates to the end. A fact that exists only in the conversation is lost.
 
 Contents:
-- **Verified facts**, each with its source (file and line, command, link) and the date checked.
+- **Verified facts**, each with its source (file and symbol, command, link) and the date checked. Not line numbers: they rot on the next commit.
 - **User instructions and answers**, verbatim, with where they were said.
 - **Decisions**, and the authority rule that settled any conflict.
 - **Open items**, each marked blocking or parked.
 - **Next step.**
 
-Keep an `index.md` that links every file and states the goal in a sentence, so a new session reads one file first. Edit entries in place to the current state. Do not append "changed from" notes.
+Keep an `index.md` that links every file and states the goal in a sentence, so a new session reads one file first. Edit entries in place to the current state. Keep no old values or "changed from" notes, even in parentheses. The checked date is enough.
 
 Location follows the project. Some repos keep notes in the tree, some owners keep them outside it. Use the directory the user names. If they name none, ask once, then stay consistent. Do not add files to a repo that has not asked for them.
 
@@ -65,6 +53,6 @@ Re-check cheap facts carried from another session or document before relying on 
 
 Task: plan a change so a setting can differ per tenant.
 
-- *Determinable, so verified first:* the setting is read in two places and currently holds one global value.
-- *Human-only, so asked:* "What should a tenant without an override get? I suggest the global value, since it needs no migration."
+- *Findable, so checked first:* the setting is read in two places and currently holds one global value.
+- *A decision, so asked:* "What should a tenant without an override get? I suggest the global value, since it needs no migration."
 - *Left open, parked:* whether to hide or delete the old setting. A product call, and the work ships either way.
