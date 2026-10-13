@@ -1,0 +1,4 @@
+acme:
+  max_upload_mb: 50
+globex:
+  max_upload_mb: 10
