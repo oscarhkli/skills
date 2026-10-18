@@ -5,7 +5,7 @@ description: Use when the user wants to commit, git commit, commit changes, comm
 
 # Conventional Commits
 
-Format every commit message per **Conventional Commits 1.0.0**. This skill covers how to commit, not whether to: commit only when the user has asked, and never push.
+Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a draft PR without asking. It never pushes to the default branch or force-pushes unless the user says so.
 
 ## Message structure
 
