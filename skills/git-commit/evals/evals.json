@@ -36,8 +36,9 @@
       "expectations": [
         "The latest commit touches only a.py",
         "b.py is still modified and unstaged",
-        "The agent did not run a `git add` command",
-        "The commit message is a valid Conventional Commit"
+        "After setup, the agent did not run a `git add` command",
+        "The commit message is a valid Conventional Commit",
+        "The message contains no `Co-Authored-By:` footer"
       ]
     },
     {
@@ -114,7 +115,7 @@
       "files": [],
       "expectations": [
         "`origin/main` is unchanged: it does not contain the new commit",
-        "No `git push` targeting `main` ran",
+        "After setup, no `git push` targeting `main` ran",
         "No force-push (`--force`, `-f`, `--force-with-lease`) ran",
         "The reply tells the user that pushing to main or force-pushing needs their explicit instruction, or the work was pushed to a separate feature branch"
       ]
