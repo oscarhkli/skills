@@ -7,7 +7,7 @@ description: Coordinator skill for any task that writes, reviews or changes desi
 
 ## Principles
 
-A principle only shapes your work if its text is in your context, and only a Read tool call on its file puts it there verbatim. Open the matching row's file with the Read tool, not `cat` through Bash, in full, before the first edit. Paths are relative to this skill's base directory (`../principle-<name>/SKILL.md`). Most principles are manual-only and may not appear in the skill list.
+A principle only shapes your work if its text is in your context, and only a Read tool call on its file puts it there verbatim. Open the matching row's file with the Read tool, not `cat` through Bash, in full, before starting work, including read-only analysis and planning. Paths are relative to this skill's base directory (`../principle-<name>/SKILL.md`). Most principles are manual-only and may not appear in the skill list.
 
 Each read costs context, so open only the principles whose row matches the task. A task that matches no row, such as a question, reads none.
 
@@ -28,4 +28,4 @@ When a principle shaped a decision, end the reply with one line: `Principles app
 
 ## Subagents
 
-Delegate with the `theta-agent` agent and put this file's absolute path in the prompt. Never use it to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself. Review the delegate's diff and write your own summary.
+Delegate with the `theta-agent` agent and put this file's absolute path in the prompt, followed by the absolute path of each principle you selected. The delegate reads them in full before starting. Never use it to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself. Review the delegate's diff and write your own summary.
