@@ -28,5 +28,6 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
+- Tell the delegate to apply the `unslop` skill to the plan files before it reports.
 - Have a second `theta-agent` check every path, line number, count and command against the code before you present the plan.
 - Present the plan and wait. Do not edit code until the human says so.
