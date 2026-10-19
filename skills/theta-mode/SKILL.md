@@ -17,7 +17,7 @@ Each read costs context, so open only the principles whose row matches the task.
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design or refactor, or for the best or idiomatic design. |
 | `principle-never-block-on-the-human` | Tempted to ask "want me to do X?" on reversible, in-scope work. |
 
-As your last tool call before the final message, invoke the `unslop` skill with the Skill tool and apply it to that message. Skip it only for one-line answers. When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session.
+When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session.
 
 ## Subagents
 
