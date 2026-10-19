@@ -17,7 +17,7 @@ Each read costs context, so open only the principles whose row matches the task.
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
 
-When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session.
+When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session. When you read a playbook, add a second line: `Playbooks read: <file>`.
 
 ## Playbooks
 
