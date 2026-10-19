@@ -11,6 +11,7 @@ Goal: fewer human interventions next time. Every correction, push back or repeat
 ## Find the transcript
 
 - Claude Code: `~/.claude/projects/<project-dir>/<session>.jsonl`. Take the most recent file in the project's directory, otherwise use the current conversation.
+- List the human turns with `scripts/human_turns.py <transcript>` (relative to this file), then read around each turn that looks like an intervention.
 - Copilot CLI: `~/.copilot/session-state/<session-id>/events.jsonl`, with `workspace.yaml` holding the working directory. Match the session by its `cwd`, then take the most recent. User turns are `user.message` events. Fall back to the current conversation.
 
 ## Active instructions
@@ -25,6 +26,7 @@ Read the instructions the session ran with, so you can tell a rule that was igno
 Read the whole transcript and collect each time the human stepped in:
 
 - Frustration, push back or a correction of the agent's output.
+- Plain-language confusion: "I don't understand", "what do you mean", "why did you add that". The human may say this without typing `/wait-what`.
 - A `/wait-what` call: the previous reply was confusing.
 - A `/unslop` call: the agent wrote slop on its own.
 - The same instruction repeated, or a rule from `CLAUDE.md`, `AGENTS.md`, or a skill the agent ignored.
