@@ -31,6 +31,7 @@ The notes directory holds everything a new session needs to continue the initiat
 Update it in the same turn as every finding and every user instruction. Do not batch updates to the end. A fact that exists only in the conversation is lost.
 
 Contents:
+
 - **Verified facts**, each with its source (file and symbol, command, link) and the date checked. Not line numbers: they rot on the next commit.
 - **User instructions and answers**, verbatim, with where they were said.
 - **Decisions**, and the authority rule that settled any conflict.
@@ -53,6 +54,6 @@ Re-check cheap facts carried from another session or document before relying on 
 
 Task: plan a change so a setting can differ per tenant.
 
-- *Findable, so checked first:* the setting is read in two places and currently holds one global value.
-- *A decision, so asked:* "What should a tenant without an override get? I suggest the global value, since it needs no migration."
-- *Left open, parked:* whether to hide or delete the old setting. A product call, and the work ships either way.
+- **Findable, so checked first:** the setting is read in two places and currently holds one global value.
+- **A decision, so asked:** "What should a tenant without an override get? I suggest the global value, since it needs no migration."
+- **Left open, parked:** whether to hide or delete the old setting. A product call, and the work ships either way.

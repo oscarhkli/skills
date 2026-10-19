@@ -11,14 +11,14 @@ The user is confused by your last reply. Treat that as evidence the reply has a 
 
 1. **Triage.** Re-read your last reply and the user's words. Decide which kind of problem it is. The user rarely says, so infer it.
    - **Factual defect**: the content may be wrong. Go to step 2.
-     - *Invented term*: a name or concept that doesn't exist in the project, tool, or domain, or was never introduced.
-     - *Contradiction*: conflicts with something said earlier in the session.
-     - *Misquote*: differs from a file, doc, or output you cited.
+     - **Invented term**: a name or concept that doesn't exist in the project, tool, or domain, or was never introduced.
+     - **Contradiction**: conflicts with something said earlier in the session.
+     - **Misquote**: differs from a file, doc, or output you cited.
    - **Clarity defect**: the content may be right but the user can't follow it. Skip to step 3 and don't re-open sources.
-     - *Muddy*: a wall of text, buried point, or several ideas tangled together.
-     - *Jargon or ambiguity*: undefined acronyms, vague pronouns, two possible readings.
-     - *Off-topic*: doesn't answer what was asked.
-     - *Slop*: filler, recap, hedging.
+     - **Muddy**: a wall of text, buried point, or several ideas tangled together.
+     - **Jargon or ambiguity**: undefined acronyms, vague pronouns, two possible readings.
+     - **Off-topic**: doesn't answer what was asked.
+     - **Slop**: filler, recap, hedging.
 2. **Verify (factual only).** Check the claim against the earlier messages or re-open the cited source. Don't rely on memory. Decide which side is right. Report the correct fact plainly, for example "retry.md says 3 retries".
 3. **Rewrite.** Send a corrected reply that keeps the same facts for a clarity defect and fixes them for a factual one. It:
    - starts with the answer and contains no apology, not even "sorry" or "my mistake";
@@ -46,8 +46,8 @@ The log is for a later review, so keep entries short and quote the exact phrase.
 
 ## Example
 
-User: "wait what, what's a 'sync gate'?"
-Earlier reply: "Add a sync gate before the deploy step."
-Check: no "sync gate" exists in the project's pipeline config.
-Corrected reply: "I made that term up. I meant a manual approval step before deploy. In `pipeline.yml` that is the `approval:` key."
+User: "wait what, what's a 'sync gate'?"\
+Earlier reply: "Add a sync gate before the deploy step."\
+Check: no "sync gate" exists in the project's pipeline config.\
+Corrected reply: "I made that term up. I meant a manual approval step before deploy. In `pipeline.yml` that is the `approval:` key."\
 Log: Type: invented term; Offending text: "sync gate"; Fix: replaced with "manual approval step".

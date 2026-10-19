@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # No Comments
 
-Run the audit defined in [references/comment-hater.md](references/comment-hater.md), then act on its findings. The audit only reports; you make the edits.
+Use the `comment-hater` agent to audit the scope, then act on its findings. The audit only reports; you make the edits. Do not restate its rules.
 
-Spawn a subagent for the audit and pass it the rules file path and the scope. Do not restate the rules. If the tool cannot spawn a subagent, read the rules file and run the audit yourself as a report-only pass before editing anything.
+If the `comment-hater` agent is not available, say so and stop. Tell the human to run `scripts/install.sh`.
 
 If no scope is provided, the scope is every file touched by the current diff against the main branch. Pass a narrower scope to clean up in phases.
 

@@ -60,3 +60,19 @@ for skill in "$src"/*/; do
     *) echo "skipped    $name" ;;
   esac
 done
+
+agents_src="$(dirname "$src")/agents"
+if [ -d "$agents_src" ]; then
+  for agent_dst in "${CLAUDE_AGENTS_DIR:-$HOME/.claude/agents}" "${COPILOT_AGENTS_DIR:-$HOME/.copilot/agents}"; do
+    mkdir -p "$agent_dst"
+    for f in "$agents_src"/*.md; do
+      name="$(basename "$f" .md)"
+      if cmp -s "$f" "$agent_dst/$name.md"; then
+        echo "up-to-date agent $name ($agent_dst)"
+      else
+        cp "$f" "$agent_dst/$name.md"
+        echo "installed agent $name ($agent_dst)"
+      fi
+    done
+  done
+fi
