@@ -23,7 +23,8 @@ When a principle shaped a decision, end the reply with one line: `Principles app
 
 | Playbook | Read it when |
 | --- | --- |
-| `playbooks/plan.md` | Asked for a plan, or the work spans more than one PR. Read it before drafting. |
+| `playbooks/plan.md` | Asked for a plan. Read it before drafting. |
+| `playbooks/plan-multi.md` | The work spans more than one PR or phase, or agents will work in parallel. Read it after `plan.md`. |
 
 ## Subagents
 
