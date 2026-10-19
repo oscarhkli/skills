@@ -54,6 +54,6 @@ Re-check cheap facts carried from another session or document before relying on 
 
 Task: plan a change so a setting can differ per tenant.
 
-- _Findable, so checked first:_ the setting is read in two places and currently holds one global value.
-- _A decision, so asked:_ "What should a tenant without an override get? I suggest the global value, since it needs no migration."
-- _Left open, parked:_ whether to hide or delete the old setting. A product call, and the work ships either way.
+- **Findable, so checked first:** the setting is read in two places and currently holds one global value.
+- **A decision, so asked:** "What should a tenant without an override get? I suggest the global value, since it needs no migration."
+- **Left open, parked:** whether to hide or delete the old setting. A product call, and the work ships either way.
