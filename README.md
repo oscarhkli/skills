@@ -27,11 +27,16 @@ create that once if you don't have it.
 - Skills that aren't in this repo are never touched.
 - Set `AGENTS_SKILLS_DIR` to deploy somewhere else.
 
+Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and
+Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten
+without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
+
 ## Layout
 
 ```
 skills/<name>/SKILL.md   one folder per skill; optional scripts/, references/, evals/
-scripts/install.sh       deploys (copies) skills into ~/.agents/skills
+agents/<name>.md         custom agents that skills call by name
+scripts/install.sh       deploys skills into ~/.agents/skills and agents into ~/.claude/agents, ~/.copilot/agents
 ```
 
 Evals live inside the skill they test and only exist where output is objectively checkable.
