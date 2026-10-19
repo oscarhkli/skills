@@ -1,6 +1,6 @@
 ---
 name: wait-what
-description: Repair a confusing or wrong assistant reply after the user signals confusion. Use when the user types /wait-what, or says things like "wait, what?", "huh?", "what does that mean?", "where did that term come from?", "that contradicts what you said earlier", "that's not what the doc says", or "this is off-topic". Re-checks the last reply against the session and any cited files, then sends a clearer, corrected reply and logs what went wrong. Use it even when the user doesn't name the skill but is clearly lost or disputing the reply.
+description: Repair a confusing or wrong assistant reply after the user signals confusion. Use when the user types /wait-what, or says things like "wait, what?", "huh?", "what does that mean?", "I don't understand", "what do you mean", "why did you add that", "where did that term come from?", "that contradicts what you said earlier", "that's not what the doc says", or "this is off-topic". Re-checks the last reply against the session and any cited files, then sends a clearer, corrected reply. Use it even when the user doesn't name the skill but is clearly lost or disputing the reply.
 ---
 
 # Wait, What
@@ -25,29 +25,15 @@ The user is confused by your last reply. Treat that as evidence the reply has a 
    - uses terms the user already uses, or defines a new term in a few words;
    - says each point once, in plain words, with no filler;
    - drops anything off-topic.
-4. **Log it.** Append one entry to `wait-what-log.jsonl` (see below), only when you found a real defect.
-5. **If nothing is clearly wrong**, the reply was probably fine and the user wants more or different detail. Don't invent a flaw, don't log, and don't pad. Ask one short question about which part was unclear, or give one brief clarification of the most likely confusing word.
+4. **If nothing is clearly wrong**, the reply was probably fine and the user wants more or different detail. Don't invent a flaw and don't pad. Ask one short question about which part was unclear, or give one brief clarification of the most likely confusing word.
 
 ## De-slop
 
 If an `/unslop` skill is installed, apply it to the rewrite. Otherwise apply these rules: cut filler and recap, remove hedges that add no information, prefer short sentences, one idea per paragraph, and concrete words over abstract ones.
-
-## Log
-
-Append to `wait-what-log.jsonl` in the session's state or files directory when the agent has one. Otherwise use the current working directory. Create the file if missing. Append one line holding one JSON object, with no line breaks inside it and double quotes in text escaped as `\"`:
-
-```
-{"ts":"<ISO date and time>","type":"<type>","offending":"<short exact quote>","fix":"<one line>","task":"<few words on what the session was doing>"}
-```
-
-`type` is one of: `invented term`, `contradiction`, `misquote`, `muddy`, `off-topic`, `ambiguity`, `slop`.
-
-The log is for a later review, so keep entries short and quote the exact phrase.
 
 ## Example
 
 User: "wait what, what's a 'sync gate'?"\
 Earlier reply: "Add a sync gate before the deploy step."\
 Check: no "sync gate" exists in the project's pipeline config.\
-Corrected reply: "I made that term up. I meant a manual approval step before deploy. In `pipeline.yml` that is the `approval:` key."\
-Log: Type: invented term; Offending text: "sync gate"; Fix: replaced with "manual approval step".
+Corrected reply: "I made that term up. I meant a manual approval step before deploy. In `pipeline.yml` that is the `approval:` key."

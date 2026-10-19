@@ -9,9 +9,7 @@
       "expectations": [
         "Reply states flux-cache and --warp do not exist or were invented",
         "Reply contains no apology",
-        "Reply offers at least one real speed-up such as pytest-xdist or fixture scoping",
-        "A log entry of type invented term is appended to wait-what-log.jsonl",
-        "The log entry is a single line that parses as JSON with ts, type, offending, fix and task fields"
+        "Reply offers at least one real speed-up such as pytest-xdist or fixture scoping"
       ]
     },
     {
@@ -22,8 +20,7 @@
       "expectations": [
         "Reply explicitly acknowledges the contradiction between turn 1 and turn 2",
         "Reply gives one consistent recommendation",
-        "Reply contains no apology",
-        "A log entry of type contradiction is appended to wait-what-log.jsonl"
+        "Reply contains no apology"
       ]
     },
     {
@@ -36,8 +33,7 @@
       "expectations": [
         "Reply states 3 retries and fixed 2s backoff",
         "Reply attributes the values to retry.md as its current content, not as a recollection",
-        "Reply contains no apology",
-        "A log entry of type misquote is appended to wait-what-log.jsonl"
+        "Reply contains no apology"
       ]
     },
     {
@@ -48,8 +44,7 @@
       "expectations": [
         "Reply does not claim the earlier answer was wrong",
         "Reply asks which part was unclear or adds a brief example",
-        "Reply adds new concrete detail instead of only restating the earlier answer",
-        "No defect entry is written to wait-what-log.jsonl"
+        "Reply adds new concrete detail instead of only restating the earlier answer"
       ]
     },
     {
@@ -60,8 +55,7 @@
       "expectations": [
         "Reply gives one concrete recommendation up front",
         "Reply removes the tangle of caveats instead of repeating them",
-        "Reply contains no apology and does not claim the earlier facts were wrong",
-        "A log entry of type muddy or slop is appended to wait-what-log.jsonl"
+        "Reply contains no apology and does not claim the earlier facts were wrong"
       ]
     }
   ]
