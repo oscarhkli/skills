@@ -11,7 +11,7 @@ Existing code may be badly designed. Following its habits makes the design worse
 ## Three kinds of input
 
 | Kind | Examples | Treatment |
-|---|---|---|
+| --- | --- | --- |
 | Hard constraints | Persisted data formats, public or deployed APIs, wire protocols, other consumers' contracts | Inputs to the design. Breaking one is called out as a migration. |
 | Language and ecosystem idiom | Effective Go, JS/TS industry conventions, framework conventions | The target. Design the idiomatic way. |
 | This codebase's own habits | Odd naming, a layering quirk, a pattern copied because it was already there | Ignore. |
