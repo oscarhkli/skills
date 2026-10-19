@@ -14,10 +14,16 @@ Each read costs context, so open only the principles whose row matches the task.
 | Principle | Applies when |
 | --- | --- |
 | `principle-lazy-senior-dev` | Adding a feature, refactoring, extracting a function or class, sizing a diff. |
-| `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design or refactor, or for the best or idiomatic design. |
+| `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
 
 When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session.
+
+## Playbooks
+
+| Playbook | Read it when |
+| --- | --- |
+| `playbooks/plan.md` | Asked for a plan, or the work spans more than one PR. Read it before drafting. |
 
 ## Subagents
 
