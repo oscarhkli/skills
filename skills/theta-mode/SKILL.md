@@ -9,13 +9,13 @@ description: Coordinator skill for any task that writes, reviews or changes desi
 
 A principle only shapes your work if its text is in your context, and only a Read tool call on its file puts it there verbatim. Open the matching row's file with the Read tool, not `cat` through Bash, in full, before the first edit. Paths are relative to this skill's base directory (`../principle-<name>/SKILL.md`). Most principles are manual-only and may not appear in the skill list.
 
-Each read costs context, so open only the principles whose row matches the task. A task that matches no row, such as a docs typo or a question, reads none.
+Each read costs context, so open only the principles whose row matches the task. A task that matches no row, such as a question, reads none.
 
 | Principle | Applies when |
 | --- | --- |
 | `principle-lazy-senior-dev` | Adding a feature, refactoring, extracting a function or class, sizing a diff. |
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design or refactor, or for the best or idiomatic design. |
-| `principle-never-block-on-the-human` | Tempted to ask "want me to do X?" on reversible, in-scope work. |
+| `principle-never-block-on-the-human` | Any task that writes, reviews or changes code. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
 
 When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session.
 
