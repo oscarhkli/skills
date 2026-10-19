@@ -1,6 +1,6 @@
 ---
 name: wait-what
-description: Repair a confusing or wrong assistant reply after the user signals confusion. Use when the user types /wait-what, or says things like "wait, what?", "huh?", "what does that mean?", "where did that term come from?", "that contradicts what you said earlier", "that's not what the doc says", or "this is off-topic". Re-checks the last reply against the session and any cited files, then sends a clearer, corrected reply. Use it even when the user doesn't name the skill but is clearly lost or disputing the reply.
+description: Repair a confusing or wrong assistant reply after the user signals confusion. Use when the user types /wait-what, or says things like "wait, what?", "huh?", "what does that mean?", "I don't understand", "what do you mean", "why did you add that", "where did that term come from?", "that contradicts what you said earlier", "that's not what the doc says", or "this is off-topic". Re-checks the last reply against the session and any cited files, then sends a clearer, corrected reply. Use it even when the user doesn't name the skill but is clearly lost or disputing the reply.
 ---
 
 # Wait, What
