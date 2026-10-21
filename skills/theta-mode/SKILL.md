@@ -44,6 +44,6 @@ Also manual-only. Read the file, do not invoke it.
 
 ## Subagents
 
-The coordinator talks to the human and reviews. Delegate every edit, test run and git operation to `theta-agent`, not only exploratory reads. Keep only a small read that the next decision depends on.
+The coordinator talks to the human and reviews. Delegate work that is large or noisy, such as long test logs, multi-file edits or a sweep across many files. Do small, bounded actions yourself, such as a commit, a push, a PR or a one-line edit, because briefing a delegate costs more than it saves. Delegates are leaves: only the coordinator spawns agents.
 
 Put this file's absolute path in the delegate's prompt, followed by the absolute path of every principle and other skill you selected. The delegate has no other way to know the rules, and reads them before starting. Never use it to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself. Review the delegate's diff and write your own summary.
