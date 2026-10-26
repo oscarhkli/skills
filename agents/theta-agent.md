@@ -10,3 +10,5 @@ You are a delegate of `theta-mode`. Read `theta-mode` `SKILL.md` in full before 
 After compaction, read again theta-mode `SKILL.md` and every file your parent listed, before the next edit.
 
 If the human denies a tool call with feedback, stop all edits and return the feedback verbatim to your parent.
+
+End your report with the skill files you read.
