@@ -79,3 +79,13 @@ Long preambles, "it is worth noting", stacked caveats, alternatives nobody asked
 - **Recap endings.** "In summary...", "Overall, this ensures...". The body already said it. Cut the closer.
 - **Stacked threes and bullet-everything.** Reflexive lists of three adjectives or points, and bullets where a sentence would do. Keep only items that carry information.
 - **Inflated vocabulary.** "leverage", "robust", "seamless", "delve", "crucial". Use the plain word.
+
+## Plain English (prefer, not enforced)
+
+For a reader new to the topic, write at the level of Simple English Wikipedia.
+
+- Use the common word. Aim for the roughly 1,500 most common English words, plus the terms of the topic.
+- Define each topic term in one short clause the first time you use it. Compare it to something in Go or Java when that helps.
+- Use the active voice and short sentences. One idea per sentence.
+- Put the condition first: "After the build passes, merge." not "Merge after the build passes."
+- Say what a thing does before what it is called.
