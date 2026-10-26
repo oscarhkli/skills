@@ -25,6 +25,16 @@ One README next to the slice plans holds:
 - Say what to do when a dependency merges after a slice has started: rebase, and rerun the slice's verification.
 - Each slice's verification passes on its own branch, without the other slices.
 
+## Keeping slices current
+
+- When a slice changes something its dependents rely on, such as a name, a signature, a file owner or a decision, spawn one `theta-agent` per affected dependent. Each updates that slice's plan and its row in the index. Then rerun the index check below.
+- When a slice merges, refresh the deferred and decision sections of every remaining slice's PR. Delete the ones that are now settled.
+
+## PR comments
+
+- A PR comment lists open deferred items and open decisions only. Fixed gaps go in the PR summary.
+- Update a branch only for the slice the human reviews next. Each update reruns CI.
+
 ## Checking
 
 - A `theta-agent` checks the index against the slice plans: every slice listed once, dependencies symmetric, counts reconciled, no file owned twice.

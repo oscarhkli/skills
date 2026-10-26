@@ -10,6 +10,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 ## Structure
 
+- Start here: repo, base branch, the files to read first and the terms the plan uses, each defined in plain words. A fresh agent starts from this section alone.
 - Goal: what and why, at most 10 lines.
 - Context: the current state, with file paths and line numbers checked against the code.
 - Approach: the chosen design only, not the alternatives.
@@ -30,4 +31,5 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Give the delegate absolute paths, not references to the conversation.
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports.
 - Have a second `theta-agent` check every path, line number, count and command against the code before you present the plan.
+- Have a third `theta-agent` read the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
 - Present the plan and wait. Do not edit code until the human says so.
