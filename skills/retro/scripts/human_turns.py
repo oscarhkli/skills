@@ -12,6 +12,8 @@ MAX_CHARS = 300
 
 def text_of(event):
     if event.get("type") == "user.message":
+        if "agentId" in event:
+            return ""
         return event.get("data", {}).get("content", "")
     if event.get("type") != "user" or event.get("isMeta") or event.get("toolUseResult") is not None:
         return ""
@@ -25,8 +27,9 @@ def text_of(event):
 
 
 def main(path):
+    sys.stdout.reconfigure(encoding="utf-8")
     turn = 0
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         for line_no, line in enumerate(f):
             try:
                 event = json.loads(line)

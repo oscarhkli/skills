@@ -29,3 +29,7 @@ Give the delegate the goal, absolute paths and the shape of the answer wanted. I
 Ask for a summary of about 30 lines or fewer, with file paths and line numbers, not raw dumps or step-by-step narration. Write it the way `unslop` would: conclusion first, no narration, no restated task, no recap. Apply that standard without loading the skill, since loading it costs the context this principle protects.
 
 Read a cited file yourself only to verify a claim that matters.
+
+## While waiting
+
+When you wait on a delegate, reply in two or three short lines: what you delegated and what comes back. Give no partial answer. Present the full answer when the delegate reports.
