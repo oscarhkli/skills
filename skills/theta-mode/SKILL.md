@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 - When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you read a playbook, add a second line: `Playbooks read: <file>`.
 
-- When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`.
+- When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
 
 ## Principles
 
@@ -43,6 +43,7 @@ Also manual-only. Read the file, do not invoke it.
 | --- | --- |
 | `playbooks/plan.md` | Asked for a plan. Read it before drafting. |
 | `playbooks/plan-multi.md` | The work spans more than one PR or phase, or agents will work in parallel. Read it after `plan.md`. |
+| `playbooks/prototype.md` | A design question or a claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer. |
 | `playbooks/review-others.md` | Drafting review comments the human will post on someone else's document or code. Not for reviewing an agent's own PR. |
 
 ### Extra playbooks
