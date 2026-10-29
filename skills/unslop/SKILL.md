@@ -79,6 +79,9 @@ Long preambles, "it is worth noting", stacked caveats, alternatives nobody asked
 - **Recap endings.** "In summary...", "Overall, this ensures...". The body already said it. Cut the closer.
 - **Stacked threes and bullet-everything.** Reflexive lists of three adjectives or points, and bullets where a sentence would do. Keep only items that carry information.
 - **Inflated vocabulary.** "leverage", "robust", "seamless", "delve", "crucial". Use the plain word.
+- **Coined labels.** Short codes invented during the work (J2, PR0, O6, A3) that the reader never saw defined. Write the name in words at every use, or define the label once in the same message.
+  - Before: "Option 1: short J2 now, long J2 in PR3."
+  - After: "Option 1: the VS CPU sudden-death test plays one CPU turn now; the multi-round version arrives in PR3."
 
 ## Plain English (prefer, not enforced)
 
