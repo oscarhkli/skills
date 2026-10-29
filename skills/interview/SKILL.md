@@ -50,6 +50,8 @@ Treat a challenge as evidence of a defect. Re-derive the claim from the source. 
 
 Re-check cheap facts carried from another session or document before relying on them. When reading discussion threads, fetch replies as well as top-level comments, since a missed reply looks like an unanswered question.
 
+When a decision replaces an earlier one, search the notes directory for the old value and rewrite every hit in the same turn. A note that the source or a later note contradicts is a defect: fix it in place when you find it, not only report it.
+
 ## Example
 
 Task: plan a change so a setting can differ per tenant.

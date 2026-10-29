@@ -1,0 +1,6 @@
+[
+  {"id": 101, "user": "dev-lead", "created_at": "2026-09-01T09:00:00Z", "in_reply_to_id": null,
+   "body": "Product: should a tenant without an override get the global value, or no retention at all?"},
+  {"id": 102, "user": "product-owner", "created_at": "2026-09-02T15:54:00Z", "in_reply_to_id": 101,
+   "body": "Global value. Tenants without an override must behave exactly as today."}
+]
