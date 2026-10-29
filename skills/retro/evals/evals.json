@@ -1,0 +1,46 @@
+{
+  "skill_name": "retro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/retro check the sessions 'Release notes draft' and 'Hotfix notes'. You are running in the session 3333cccc-retro. Transcripts are in evals/files/projects/demo/, memory is in evals/files/memory/, project instructions are evals/files/CLAUDE.md. I'm not available to answer questions: reply with the action plan only and edit nothing.",
+      "files": [
+        "evals/files/projects/demo/1111aaaa-release-notes.jsonl",
+        "evals/files/projects/demo/2222bbbb-hotfix-notes.jsonl",
+        "evals/files/projects/demo/3333cccc-retro.jsonl",
+        "evals/files/memory/feedback_doc_style.md",
+        "evals/files/CLAUDE.md"
+      ],
+      "expected_output": "An action plan covering both named sessions, not the retro session. The recurring line-number correction is one finding citing both sessions. It notes the rule lived only in memory, which the drafting delegates never saw, and proposes a skill, playbook or reference the brief names rather than more memory. Each action has Tradeoffs and per-part evidence.",
+      "expectations": [
+        "The plan analyses 1111aaaa-release-notes and 2222bbbb-hotfix-notes, and does not treat 3333cccc-retro as the target",
+        "The line-number correction appears as one finding that cites both sessions",
+        "Each finding cites its session, turn and a quote from the human",
+        "The plan states that the drafting was done by delegates, which do not load memory, so the no-line-number rule never reached them",
+        "The fix for the line-number problem is a skill, playbook, reference or brief change, not a new or edited memory entry",
+        "Every action has a Tradeoffs part naming at least one con or pitfall",
+        "The plan flags the typo question as a violation of the existing CLAUDE.md rule 'Fix trivial reversible things without asking'",
+        "Any proposed lint or hook targets only a pattern-decidable check, such as file:line references, and the plan does not propose linting length or tone",
+        "No file was created or modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/retro my previous session. Transcripts are in evals/files/projects/demo/, project instructions are evals/files/CLAUDE.md. I'm not available to answer questions: reply with the action plan only and edit nothing.",
+      "files": [
+        "evals/files/projects/demo/1111aaaa-release-notes.jsonl",
+        "evals/files/projects/demo/2222bbbb-hotfix-notes.jsonl",
+        "evals/files/projects/demo/3333cccc-retro.jsonl",
+        "evals/files/CLAUDE.md"
+      ],
+      "expected_output": "Picks 2222bbbb-hotfix-notes, the newest transcript other than the retro session itself, and plans from its interventions.",
+      "expectations": [
+        "The plan analyses 2222bbbb-hotfix-notes",
+        "The plan does not analyse 3333cccc-retro as the target session",
+        "The plan cites the human's turn 'Obviously fix the typo, don't ask me that' with its session and turn",
+        "Every action has a Tradeoffs part naming at least one con or pitfall",
+        "No file was created or modified"
+      ]
+    }
+  ]
+}
