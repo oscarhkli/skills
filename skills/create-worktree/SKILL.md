@@ -23,7 +23,7 @@ Ask only when one of these values is missing or ambiguous.
 Execute:
 
 ```
-python "<skill-directory>/scripts/create_worktree.py" "<worktree-parent-directory>" "<worktree-name>" "<branch-name>"
+python3 "<skill-directory>/scripts/create_worktree.py" "<worktree-parent-directory>" "<worktree-name>" "<branch-name>"
 ```
 
 The script prints the worktree path, branch, and action on three lines, plus a fourth `warning:` line when a new branch's base trails its last-fetched remote. It:
