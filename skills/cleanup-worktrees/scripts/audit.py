@@ -96,13 +96,6 @@ def row(repo, repo_slug, branch, path):
         edits = tracked(path)
         if PurePosixPath(path.replace("\\", "/")).name.startswith("proto-"):
             cls, reason = "target", f"proto ({reason})"
-            risks = []
-            if commits not in ("-", "0"):
-                risks.append("unpushed commits")
-            if edits not in ("-", "0"):
-                risks.append("tracked changes")
-            if risks:
-                cls, reason = "ask", f"proto ({', '.join(risks)})"
     state, url = (pr["state"], pr["url"]) if pr else ("-", "-")
     print("\t".join([cls, reason, branch, path, state, url, dirty, edits, commits]))
 

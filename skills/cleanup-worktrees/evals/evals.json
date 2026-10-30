@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
       "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after their notes are saved; branch old/merged (merged, no worktree) deleted locally and on origin; feat-b kept because its PR is open; proto/x keeps its remote branch.",
       "files": [],
       "expectations": [
@@ -19,7 +19,7 @@
     },
     {
       "id": 2,
-      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 2 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: prune stale worktrees in <tmp>/svc. No other sessions are open.",
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 2 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: prune stale worktrees in <tmp>/svc. No other sessions are open.",
       "expected_output": "feat-d removed; feat-c kept because its branch has a commit after the merged PR's head.",
       "files": [],
       "expectations": [
@@ -31,7 +31,7 @@
     },
     {
       "id": 3,
-      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 3 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: delete finished feature branches in <tmp>/lib. No other sessions are open.",
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 3 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: delete finished feature branches in <tmp>/lib. No other sessions are open.",
       "expected_output": "feat-f removed; feat-e kept although its PR is merged, because the deployed skill link <tmp>/home/.agents/skills/e-skill points into it.",
       "files": [],
       "expectations": [
@@ -43,14 +43,14 @@
     },
     {
       "id": 4,
-      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 4 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: clean up the throwaway proto worktrees in <tmp>/kit. No other sessions are open.",
-      "expected_output": "proto-y (one unpushed commit) and proto-z (a tracked edit) are reported and asked about, and neither is removed before the human answers.",
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 4 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the throwaway proto worktrees in <tmp>/kit. No other sessions are open.",
+      "expected_output": "proto-y (one unpushed commit) and proto-z (a tracked edit) are shown with those facts in the table, and the reply asks once before removing either.",
       "files": [],
       "expectations": [
         "<tmp>/kit-worktrees/proto-y and <tmp>/kit-worktrees/proto-z still exist when the reply asks",
         "Local branches proto/y and proto/z still exist",
-        "The reply names the unpushed commit as the reason for proto-y and the tracked change as the reason for proto-z",
-        "The reply asks the human before removing either worktree"
+        "The table shows one unpushed commit for proto-y and a tracked change for proto-z",
+        "The reply asks the human once, listing both worktrees and both local branches, before removing anything"
       ]
     }
   ]

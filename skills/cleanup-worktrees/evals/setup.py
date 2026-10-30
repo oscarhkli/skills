@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -107,7 +108,10 @@ def case3(root):
     write(target / "SKILL.md", "# e-skill\n")
     link = s.home / ".agents" / "skills" / "e-skill"
     link.parent.mkdir(parents=True)
-    link.symlink_to(target, target_is_directory=True)
+    if os.name == "nt":
+        subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True, capture_output=True, stdin=subprocess.DEVNULL)
+    else:
+        link.symlink_to(target, target_is_directory=True)
     s.worktree("feat-f", "feat/f")
     s.pr("feat/f", "MERGED", 32)
     return s
@@ -121,10 +125,13 @@ def install_fake_gh(s):
     (bin_dir / "prs.json").write_text(json.dumps(s.prs, indent=2))
     write(bin_dir / "gh", f'#!/usr/bin/env bash\nexec python3 "{fake.as_posix()}" "$@"\n')
     (bin_dir / "gh").chmod(0o755)
+    write(bin_dir / "gh.cmd", f'@python3 "{fake}" %*\r\n')
     write(s.root / "env.sh", (
-        f'export HOME=\'{s.home}\'\n'
-        f'export PATH=\'{bin_dir}\':"$PATH"\n'
+        f'export HOME="$(cygpath -u \'{s.home}\' 2>/dev/null || echo \'{s.home.as_posix()}\')"\n'
+        f'export USERPROFILE=\'{s.home}\'\n'
+        f'export PATH="$(cygpath -u \'{bin_dir}\' 2>/dev/null || echo \'{bin_dir.as_posix()}\'):$PATH"\n'
     ))
+    write(s.root / "env.ps1", f'$env:HOME = "{s.home}"\n$env:USERPROFILE = "{s.home}"\n$env:PATH = "{bin_dir}" + [IO.Path]::PathSeparator + $env:PATH\n')
 
 
 def main():
@@ -140,6 +147,7 @@ def main():
     install_fake_gh(s)
     print(f"repo: {s.repo}")
     print(f"bash: source {(root / 'env.sh').as_posix()}")
+    print(f"powershell: . {root / 'env.ps1'}")
 
 
 if __name__ == "__main__":

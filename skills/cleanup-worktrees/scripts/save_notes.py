@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 MAX_LINES = 200
+MAX_OTHERS = 20
 SKIP = {"node_modules", "bin", "obj", "dist", "build", "target", "vendor", ".venv", "venv"}
 
 
@@ -16,6 +17,15 @@ def main():
         capture_output=True, text=True, encoding="utf-8", check=True,
     ).stdout.splitlines()
     files = [f for f in listed if not SKIP.intersection(f.split("/")[:-1])]
+    others = subprocess.run(
+        ["git", "-C", worktree, "-c", "core.quotePath=false", "ls-files", "--others"],
+        capture_output=True, text=True, encoding="utf-8", check=True,
+    ).stdout.splitlines()
+    others = [f for f in others if f not in listed and not SKIP.intersection(f.split("/")[:-1])]
+    for f in others[:MAX_OTHERS]:
+        print(f"not saved: {f}")
+    if len(others) > MAX_OTHERS:
+        print(f"not saved: {len(others) - MAX_OTHERS} more")
     if not files:
         return
 
