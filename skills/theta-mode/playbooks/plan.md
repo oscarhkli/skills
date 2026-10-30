@@ -18,10 +18,10 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Critical files: path and what is added, changed or deleted.
 - Reuse: existing functions, helpers and test fixtures to use instead of writing new ones.
 - Checklist: pre-work, work, post-work.
-- Tasks: what to do, roughly where, tests first (tdd).
+- Tasks: what to do, roughly where, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
 - Observable results: what differs when the task is done.
 - Verification: the exact commands and expected output.
-- Review gate: who or what checks before the PR is ready.
+- Review gate: who or what checks before the PR is ready. For a code PR the gate names the review: a fresh `theta-agent` runs `/code-review high` on the branch, and a separate `theta-agent` evaluates each finding and fixes the ones that hold. The PR's Verification section lists what was fixed and what was skipped. It is part of the plan only when the plan's author writes it, not a default for every PR.
 - Acceptance criteria: what counts as success.
 - PR handling: draft or ready; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
 - Appendix: findings, data and long lists.
