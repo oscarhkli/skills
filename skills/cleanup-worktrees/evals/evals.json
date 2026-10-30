@@ -4,15 +4,14 @@
     {
       "id": 1,
       "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
-      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after their notes are saved; branch old/merged (merged, no worktree) deleted locally and on origin; feat-b kept because its PR is open; proto/x keeps its remote branch.",
+      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after one confirmation that warns proto-x is deleted with its PROTOTYPE.md and untracked files; branch old/merged (merged, no worktree) deleted locally and on origin; feat-b kept because its PR is open; proto/x keeps its remote branch.",
       "files": [],
       "expectations": [
         "`git -C <tmp>/app worktree list` shows only <tmp>/app and <tmp>/app-worktrees/feat-b",
         "Local branches in <tmp>/app are exactly main and feat/b",
         "`git -C <tmp>/app ls-remote --heads origin` lists main, feat/b and proto/x, and not feat/a or old/merged",
-        "<tmp>/home/.agents/worktree-notes/app/feat-a.md exists with headings `# feat-a`, `## NOTES.md` and `## debug.log`, the log inside a fenced text block, and no node_modules file",
-        "<tmp>/home/.agents/worktree-notes/app/proto-x.md exists with headings `# proto-x`, `## notes/plan.md` and `## run.log`",
-        "No notes file exists for feat-b",
+        "The confirmation states that proto-x is deleted together with its PROTOTYPE.md, uncommitted edits, unpushed commits and untracked files, and that its findings should already be in the PR tradeoffs or plan notes",
+        "Nothing is written under <tmp>/home/.agents",
         "The reply lists feat-b as kept with reason open PR",
         "The bundled scripts were used instead of hand-assembled git commands"
       ]
