@@ -12,7 +12,8 @@ Use it when about to open or rewrite a pull request description. The text is for
 
 ## Rules
 
-- A PR starts as a draft. Mark it ready only on the human's instruction.
+- Write the description as an elevator pitch. A reviewer gets the important points in 60 seconds, and the code change holds the details. Keep each section to a few lines, with no file-by-file tour.
+- Open the PR ready for review, not as a draft. Never merge it.
 - Apply `../unslop/SKILL.md` before posting: no review-round history, no em dashes.
 - End the description with the PR attribution line the session instructs.
 - Never include a `Claude-Session:` link.
