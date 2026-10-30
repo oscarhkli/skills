@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 - When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you read a playbook, add a second line: `Playbooks read: <file>`.
 
-- When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`.
+- When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
 
 ## Principles
 
@@ -22,7 +22,7 @@ Each read costs context, so read only the principles whose row matches the task.
 
 | Principle | Applies when |
 | --- | --- |
-| `principle-agent-can-say-no` | The human's proposal, correction or "drop X" rests on a claim about code, tests, docs or a recorded decision, including whether an idea would work. |
+| `principle-agent-can-say-no` | The human's proposal, correction or "drop X", or your own finding or reply, rests on a claim about code, tests, docs or a recorded decision, including whether an idea would work. |
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Adding a feature, refactoring, extracting a function or class, sizing a diff. |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
@@ -35,7 +35,7 @@ Also manual-only. Read the file, do not invoke it.
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before a commit whose diff touches comments. |
-| `../unslop/SKILL.md` | Before committing prose, such as docs, designs or PR text. Apply it to the changed lines only. |
+| `../unslop/SKILL.md` | Before committing prose such as docs, designs or PR text, showing the human a PR comment draft or reply, or replying to the human. In a file, apply it to the changed lines only. |
 
 ## Playbooks
 
@@ -43,7 +43,8 @@ Also manual-only. Read the file, do not invoke it.
 | --- | --- |
 | `playbooks/plan.md` | Asked for a plan. Read it before drafting. |
 | `playbooks/plan-multi.md` | The work spans more than one PR or phase, or agents will work in parallel. Read it after `plan.md`. |
-| `playbooks/review.md` | Drafting review comments on someone else's document or code. |
+| `playbooks/prototype.md` | A design question or a claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer. |
+| `playbooks/review-others.md` | Drafting review comments the human will post on someone else's document or code. Not for reviewing an agent's own PR. |
 
 ### Extra playbooks
 
@@ -51,6 +52,6 @@ Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with
 
 ## Subagents
 
-The coordinator talks to the human, writes briefs, reviews and decides. Spawn a `theta-agent` subagent for every edit, however small, and for every read or search that finds or verifies facts. The coordinator reads only this skill's principle, playbook and skill files, and the reports and diffs it reviews. The subagent that edits also commits, and pushes or opens the PR when the human asks. The coordinator may push a reviewed commit itself. Spawn a fresh subagent for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume a subagent (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process. Only the coordinator spawns subagents.
+The coordinator talks to the human, writes briefs, reviews and decides. Spawn a `theta-agent` subagent for every edit outside the coordinator's own scratchpad files, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree, and every other edit goes to a theta-agent. The coordinator reads only this skill's principle, playbook and skill files, those scratchpad files, and the reports and diffs it reviews. The subagent that edits also commits, and pushes or opens the PR when the human asks. The coordinator may push a reviewed commit itself. Spawn a fresh subagent for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume a subagent (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process. Only the coordinator spawns subagents.
 
 Put this file's absolute path in the delegate's prompt, followed by the absolute path of every principle and other skill you selected. The delegate has no other way to know the rules, and reads them before starting. Copy every source path, URL, correction, settled decision and applicable user preference into the brief verbatim. Do not start a delegate's edits that depend on a question you are asking the human. Never use it to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself. The delegate's report lists the skill files it read. Review the delegate's diff and write your own summary.

@@ -95,6 +95,28 @@
         "The reply asks no more than three questions",
         "notes/index.md exists, and the notes record the tenant_id column, ADR 0007 and the tenant_setting helper, citing db/migrations/001_events.sql, the ADR file and app/tenants/settings.py"
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Resume the per-tenant retention interview from last week. Notes are in evals/files/resume-multi-notes/notes/, code is in evals/files/resume-multi-notes/, and the product review thread is exported in evals/files/resume-multi-notes/review-thread.json. Reply with your first message to me only.",
+      "files": [
+        "evals/files/resume-multi-notes/config.yaml",
+        "evals/files/resume-multi-notes/cleanup.py",
+        "evals/files/resume-multi-notes/report.py",
+        "evals/files/resume-multi-notes/review-thread.json",
+        "evals/files/resume-multi-notes/notes/index.md",
+        "evals/files/resume-multi-notes/notes/decisions.md",
+        "evals/files/resume-multi-notes/notes/ops/runbook.md"
+      ],
+      "expected_output": "Finds retention is now 14 not 30 and corrects the value in every notes file, including decisions.md and ops/runbook.md, in the same turn.",
+      "expectations": [
+        "The reply states that retention_days is 14, not 30",
+        "notes/index.md records retention_days as 14 with a newer checked date",
+        "notes/decisions.md no longer states 30 days",
+        "notes/ops/runbook.md no longer states 30 days",
+        "No file under notes/, at any depth, still states 30 days",
+        "The reply asks no more than three questions"
+      ]
     }
   ]
 }

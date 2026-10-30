@@ -13,7 +13,7 @@ For work split into several PRs or phases, possibly built by agents in parallel.
 One README next to the slice plans holds:
 
 - Goal and why the work is split, at most 10 lines.
-- A table: slice, scope, depends on, can run in parallel with, branch, worktree, owner agent.
+- A table: slice, scope, depends on, can run in parallel with, owner agent.
 - The merge order, and why each dependency exists.
 - Shared files and the slice that owns each edit.
 - Counts that must reconcile, such as findings per slice summing to the total.
@@ -21,7 +21,7 @@ One README next to the slice plans holds:
 ## Dependencies and concurrency
 
 - A slice starts from the default branch plus the slices it depends on. Say which, by name.
-- Slices with no dependency between them run concurrently, each in its own worktree and branch.
+- Slices with no dependency between them run concurrently.
 - Say what to do when a dependency merges after a slice has started: rebase, and rerun the slice's verification.
 - Each slice's verification passes on its own branch, without the other slices.
 

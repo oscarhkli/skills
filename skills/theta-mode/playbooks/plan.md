@@ -6,6 +6,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 - Read `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follow it, unless the request already settles scope and constraints.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
+- If a design question is open, read `prototype.md` and run it before choosing.
 - Write to the directory the human names, else the repo's plan directory.
 
 ## Structure
@@ -22,7 +23,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Verification: the exact commands and expected output.
 - Review gate: who or what checks before the PR is ready.
 - Acceptance criteria: what counts as success.
-- PR handling: branch, worktree, draft or ready.
+- PR handling: draft or ready; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
 - Appendix: findings, data and long lists.
 
 ## Writing and checking
@@ -32,4 +33,5 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports.
 - Have a second `theta-agent` check every path, line number, count and command against the code before you present the plan.
 - Have a third `theta-agent` read the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
+- Never offer to skip a check this playbook requires, whatever the token quota. If checks are still owed when you present, put an "Owed checks" list in the plan README, say so in the reply, and answer the question that was asked first.
 - Present the plan and wait. Do not edit code until the human says so.

@@ -8,11 +8,16 @@ disable-model-invocation: true
 
 Goal: fewer human interventions next time. Every correction, push back or repeated request is a failure of the environment, so find the cause and fix it there. Turn what you find into an actionable plan for the human to approve: linter and hook changes, skill and `CLAUDE.md` edits, refactoring steps.
 
-## Find the transcript
+## Find the transcripts
 
-- Claude Code: `~/.claude/projects/<project-dir>/<session>.jsonl`. Take the most recent file in the project's directory, otherwise use the current conversation.
-- List the human turns with `scripts/human_turns.py <transcript>` (relative to this file), then read around each turn that looks like an intervention.
-- Copilot CLI: `~/.copilot/session-state/<session-id>/events.jsonl`, with `workspace.yaml` holding the working directory. Match the session by its `cwd`, then take the most recent. User turns are `user.message` events. Fall back to the current conversation.
+A retro covers the current session, or one or more other sessions the human names by ID, title, date or topic. A long session often runs its retro in a fresh session, and then the most recent transcript is the retro itself, never the target.
+
+- Claude Code: `~/.claude/projects/<project-dir>/<session>.jsonl`.
+- Copilot CLI: `~/.copilot/session-state/<session-id>/events.jsonl`, with `workspace.yaml` holding the working directory. Match the session by its `cwd`. User turns are `user.message` events.
+- Find a named session by grepping the transcripts for its title or a phrase from it, narrowed by file date. Confirm the match from its first human turn.
+- With no session named, use the current conversation.
+- List the human turns with `scripts/human_turns.py <transcript>...` (relative to this file). Add `--full` to print each turn in full with the tail of the agent reply before it, then read around each turn that looks like an intervention.
+- With several sessions, merge an intervention that recurs across them into one finding and cite every session.
 
 ## Active instructions
 
@@ -20,6 +25,8 @@ Read the instructions the session ran with, so you can tell a rule that was igno
 
 - Claude Code: global `~/.claude/CLAUDE.md`, and the project's `CLAUDE.md` and `.claude/CLAUDE.md`, including nested ones along the paths touched.
 - Copilot CLI: global `~/.copilot/copilot-instructions.md` and `~/.copilot/instructions/**/*.instructions.md`. Project `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `CLAUDE.md` and `.claude/CLAUDE.md`. Copilot combines them with no precedence, so conflicting lines across files are themselves a finding.
+
+Check whether the rule reached the agent that broke it. A delegate loads neither memory nor the parent's skills, so it sees a skill, playbook or reference only when its brief names the path. A rule the delegate never saw is missing, not ignored.
 
 ## Intervention signals
 
@@ -43,7 +50,9 @@ For each intervention, find the cause and the highest layer that removes it. Spe
 3. Prose: comments, AGENTS.md rules, skills. Not enforceable and relies on agent judgment, so use sparingly.
 4. Human review: does not scale. Reserve it for what the layers above cannot check.
 
-When a finding is a repeatable check, propose a verification skill, script or process instead of a prose rule.
+When a finding is a repeatable check, propose a verification skill, script or process instead of a prose rule. A lint or hook earns its place only when a pattern decides the result with few false positives. Length, tone and structure are judgment, not lint.
+
+At layer 3, prefer a skill, playbook or reference over memory, since they are portable across tools and reach delegates. For style and format, a worked sample in `references/` beats a list of rules.
 
 ## Before proposing
 
@@ -55,10 +64,11 @@ Produce an action plan the human can approve and then execute, not a list of obs
 
 Each action has:
 
-- Removes: the interventions it should prevent, with evidence (quote or turn).
+- Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
 - Layer: 1-4.
 - Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config.
+- Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
 
 Order actions by layer, top first, and mark the quick wins. Drop one-offs that no change can prevent.
