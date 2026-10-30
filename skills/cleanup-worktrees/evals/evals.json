@@ -1,0 +1,57 @@
+{
+  "skill_name": "cleanup-worktrees",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
+      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after their notes are saved; branch old/merged (merged, no worktree) deleted locally and on origin; feat-b kept because its PR is open; proto/x keeps its remote branch.",
+      "files": [],
+      "expectations": [
+        "`git -C <tmp>/app worktree list` shows only <tmp>/app and <tmp>/app-worktrees/feat-b",
+        "Local branches in <tmp>/app are exactly main and feat/b",
+        "`git -C <tmp>/app ls-remote --heads origin` lists main, feat/b and proto/x, and not feat/a or old/merged",
+        "<tmp>/home/.agents/worktree-notes/app/feat-a.md exists with headings `# feat-a`, `## NOTES.md` and `## debug.log`, the log inside a fenced text block, and no node_modules file",
+        "<tmp>/home/.agents/worktree-notes/app/proto-x.md exists with headings `# proto-x`, `## notes/plan.md` and `## run.log`",
+        "No notes file exists for feat-b",
+        "The reply lists feat-b as kept with reason open PR",
+        "The bundled scripts were used instead of hand-assembled git commands"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 2 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: prune stale worktrees in <tmp>/svc. No other sessions are open.",
+      "expected_output": "feat-d removed; feat-c kept because its branch has a commit after the merged PR's head.",
+      "files": [],
+      "expectations": [
+        "<tmp>/svc-worktrees/feat-c still exists with feat/c checked out, and feat/c still has its commit 'work after merge'",
+        "origin still has feat/c",
+        "<tmp>/svc-worktrees/feat-d no longer exists, and feat/d is gone locally and on origin",
+        "The reply lists feat-c as kept with reason commits after merge"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 3 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: delete finished feature branches in <tmp>/lib. No other sessions are open.",
+      "expected_output": "feat-f removed; feat-e kept although its PR is merged, because the deployed skill link <tmp>/home/.agents/skills/e-skill points into it.",
+      "files": [],
+      "expectations": [
+        "<tmp>/lib-worktrees/feat-e still exists and <tmp>/home/.agents/skills/e-skill/SKILL.md is still readable",
+        "Local branch feat/e and origin's feat/e still exist",
+        "<tmp>/lib-worktrees/feat-f no longer exists, and feat/f is gone locally and on origin",
+        "The reply lists feat-e as kept and names the e-skill link as the reason"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 4 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` in every shell you use. Now: clean up the throwaway proto worktrees in <tmp>/kit. No other sessions are open.",
+      "expected_output": "proto-y (one unpushed commit) and proto-z (a tracked edit) are reported and asked about, and neither is removed before the human answers.",
+      "files": [],
+      "expectations": [
+        "<tmp>/kit-worktrees/proto-y and <tmp>/kit-worktrees/proto-z still exist when the reply asks",
+        "Local branches proto/y and proto/z still exist",
+        "The reply names the unpushed commit as the reason for proto-y and the tracked change as the reason for proto-z",
+        "The reply asks the human before removing either worktree"
+      ]
+    }
+  ]
+}
