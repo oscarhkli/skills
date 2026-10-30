@@ -5,7 +5,7 @@ description: Use when the user wants to commit, git commit, commit changes, comm
 
 # Conventional Commits
 
-Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a draft PR without asking. It never pushes to the default branch or force-pushes unless the user says so.
+Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a ready-for-review PR without asking, titled in Conventional Commit style. It never pushes to the default branch or force-pushes unless the user says so.
 
 ## Message structure
 
@@ -26,6 +26,14 @@ Format every commit message per **Conventional Commits 1.0.0**. The agent may co
 5. The body is optional. Omit it when the description is self-evident. Otherwise start it one blank line after the description, keep it to 1-3 lines, and explain why, not how.
 6. Each footer is optional, separated from the body by one blank line, in the form `Token: value` or `Token #value`.
 7. If a commit fits more than one type, use the highest-impact one (`feat` > `fix` > `chore`) and mention the rest in the body.
+
+## Branch names
+
+Name a new branch `<type>/<short-kebab-summary>`, with the same types as commits (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `build`, `ci`, `style`, `revert`). Never use `sync/` or another prefix outside this list. The one exception is the throwaway `proto/<topic>` branch from the prototype playbook, which is never pushed.
+
+## Prose
+
+Apply `../unslop/SKILL.md` to the subject and body before committing.
 
 ## Examples
 

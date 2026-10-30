@@ -8,7 +8,7 @@ compatibility: Requires Git, an authenticated GitHub CLI (gh), and Python 3.9 or
 
 The scripts in `scripts/` (relative to this file) run the Git and `gh` commands. You decide what is safe to remove.
 
-Run this skill only when the human asks. A prototype worktree stays until the human says to remove it. On Windows, run the scripts with `python` or `py -3` if `python3` is missing.
+Run this skill only when the human asks. A prototype worktree stays until the human says to remove it.
 
 `<repo>` is the main checkout: the first path `git worktree list` prints. Run nothing from inside a worktree you might remove. Take every worktree path from the audit. Never type a path by hand or assume a `<repo>-worktrees` layout, because a worktree can live anywhere.
 
