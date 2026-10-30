@@ -35,7 +35,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before a commit whose diff touches comments. |
-| `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. |
+| `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
 
 ## Playbooks
 
