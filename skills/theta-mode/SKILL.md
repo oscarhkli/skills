@@ -18,24 +18,24 @@ disable-model-invocation: true
 
 Read the matching row's `../<name>/SKILL.md` before starting work, including read-only analysis and planning. Most principles are manual-only, so read the file instead of invoking the skill.
 
-Each read costs context, so read only the principles whose row matches the task. Match the rows again whenever the task changes kind, such as from research or planning to editing, and read each newly matching principle before continuing.
+Each read costs context, so read only the principles in this table whose row matches the task. Match this table's rows again whenever the task changes kind, such as from research or planning to editing, and read each newly matching principle before continuing.
 
 | Principle | Applies when |
 | --- | --- |
 | `principle-agent-can-say-no` | The human's proposal, correction or "drop X", or your own finding or reply, rests on a claim about code, tests, docs or a recorded decision, including whether an idea would work. |
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
-| `principle-lazy-senior-dev` | Adding a feature, refactoring, extracting a function or class, sizing a diff. |
+| `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 
 ## Other skills
 
-Also manual-only. Read the file, do not invoke it.
+Also manual-only. Read the file, do not invoke it. Read each on its own trigger, whatever the cost in context.
 
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before a commit whose diff touches comments. |
-| `../unslop/SKILL.md` | Before committing prose such as docs, designs or PR text, showing the human a PR comment draft or reply, or replying to the human. In a file, apply it to the changed lines only. |
+| `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. |
 
 ## Playbooks
 
