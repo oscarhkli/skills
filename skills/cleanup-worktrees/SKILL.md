@@ -40,6 +40,8 @@ A target that is not `proto-*` with `changes` of `other:<count>`: show `git -C <
 
 Show two tables: targets (worktree, branch, PR, `changes`, `tracked`, `unpushed`) and kept items (worktree or branch, reason). Then ask the human once, listing exactly what will be deleted: the worktrees, the local branches and the remote branches. State that uncommitted edits and unpushed commits in the listed worktrees are lost. State that each `proto-*` worktree is deleted together with its `PROTOTYPE.md`, uncommitted edits, unpushed commits and untracked files, and that its findings should already be in the PR's tradeoffs or the plan notes. Remove nothing until the human says yes.
 
+Skip the question when the human's request names the exact worktree, the audit shows it as a `target` with PR state `MERGED`, `changes` of `clean` and `tracked` 0, and step 2 drops nothing. Remove it, then show both tables and the results in the response. Every other case asks.
+
 For each target:
 
 ```
