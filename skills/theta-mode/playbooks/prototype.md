@@ -64,4 +64,5 @@ If the decision is still open, say what is open and offer the human the next opt
 - The coordinator opens the evidence behind the result that drives the decision.
 - A conflict between two reports is settled by the cheapest experiment, not by reading.
 - Record the findings, worktree paths and each `PROTOTYPE.md` path in the plan notes.
+- When the approach is adopted, put the prototype's conclusion in the PR's Tradeoffs section (see `create-pr.md`). When it is abandoned, keep it in the plan notes. `PROTOTYPE.md` is a working file, not the archive.
 - Worktrees stay until the human says to remove them.

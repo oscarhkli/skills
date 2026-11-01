@@ -5,52 +5,24 @@ description: Use when the user wants to commit, git commit, commit changes, comm
 
 # Conventional Commits
 
-Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a draft PR without asking. It never pushes to the default branch or force-pushes unless the user says so.
-
-## Message structure
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
+Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a ready-for-review PR without asking, titled in Conventional Commit style. It never pushes to the default branch or force-pushes unless the user says so.
 
 ## Rules
 
-1. The `type` is required: a noun such as `feat` or `fix`, followed by an optional scope, an optional `!`, and a required `: `.
-2. Use `feat` for a new feature and `fix` for a bug fix.
-3. The scope is optional: a noun in parentheses naming the affected part of the codebase, e.g. `feat(engine)`, `fix(web/access)`.
-4. The description is required and follows the prefix immediately. It is a short imperative summary: lowercase, no trailing period, under 72 characters in total on the first line.
-5. The body is optional. Omit it when the description is self-evident. Otherwise start it one blank line after the description, keep it to 1-3 lines, and explain why, not how.
-6. Each footer is optional, separated from the body by one blank line, in the form `Token: value` or `Token #value`.
-7. If a commit fits more than one type, use the highest-impact one (`feat` > `fix` > `chore`) and mention the rest in the body.
+- The scope names the affected skill or folder, as in `feat(theta-mode)` or `fix(cleanup-worktrees)`. Use `skills` for a change across several.
+- The subject is a short imperative summary: lowercase, no trailing period, 72 characters or fewer on the first line.
+- Add a body only when the subject is not self-evident. Keep it to 1-3 lines and explain why, not how.
+- Apply `../unslop/SKILL.md` to the subject and body before committing.
 
-## Examples
+## Branch names
 
-```
-feat(server): update Room.LastActivity when someone edits the state
-```
-
-```
-fix(cli): refine command instruction layout
-```
-
-```
-feat(api): add endpoint for bulk user import
-
-Allows importing multiple users at once via a CSV payload.
-Supports up to 500 records per request.
-```
+Name a new branch `<type>/<short-kebab-summary>`, with the same types as commits (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `build`, `ci`, `style`, `revert`). Never use `sync/` or another prefix outside this list. The one exception is the throwaway `proto/<topic>` branch from the prototype playbook, which is never pushed.
 
 ## Staging
 
-- Stage only the files that belong to this one logical change, by explicit path. Never use `git add -A` or `git add .`: they sweep in unrelated edits, scratch files and secrets.
-- Run `git status` first. If unrelated changes exist, leave them unstaged and mention them in your reply.
-- Never force-add ignored files (`git add -f`, or `git add` on a path `.gitignore` excludes). Ignored files are ignored on purpose (secrets, local config, build output). If the only changes are in ignored files, say so instead of committing.
+- Stage only the files of this one logical change, by explicit path, so each commit stays small and focused. Never use `git add -A`, `git add .` or `git add -f`: they sweep in unrelated edits, scratch files, secrets and ignored files.
+- Run `git status` first. Leave unrelated changes unstaged and mention them in your reply.
 - If the user already staged files, commit exactly those and do not restage.
-- Prefer small, focused commits: one logical change per commit.
 
 ## Authorship footer
 

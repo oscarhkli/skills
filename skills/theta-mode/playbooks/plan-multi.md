@@ -17,6 +17,7 @@ One README next to the slice plans holds:
 - The merge order, and why each dependency exists.
 - Shared files and the slice that owns each edit.
 - Counts that must reconcile, such as findings per slice summing to the total.
+- Kickoff: the one-line prompt that starts a slice, so the human does not retype context. Each slice plan's Start here supplies the rest.
 
 ## Dependencies and concurrency
 
