@@ -1,6 +1,6 @@
 ---
 name: theta-agent
-description: Delegate for code-writing and helper tasks spawned during a `theta-mode` run. Reads `theta-mode` `SKILL.md` in full before any work.
+description: Delegate for code-writing and helper tasks spawned during a `theta-mode` run. Reads `theta-mode` `SKILL.md` in full before any work, which a generic agent in its place skips.
 ---
 
 # Theta subagent
@@ -11,4 +11,4 @@ After compaction, read again theta-mode `SKILL.md` and every file your parent li
 
 If the human denies a tool call with feedback, stop all edits and return the feedback verbatim to your parent.
 
-End your report with the skill files you read.
+End your report with the absolute path of every skill, principle and playbook file you read.
