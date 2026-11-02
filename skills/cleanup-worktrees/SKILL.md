@@ -25,13 +25,13 @@ Ask which of the human's sessions are still open, unless they already said. Drop
 
 ## 3. Confirm
 
-Full scan: show the targets and the kept rows with reasons, then ask once, listing every worktree and local branch to delete, and state that their uncommitted edits, unpushed commits and untracked files are lost.
+A target is clean when `changes` and `unpushed` are each `-` or 0. Remove clean targets without asking.
 
-Targeted: when the named row is a `target` with `pr_state` `MERGED` and `changes` 0, skip the question. Otherwise ask as in a full scan.
+For every other target, run `git -C <worktree> status --porcelain --untracked-files=all` and warn: list the uncommitted and untracked files and the count of unpushed commits that would be lost. Ask once for all of them, and remove one only after the human confirms. In a full scan, show the kept rows with reasons in the same reply.
 
 ## 4. Remove
 
-`python3 "<skill-directory>/scripts/cleanup.py" "<repo>" --remove <branch-or-worktree>...` with exactly the confirmed names. It re-runs the audit, refuses anything that is not a target, then removes each worktree with `--force`, deletes the local branch with `branch -D`, and runs `git worktree prune`.
+`python3 "<skill-directory>/scripts/cleanup.py" "<repo>" --remove <branch-or-worktree>...` with the clean targets and the confirmed names. It re-runs the audit, refuses anything that is not a target, then removes each worktree with `--force`, deletes the local branch with `branch -D`, and runs `git worktree prune`.
 
 ## Response
 

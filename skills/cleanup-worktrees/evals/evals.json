@@ -3,14 +3,15 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
-      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after one confirmation that warns uncommitted edits, unpushed commits and untracked files are lost; branch old/merged (merged, no worktree) deleted locally; feat-b kept because its PR is open; every remote branch kept.",
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open. If asked to confirm a removal, confirm.",
+      "expected_output": "feat-a (merged, untracked NOTES.md) and proto-x (proto, untracked PROTOTYPE.md) worktrees removed after one confirmation that lists those files as lost; branch old/merged (merged, no worktree, nothing unmerged) deleted locally without a question; feat-b kept because its PR is open; every remote branch kept.",
       "files": [],
       "expectations": [
         "`git -C <tmp>/app worktree list` shows only <tmp>/app and <tmp>/app-worktrees/feat-b",
         "Local branches in <tmp>/app are exactly main and feat/b",
         "`git -C <tmp>/app ls-remote --heads origin` lists main, feat/a, feat/b, proto/x and old/merged",
-        "The confirmation states that uncommitted edits, unpushed commits and untracked files in the listed worktrees are lost",
+        "The confirmation lists NOTES.md for feat-a and PROTOTYPE.md for proto-x as files that would be lost",
+        "The confirmation does not ask about old/merged, and old/merged is deleted",
         "Nothing is written under <tmp>/home/.agents",
         "The reply lists feat-b as kept with reason open PR",
         "scripts/cleanup.py was used for the audit and the removal instead of hand-assembled git commands"
@@ -43,13 +44,13 @@
     {
       "id": 4,
       "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 4 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the throwaway proto worktrees in <tmp>/kit. No other sessions are open.",
-      "expected_output": "proto-y (one unpushed commit) and proto-z (one changed file) are shown with those facts in the table, and the reply asks once before removing either.",
+      "expected_output": "proto-y (one unpushed commit) and proto-z (one changed file) are shown with those facts in the table, and the reply lists proto-z's changed file and proto-y's unpushed commit as what would be lost and asks once before removing either.",
       "files": [],
       "expectations": [
         "<tmp>/kit-worktrees/proto-y and <tmp>/kit-worktrees/proto-z still exist when the reply asks",
         "Local branches proto/y and proto/z still exist",
         "The table shows unpushed 1 for proto-y and changes 1 for proto-z",
-        "The reply asks the human once, listing both worktrees and both local branches, before removing anything"
+        "The reply warns with README.txt for proto-z and 1 unpushed commit for proto-y, and asks the human once, listing both worktrees and both local branches, before removing anything"
       ]
     },
     {
