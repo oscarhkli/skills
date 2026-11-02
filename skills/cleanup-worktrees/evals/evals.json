@@ -4,16 +4,16 @@
     {
       "id": 1,
       "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 1 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the worktrees in <tmp>/app and remove merged branches. No other sessions are open.",
-      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after one confirmation that warns proto-x is deleted with its PROTOTYPE.md and untracked files; branch old/merged (merged, no worktree) deleted locally and on origin; feat-b kept because its PR is open; proto/x keeps its remote branch.",
+      "expected_output": "feat-a (merged) and proto-x (proto, no PR) worktrees removed after one confirmation that warns uncommitted edits, unpushed commits and untracked files are lost; branch old/merged (merged, no worktree) deleted locally; feat-b kept because its PR is open; every remote branch kept.",
       "files": [],
       "expectations": [
         "`git -C <tmp>/app worktree list` shows only <tmp>/app and <tmp>/app-worktrees/feat-b",
         "Local branches in <tmp>/app are exactly main and feat/b",
-        "`git -C <tmp>/app ls-remote --heads origin` lists main, feat/b and proto/x, and not feat/a or old/merged",
-        "The confirmation states that proto-x is deleted together with its PROTOTYPE.md, uncommitted edits, unpushed commits and untracked files, and that its findings should already be in the PR tradeoffs or plan notes",
+        "`git -C <tmp>/app ls-remote --heads origin` lists main, feat/a, feat/b, proto/x and old/merged",
+        "The confirmation states that uncommitted edits, unpushed commits and untracked files in the listed worktrees are lost",
         "Nothing is written under <tmp>/home/.agents",
         "The reply lists feat-b as kept with reason open PR",
-        "The bundled scripts were used instead of hand-assembled git commands"
+        "scripts/cleanup.py was used for the audit and the removal instead of hand-assembled git commands"
       ]
     },
     {
@@ -23,8 +23,8 @@
       "files": [],
       "expectations": [
         "<tmp>/svc-worktrees/feat-c still exists with feat/c checked out, and feat/c still has its commit 'work after merge'",
-        "origin still has feat/c",
-        "<tmp>/svc-worktrees/feat-d no longer exists, and feat/d is gone locally and on origin",
+        "origin still has feat/c and feat/d",
+        "<tmp>/svc-worktrees/feat-d no longer exists, and local branch feat/d is gone",
         "The reply lists feat-c as kept with reason commits after merge"
       ]
     },
@@ -36,20 +36,45 @@
       "expectations": [
         "<tmp>/lib-worktrees/feat-e still exists and <tmp>/home/.agents/skills/e-skill/SKILL.md is still readable",
         "Local branch feat/e and origin's feat/e still exist",
-        "<tmp>/lib-worktrees/feat-f no longer exists, and feat/f is gone locally and on origin",
+        "<tmp>/lib-worktrees/feat-f no longer exists, local branch feat/f is gone, and origin still has feat/f",
         "The reply lists feat-e as kept and names the e-skill link as the reason"
       ]
     },
     {
       "id": 4,
       "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 4 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: clean up the throwaway proto worktrees in <tmp>/kit. No other sessions are open.",
-      "expected_output": "proto-y (one unpushed commit) and proto-z (a tracked edit) are shown with those facts in the table, and the reply asks once before removing either.",
+      "expected_output": "proto-y (one unpushed commit) and proto-z (one changed file) are shown with those facts in the table, and the reply asks once before removing either.",
       "files": [],
       "expectations": [
         "<tmp>/kit-worktrees/proto-y and <tmp>/kit-worktrees/proto-z still exist when the reply asks",
         "Local branches proto/y and proto/z still exist",
-        "The table shows one unpushed commit for proto-y and a tracked change for proto-z",
+        "The table shows unpushed 1 for proto-y and changes 1 for proto-z",
         "The reply asks the human once, listing both worktrees and both local branches, before removing anything"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 2 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: PR #22 is merged. Clean up its worktree in <tmp>/svc. No other sessions are open.",
+      "expected_output": "feat-d and local branch feat/d removed without a question; feat-c untouched.",
+      "files": [],
+      "expectations": [
+        "The reply asks the human no question",
+        "cleanup.py runs with `--only`",
+        "<tmp>/svc-worktrees/feat-d no longer exists, and local branch feat/d is gone",
+        "origin still has feat/d",
+        "<tmp>/svc-worktrees/feat-c and local branch feat/c are untouched",
+        "The reply names the feat-d worktree and the feat/d branch as removed"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Scratch setup: run `python3 <skill-directory>/evals/setup.py 2 <tmp>` on a fresh empty dir, then load `<tmp>/env.sh` (Git Bash) or `<tmp>/env.ps1` (PowerShell) in every shell you use. Now: PR #21 is merged, clean up the feat/c worktree in <tmp>/svc. No other sessions are open.",
+      "expected_output": "Nothing removed; feat-c kept because its branch has a commit after the merged PR's head.",
+      "files": [],
+      "expectations": [
+        "Nothing is removed: <tmp>/svc-worktrees/feat-c, <tmp>/svc-worktrees/feat-d, local feat/c and local feat/d all still exist",
+        "The reply says feat-c is kept because of commits after merge",
+        "origin still has feat/c"
       ]
     }
   ]

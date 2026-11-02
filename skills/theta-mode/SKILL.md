@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 - Read each file this skill or its playbooks name in full with the file tool (`Read` in Claude Code, `view` in Copilot CLI), never through a shell command. Paths are relative to this skill's base directory. A principle shapes your work only if its text is in your context verbatim, and only a file-tool read puts it there. After compaction, read again the files whose rules still apply, including playbooks and extra playbooks.
 
-- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you read a playbook, add a second line: `Playbooks read: <file>`.
+- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`.
 
 - When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
 
@@ -49,10 +49,24 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 
 ### Extra playbooks
 
-Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` table in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` and treat its rows as rows of this table. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. If none exist, skip this.
+Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` table in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` and treat its rows as rows of this table. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. A delegate gets and reads both kinds: every playbook whose row matches its task. If none exist, skip this.
 
 ## Subagents
 
-The coordinator talks to the human, writes briefs, reviews and decides. Spawn a `theta-agent` subagent for every edit outside the coordinator's own scratchpad files, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree, and every other edit goes to a theta-agent. The coordinator reads only this skill's principle, playbook and skill files, those scratchpad files, and the reports and diffs it reviews. The subagent that edits also commits, and pushes or opens the PR when the human asks. The coordinator may push a reviewed commit itself. Spawn a fresh subagent for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume a subagent (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process. Only the coordinator spawns subagents.
+The coordinator talks to the human, writes briefs, reviews and decides. Only the coordinator spawns subagents.
 
-Put this file's absolute path in the delegate's prompt, followed by the absolute path of every principle and other skill you selected. Pick principles by the delegate's task: a delegate that reports a finding or answers a fact gets `principle-agent-can-say-no`, and one that edits gets `principle-lazy-senior-dev`. Tell it to read each with the file tool. The delegate has no other way to know the rules, and reads them before starting. When the delegate opens or edits a pull request, also put the absolute path of `playbooks/create-pr.md`, resolved against this skill's base directory, in its prompt, and it reads that file before writing the PR title or body. Copy every source path, URL, correction, settled decision and applicable user preference into the brief verbatim. Do not start a delegate's edits that depend on a question you are asking the human. Never use it to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself. The delegate's report lists the skill files it read. Review the delegate's diff and write your own summary.
+- Spawn a `theta-agent` for every edit outside the coordinator's scratchpad, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree.
+- The coordinator reads only this skill's principle, playbook and skill files, its scratchpad files, and the reports and diffs it reviews.
+- The delegate that edits also commits, and pushes or opens the PR when the human asks. The coordinator may push a reviewed commit itself.
+- Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
+- Do not start a delegate's edits that depend on a question you are asking the human.
+- Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.
+
+The brief holds:
+
+- This file's absolute path, then the absolute path of every selected principle and other skill. A delegate that reports a finding or answers a fact gets `principle-agent-can-say-no`; one that edits gets `principle-lazy-senior-dev`. It reads each with the file tool before starting, since it has no other way to know the rules.
+- The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
+- The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
+- The evidence that proves the work is done, the paths it may write, and the actions it must not take.
+
+The report lists, by absolute path, every skill, principle and playbook file the delegate read, and names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.

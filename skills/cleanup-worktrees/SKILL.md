@@ -1,59 +1,38 @@
 ---
 name: cleanup-worktrees
-description: Remove Git worktrees and local and remote branches whose pull request is merged, plus throwaway proto-* worktrees. Use when the user asks to clean up worktrees, remove merged branches, prune stale worktrees, or delete finished feature branches.
-compatibility: Requires Git, an authenticated GitHub CLI (gh), and Python 3.9 or later.
+description: Remove Git worktrees and local branches whose pull request is merged, plus throwaway proto-* worktrees. Use when the user asks to clean up worktrees, remove merged branches, prune stale worktrees, delete finished feature branches, or says a PR is merged and its worktree can go.
+compatibility: Requires Git, an authenticated GitHub CLI (gh), and Python 3.9 or later. Works on macOS and Windows.
 ---
 
 # Cleanup Worktrees
 
-The scripts in `scripts/` (relative to this file) run the Git and `gh` commands. You decide what is safe to remove.
+`scripts/cleanup.py` (relative to this file) runs every Git and `gh` command. Remote branches are never touched. `<repo>` is the main checkout, the first path `git worktree list` prints. Run nothing from inside a worktree you might remove.
 
-Run this skill only when the human asks. A prototype worktree stays until the human says to remove it.
+## Modes
 
-`<repo>` is the main checkout: the first path `git worktree list` prints. Run nothing from inside a worktree you might remove. Take every worktree path from the audit. Never type a path by hand or assume a `<repo>-worktrees` layout, because a worktree can live anywhere.
+- **Targeted:** the human names one PR, branch or worktree. Pass it with `--only`.
+- **Full scan:** any other request. Audit everything.
 
 ## 1. Audit
 
-```
-python3 "<skill-directory>/scripts/audit.py" "<repo>"
-```
+`python3 "<skill-directory>/scripts/cleanup.py" "<repo>" [--only <name>]` prints one TSV row per worktree and local branch, skipping the default branch and the main checkout: `class`, `reason`, `branch`, `worktree`, `pr_state`, `pr_url`, `changes` (uncommitted and untracked files), `unpushed` (`proto-*` rows only). `-` means none. `--only` matches a branch, worktree path, directory name or PR number (`22` or `#22`), and fails when nothing matches.
 
-It fetches with `--prune`, then prints one TSV row per worktree and per local branch, except the default branch and the main checkout. Columns: `class`, `reason`, `branch`, `worktree`, `pr_state`, `pr_url`, `changes`, `tracked`, `unpushed`. A `-` means none.
+`target` means a merged PR whose head is the local head, or a `proto-*` worktree. Everything else is `keep` with its reason: no PR, open PR, closed without merge, commits after merge, or `linked: <name>` when a skill in `~/.agents/skills` or `~/.claude/skills` points into the worktree. Remove a `keep` row only when the human names it after seeing its reason.
 
-- `class` is `target` when the branch has a merged PR, no open PR, and a local head equal to the merged PR's head. A worktree directory named `proto-*` is also a `target`, including the control worktree `proto-main-check`. Everything else is `keep`, with `reason` one of: no PR, open PR, closed without merge, commits after merge.
-- PR state comes from `gh`, not `git branch --merged`, because squash and rebase merges leave the branch outside the default branch's history.
-- `changes` is `clean`, `notes-only` (untracked `.md` and `.log` files), `other:<count>`, or `missing` when the directory is gone.
-- `tracked` counts modified tracked files in the worktree. `unpushed` counts commits on the branch that no remote branch has. Prototype code is uncommitted by design, so a `proto-*` row with `tracked` or `unpushed` above 0 is information for the confirmation in step 3, not a stop.
+## 2. Open sessions
 
-Remove a kept item only when the human names it.
+Ask which of the human's sessions are still open, unless they already said. Drop any target an open session uses, and name the session as the reason.
 
-## 2. Check before removing
+## 3. Confirm
 
-The audit is advice, not permission. Drop a target from the list, and record why, when any of these holds:
+Full scan: show the targets and the kept rows with reasons, then ask once, listing every worktree and local branch to delete, and state that their uncommitted edits, unpushed commits and untracked files are lost.
 
-- One of the human's open sessions or chats still uses it. Ask the human which sessions are still open, unless they already said. Name the session as the reason.
-- A link points into the worktree, such as deployed skills linked from `~/.agents/skills` or `~/.claude/skills`. List the links in those folders and check where each points. On Windows, list links with `Get-ChildItem <dir> | Where-Object LinkType | Select-Object Name, Target` in PowerShell, because junctions do not show as links in Git Bash. Record the link as the reason.
+Targeted: when the named row is a `target` with `pr_state` `MERGED` and `changes` 0, skip the question. Otherwise ask as in a full scan.
 
-A target that is not `proto-*` with `changes` of `other:<count>`: show `git -C <worktree> status --porcelain` and ask the human before removing it.
+## 4. Remove
 
-## 3. Show, then ask once, then remove
-
-Show two tables: targets (worktree, branch, PR, `changes`, `tracked`, `unpushed`) and kept items (worktree or branch, reason). Then ask the human once, listing exactly what will be deleted: the worktrees, the local branches and the remote branches. State that uncommitted edits and unpushed commits in the listed worktrees are lost. State that each `proto-*` worktree is deleted together with its `PROTOTYPE.md`, uncommitted edits, unpushed commits and untracked files, and that its findings should already be in the PR's tradeoffs or the plan notes. Remove nothing until the human says yes.
-
-Skip the question when the human's request names the exact worktree, the audit shows it as a `target` with PR state `MERGED`, `changes` of `clean` and `tracked` 0, and step 2 drops nothing. Remove it, then show both tables and the results in the response. Every other case asks.
-
-For each target:
-
-```
-python3 "<skill-directory>/scripts/remove.py" "<repo>" "<branch>" "<worktree>" [--force] [--keep-remote]
-```
-
-- It removes the worktree, deletes the local branch with `branch -D` (a squash-merged branch is not an ancestor of the default branch), then runs `git worktree prune`.
-- It deletes the remote branch only when the remote head equals the local head. If they differ, it skips the remote delete and prints why. Report that line.
-- Pass `-` for a missing branch or worktree.
-- Pass `--force` for a `proto-*` worktree, for a `notes-only` worktree, and for an `other:<count>` worktree the human approved. Git refuses to remove a worktree with untracked or modified files otherwise.
-- Pass `--keep-remote` unless `pr_state` is `MERGED`, because deleting the branch of an open PR closes it.
+`python3 "<skill-directory>/scripts/cleanup.py" "<repo>" --remove <branch-or-worktree>...` with exactly the confirmed names. It re-runs the audit, refuses anything that is not a target, then removes each worktree with `--force`, deletes the local branch with `branch -D`, and runs `git worktree prune`.
 
 ## Response
 
-Report what was removed (worktree, local branch, remote branch), everything kept with its reason, any remote delete the script skipped, and any command that failed, with its error.
+Report what was removed, everything kept with its reason, and any failed command with its error.
