@@ -15,11 +15,11 @@ A clean compile and a read-through of the diff prove nothing about behaviour. Ch
 - **Cover the edges.** Verify each edge case. Do not list them in the chat.
 - **Capture what users see.** For visible behaviour, save evidence to a file: logs, a screenshot or an end-to-end test result. Link the file, do not paste it.
 - **Pick the lowest level.** Use the lowest level of the testing pyramid that proves the claim. Use end-to-end only when lower levels cannot show it, such as when wiring, UI or a cross-service flow is the risk. Judge this per change.
-- **Never skip proof.** Try every route inside or outside the repo: tests, a throwaway script, a local run, a query against a dev database. If none works, name the check, why it failed and the alternatives you tried, then propose the next best proof. A check you could not run is not a check you skipped.
+- **Try every route.** Never stop at the first check that fails. Try tests, a throwaway script, a local run or a query against a dev database, inside or outside the repo. If none works, name the check, why it failed and the alternatives you tried, then propose the next best proof. A check you could not run is not a check you skipped.
 - **Report what ran.** One line per check with its result.
 
 ## Scripted verification
 
 Automate checks as tests that run the same way every time and catch regressions.
 
-Keep them in the codebase as unit, integration or end-to-end tests. If a script cannot live there, put it in `~/.agents/project-brain/<project>/verification/` and tell the human its path.
+Keep them in the codebase as unit, integration or end-to-end tests. If a script cannot live there, put it in `~/.agents/project-brain/<project>/verification/` (`<project>` is the main checkout's directory name) and tell the human its path.
