@@ -20,7 +20,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Checklist: pre-work, work, post-work.
 - Tasks: what to do, roughly where, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
 - Observable results: what differs when the task is done.
-- Verification: the exact commands and expected output. How is it proven that the problem is solved? Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser)? A layer left out says why. Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
+- Verification: the exact commands and expected output. How is it proven that the problem is solved? Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser; a layer that fits none of them, such as scene tests with mocks, goes with the nearest one)? A layer left out says why. Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
 - Review gate: who or what checks before the PR is ready. For a code PR the gate names the review: a fresh `theta-agent` runs `/code-review high` on the branch, and a separate `theta-agent` evaluates each finding and fixes the ones that hold. The PR's Verification section lists what was fixed and what was skipped. Name the review only when the plan's author wants it; it is not a default for every PR.
 - Acceptance criteria: what counts as success.
 - PR handling: ready for review unless the human asks for a draft; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
@@ -33,7 +33,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Give the delegate absolute paths, not references to the conversation.
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports.
 - Path check: a `theta-agent` checks every path, line number, count and command against the code before you present the plan.
-- User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
+- User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
 - The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
 - Present the plan and wait. Do not edit code until the human says so.
