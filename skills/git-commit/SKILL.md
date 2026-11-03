@@ -9,7 +9,7 @@ Format every commit message per **Conventional Commits 1.0.0**. The agent may co
 
 ## Rules
 
-- The scope names the affected skill or folder, as in `feat(theta-mode)` or `fix(cleanup-worktrees)`. Use `skills` for a change across several.
+- The scope is optional: a noun for the affected section of the codebase, as in `feat(parser)` or `fix(auth)`. When a change spans several sections, name the broader area that contains them.
 - The subject is a short imperative summary: lowercase, no trailing period, 72 characters or fewer on the first line.
 - Add a body only when the subject is not self-evident. Keep it to 1-3 lines and explain why, not how.
 - Apply `../unslop/SKILL.md` to the subject and body before committing.

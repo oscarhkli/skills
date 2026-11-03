@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: delegate-gets-playbook-paths
+expected_outcome: |
+  The coordinator spawns a theta-agent and its brief carries the absolute paths of theta-mode, both create-pr playbooks in order, and the principles. The final Playbooks read line matches the delegate's report.
+context:
+  scaffold_script: place-files.sh
