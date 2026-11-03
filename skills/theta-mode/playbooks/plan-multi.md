@@ -6,6 +6,7 @@ For work split into several PRs or phases, possibly built by agents in parallel.
 
 - Slice vertically: each slice delivers a working, mergeable change, not a layer that only works once the others land.
 - Each file, finding or task belongs to exactly one slice. Check by listing every owner and finding no gaps or overlaps. Two slices editing the same file is a dependency; record it.
+- A slice that trips the size gate in `plan.md` is split before it is planned further.
 - Put shared prerequisites, such as a type, helper or test fixture several slices need, in their own first slice.
 
 ## Index (README)

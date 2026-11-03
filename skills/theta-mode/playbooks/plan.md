@@ -24,6 +24,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Review gate: who or what checks before the PR is ready. For a code PR the gate names the review: a fresh `theta-agent` runs `/code-review high` on the branch, and a separate `theta-agent` evaluates each finding and fixes the ones that hold. The PR's Verification section lists what was fixed and what was skipped. Name the review only when the plan's author wants it; it is not a default for every PR.
 - Acceptance criteria: what counts as success.
 - PR handling: ready for review unless the human asks for a draft; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
+- Open items: minor findings left unfixed and questions left unanswered.
 - Appendix: findings, data and long lists.
 
 ## Writing and checking
@@ -31,8 +32,24 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports.
-- Have a second `theta-agent` check every path, line number, count and command against the code before you present the plan.
-- Have a fresh `theta-agent` list every path a user can take to the changed code and the pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
-- Have a third `theta-agent` read the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
-- Never offer to skip a check this playbook requires, whatever the token quota. If checks are still owed when you present, put an "Owed checks" list in the plan README, say so in the reply, and answer the question that was asked first.
+- Path check: a `theta-agent` checks every path, line number, count and command against the code before you present the plan.
+- User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
+- Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
+- The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
 - Present the plan and wait. Do not edit code until the human says so.
+
+## Budget
+
+Planning is boxed like a spike.
+
+1. One delegate drafts.
+2. Review once on the full draft: path check, user-path check and cold read, in parallel. This is the only full review.
+3. A fresh delegate saves a copy of the files, then fixes every major finding and the cheap minor ones. The rest go to Open items.
+4. A fresh reviewer gets the findings and the diff, and checks only those and the changed lines. If it finds a major issue, repeat steps 3 and 4 once.
+5. One final scan: cold read and `unslop`, for logic, contradictions and readability. Text-only fixes land directly.
+
+Major means a delegate would build the wrong thing, a test passes without proving its claim, or two parts contradict. Minor findings never start a round.
+
+If the second step 4 still finds a major issue, stop and skip step 5. Plan an alternative: slice the work, or build a prototype (`prototype.md`) to test the claim against real code. Report both to the human.
+
+Size gate, before step 2: if Critical files lists more than 8 production plus test files, slice first.
