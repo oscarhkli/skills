@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: extra-playbook-layers-on-general
+expected_outcome: |
+  The general create-pr playbook is read first and the extra one second. The output keeps the general sections and rules and takes the title prefix and the last line from the extra playbook.
+context:
+  scaffold_script: place-files.sh

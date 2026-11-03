@@ -55,7 +55,7 @@ Only what the decision needs, no fixed length:
 - The references found: file and symbol, or quoted doc text.
 - What was not tested.
 
-Each prototype leaves a `PROTOTYPE.md` at the root of its worktree, never committed (the branch is not pushed). It holds the same text the subagent reports in chat: each candidate's result with the path of its evidence, the recommendation, the references found and what was not tested.
+Each prototype writes a `PROTOTYPE.md` to `~/.agents/project-brain/<project>/`, not into its worktree. Glob tools skip linked directories, so list that directory with `ls` or `view`. The file holds the same text the subagent reports in chat: each candidate's result with the path of its evidence, the recommendation, the references found and what was not tested.
 
 If the decision is still open, say what is open and offer the human the next options. Do not decide for them.
 
@@ -63,6 +63,6 @@ If the decision is still open, say what is open and offer the human the next opt
 
 - The coordinator opens the evidence behind the result that drives the decision.
 - A conflict between two reports is settled by the cheapest experiment, not by reading.
-- Record the findings, worktree paths and each `PROTOTYPE.md` path in the plan notes.
-- When the approach is adopted, put the prototype's conclusion in the PR's Tradeoffs section (see `create-pr.md`). When it is abandoned, keep it in the plan notes. `PROTOTYPE.md` is a working file, not the archive.
+- Record the findings, worktree paths and each `PROTOTYPE.md` path in the notes in `~/.agents/project-brain/<project>/`, where the feature map also lives.
+- When the approach is adopted, put the prototype's conclusion in the PR's Tradeoffs section (see `create-pr.md`). When it is abandoned, keep it in those notes. `PROTOTYPE.md` is a working file, not the archive.
 - Worktrees stay until the human says to remove them.

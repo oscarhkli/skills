@@ -26,6 +26,7 @@ Each read costs context, so read only the principles in this table whose row mat
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
+| `principle-prove-it-works` | About to declare a task done or report a change complete, including a fix, feature or refactor. |
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 
 ## Other skills
@@ -49,7 +50,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 
 ### Extra playbooks
 
-Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` table in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` and treat its rows as rows of this table. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. A delegate gets and reads both kinds: every playbook whose row matches its task. If none exist, skip this.
+Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` table in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` with the file tool and treat its rows as rows of this table. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. A delegate gets and reads both kinds: every playbook whose row matches its task. If none exist, skip this.
 
 ## Subagents
 
