@@ -1,0 +1,110 @@
+{
+  "skill_name": "self-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Self-review my branch change. The pull request's GitHub Actions checks have passed. Use the light mode.",
+      "expected_output": "One full review with no findings, then stop with CLEAN. Fixture: git repo whose branch holds one small, correct, tested change with a pull request whose checks passed.",
+      "expectations": [
+        "Exactly one reviewer agent is started (light mode), on the whole change",
+        "When the reviewer returns CLEAN, no finding-verifier, fixer or verifier agent is started",
+        "The coordinator reads no source file itself",
+        "No second review round runs",
+        "The final status line is CLEAN"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Self-review my branch. Use the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns two minor findings (a poor variable name, a request to reword the error text users see, which needs the human to choose the wording) and no major finding; the fixer fixes the poor variable name only and reports tests pass; the finding check accepts both; the verifier returns CLEAN once CI passes on the fix push.",
+      "expected_output": "Cheap minor findings fixed once, one verification, no extra round.",
+      "expectations": [
+        "Each finding gets ACCEPTED, REJECTED or PARTIAL from a fresh agent, with one line of evidence, and the coordinator reads no source itself",
+        "One LAUNCH fixer line follows the review, and the fixer is told to build and run the tests",
+        "One LAUNCH verifier line follows the fix, its brief names only the findings and the diff, and it starts after CI passes on the fix push",
+        "No minor pass, second fixer or second reviewer LAUNCH line appears",
+        "The unfixed minor finding (error text rewording) is listed under Open items with its blocker, the human's choice of user-visible wording",
+        "The final status line is OPEN ITEMS"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Self-review my branch with the standard mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned the canned report. Canned: both reviewers report the same major issue (a test passes without proving its claim); the finding check accepts it; each fixer reports its attempt done and tests pass; every fix-and-verify verifier still reports that major issue; the escalation investigator reports the root cause and that no fix complies with the original requirement.",
+      "expected_output": "Stops after the second verification and one escalation investigation with NEEDS HUMAN and alternatives that include slicing the change.",
+      "expectations": [
+        "Two reviewer LAUNCH lines appear, both model=opus, and no second full-review reviewer lines appear",
+        "Exactly two LAUNCH fixer lines and two fix-and-verify LAUNCH verifier lines appear, and no third fixer line",
+        "Exactly one LAUNCH investigator line appears after the second verifier",
+        "No escalation fix or escalation verifier LAUNCH line appears, because no compliant fix exists",
+        "The final status line is NEEDS HUMAN",
+        "The report gives the findings, the root cause and at least two alternatives with pros, cons and tradeoff, one of which slices the change, and ends with a recommendation"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Run an adversarial self-review of my change with the cross-vendor mode. This tool lists sol as a runnable model. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned CLEAN.",
+      "expected_output": "Models come from modes.yaml, without asking the human.",
+      "expectations": [
+        "The transcript shows modes.yaml was read",
+        "Two reviewer LAUNCH lines appear, one model=opus and one model=sol",
+        "No fixer or verifier LAUNCH line appears, because both reviewers returned CLEAN",
+        "The agent asks the human no question about models"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Self-review my plan document plan.md before I share it.",
+      "expected_output": "No reviewers run, and the agent points to the plan.md Budget. Fixture: git repo whose only change is a new plan.md.",
+      "expectations": [
+        "The agent stops because the change has no code diff",
+        "No agent of any kind is started",
+        "The reply names theta-mode/playbooks/plan.md and its Budget as the way to review a plan"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Self-review my branch. Name no mode. The file ~/.agents/project-brain/skills/settings.yaml has `self-review:` with an indented `mode: cross-vendor`, and this tool has no `sol` model. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned CLEAN.",
+      "expected_output": "Two reviewers on opus because the standard mode runs when a model is unavailable, without asking the human.",
+      "expectations": [
+        "The transcript shows settings.yaml was read and mode cross-vendor chosen",
+        "Because sol is unavailable, the standard mode runs: two reviewer LAUNCH lines appear, both model=opus",
+        "No fixer or verifier LAUNCH line appears, because both reviewers returned CLEAN",
+        "The agent asks the human no question about models"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Self-review my branch with the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns two minor findings and no major finding, both accepted by the finding check; the fixer fixes both and reports tests pass; the verifier reports one of the fixes is incomplete, a minor issue, and nothing major; the minor pass fixer fixes it and reports tests pass; the minor pass verifier reports a new minor issue in the same function; the escalation investigator finds a fix that complies with the original requirement and applies it; the escalation verifier returns CLEAN.",
+      "expected_output": "Only minor issues remain after the last verifier, so one minor pass runs; a minor issue left after it goes to Escalate, not to another minor pass.",
+      "expectations": [
+        "One LAUNCH fixer line and one LAUNCH verifier line follow the finding check, before the minor pass",
+        "A second, fresh LAUNCH fixer line follows for the minor pass, and its brief names only the minor issue the verifier reported",
+        "A LAUNCH verifier line follows the minor pass fixer, and its brief names only the changes that fixer made",
+        "Because the minor pass verifier still reports a minor issue, a LAUNCH investigator line follows, then one LAUNCH verifier line, and no second minor pass fixer line appears",
+        "No second full-review reviewer LAUNCH line appears"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Self-review my branch with the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns one minor finding and no major finding, a missing test for an empty-input edge case, expensive to fix because it needs a choice of expected output; the finding check accepts it; the fixer skips it as expensive and reports tests pass; the verifier reports that finding still open, minor only; the minor pass fixer picks the conventional empty result, adds the test and reports tests pass; the minor pass verifier returns CLEAN.",
+      "expected_output": "The expensive minor finding is blocked only by a reversible, in-scope choice, so the minor pass fixes it and the report states the assumption instead of listing it as open.",
+      "expectations": [
+        "A second, fresh LAUNCH fixer line follows for the minor pass, and its brief names the empty-input finding and the principle-never-block-on-the-human file",
+        "The finding is not parked under Open items",
+        "The report states the assumption that the conventional empty result is the expected output",
+        "The final status line is CLEAN"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Self-review my branch with the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns one minor finding and no major finding, accepted by the finding check; the fixer fixes it and reports tests pass; the verifier reports one more minor issue, nothing major; the minor pass fixer fixes it and reports tests pass; the minor pass verifier reports a different minor issue in another file; the escalation investigator reports that the coding plan no longer meets the original requirement, names the root cause, finds no compliant fix.",
+      "expected_output": "A minor issue left elsewhere after the minor pass escalates; the investigator checks plan alignment first; no compliant fix gives NEEDS HUMAN, not an open item.",
+      "expectations": [
+        "A LAUNCH investigator line follows the minor pass verifier, and its brief says to check first whether the coding plan still meets the original requirement",
+        "No second minor pass fixer line appears and the minor issue is not listed under Open items with the blocker budget spent",
+        "No escalation fix or escalation verifier LAUNCH line appears, because no compliant fix exists",
+        "The report gives the root cause, notes the plan drifted from the original requirement, and offers at least two alternatives, one of which slices the change",
+        "The final status line is NEEDS HUMAN"
+      ]
+    }
+  ]
+}
