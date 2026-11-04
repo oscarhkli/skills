@@ -62,7 +62,7 @@
     },
     {
       "id": 6,
-      "prompt": "Self-review my branch. Name no mode. The file ~/.agents/project-brain/skills/settings.yaml has `self-review:` with an indented `mode: cross-vendor`, and this tool has no `sol` model. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned CLEAN.",
+      "prompt": "Self-review my branch. Name no mode. The file ~/.agents/project-brain/settings.yaml has `self-review:` with an indented `mode: cross-vendor`, and this tool has no `sol` model. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned CLEAN.",
       "expected_output": "Two reviewers on opus because the standard mode runs when a model is unavailable, without asking the human.",
       "expectations": [
         "The transcript shows settings.yaml was read and mode cross-vendor chosen",

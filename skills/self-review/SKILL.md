@@ -12,8 +12,8 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 
 - Start after the pull request's GitHub Actions checks pass. Fixes land afterwards as new commits. Every verifier, including the minor pass and escalation verifiers, starts after CI passes on the fix push. A project or company playbook may change this trigger and this default.
 - Stop if the change has no code diff. A plan or design is reviewed with the `theta-mode/playbooks/plan.md` Budget. The reply is that pointer and nothing else; do not review the document.
-- Read `modes.yaml` in this directory. Use the mode the caller names, else `mode` under `self-review:` in `~/.agents/project-brain/<project>/settings.yaml` (shape: `self-review:` then an indented `mode: standard`), else the mode an extra playbook names for this tool, else `default` in `modes.yaml`.
-- `<project>` is the code repo's name, which is the main checkout's directory name. For a project that spans several repos, look it up under Projects in `~/.agents/project-brain/README.md`. If `settings.yaml` does not exist, skip it. This use only reads; create nothing.
+- Read `modes.yaml` in this directory. Use the mode the caller names, else `mode` under `self-review:` in `~/.agents/project-brain/settings.yaml` (shape: `self-review:` then an indented `mode: standard`), else the mode an extra playbook names for this tool, else `default` in `modes.yaml`.
+- If `settings.yaml` does not exist, skip it. This use only reads; create nothing.
 - Reviewer count is the number of `reviewers` entries. Pass each entry as that agent's model.
 - If any reviewer model of the chosen mode is not in this tool's model list, run the `standard` mode instead. If `standard` itself has such a model, that entry uses the mode's `fixer` model.
 - The fixer and the verifier use the mode's `fixer` model.
