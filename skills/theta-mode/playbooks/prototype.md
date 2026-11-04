@@ -17,6 +17,7 @@ Test: could one grep, one file read or one command answer it with evidence? If y
 ## Who
 
 - One fresh `theta-agent` per prototype, focused on ONE topic. Do not expand the scope. A new question found on the way goes into the report as a follow-up and is not built.
+- A prototype is boxed: one fresh subagent, one build round, one report. An unanswered question is reported as open, not chased with another round. The human decides.
 - One open question gets at most 3 prototypes by default, one per candidate answer, each built by its own fresh subagent. Each prototype checks only the few assumptions behind its own candidate.
 - The coordinator writes the candidate and its assumptions in plain words in the brief, each assumption with the result that would disprove it.
 
