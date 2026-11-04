@@ -56,7 +56,7 @@ Only what the decision needs, no fixed length:
 - The references found: file and symbol, or quoted doc text.
 - What was not tested.
 
-Each prototype writes a `PROTOTYPE.md` to `~/.agents/project-brain/<project>/`, not into its worktree. `<project>` is the code repo's name, which is the main checkout's directory name. For a project that spans several repos, look it up under Projects in `~/.agents/project-brain/README.md`. If `~/.agents/project-brain/<project>/` does not exist, create it and continue. If `~/.agents/project-brain` itself does not exist, stop and tell the human, who sets it up. Glob tools skip linked directories, so list that directory with `ls` or `view`. The file holds the same text the subagent reports in chat: each candidate's result with the path of its evidence, the recommendation, the references found and what was not tested.
+Each prototype writes a `PROTOTYPE.md` to `~/.agents/project-brain/<project>/`, not into its worktree. `<project>` is the code repo's name, which is the main checkout's directory name. For a project that spans several repos, look it up under Projects in `~/.agents/project-brain/README.md`. If `~/.agents/project-brain/<project>/` does not exist, create it and any missing parent directories, then continue. Glob tools skip linked directories, so list that directory with `ls` or `view`. The file holds the same text the subagent reports in chat: each candidate's result with the path of its evidence, the recommendation, the references found and what was not tested.
 
 If the decision is still open, say what is open and offer the human the next options. Do not decide for them.
 
