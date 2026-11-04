@@ -8,11 +8,13 @@ disable-model-invocation: true
 
 ## Non-negotiables
 
-- Read each file this skill or its playbooks name in full with the file tool (`Read` in Claude Code, `view` in Copilot CLI), never through a shell command. Paths are relative to this skill's base directory. A principle shapes your work only if its text is in your context verbatim, and only a file-tool read puts it there. After compaction, read again the files whose rules still apply, including playbooks and extra playbooks.
+- Read each file this skill or its playbooks name in full with the file tool (`Read` in Claude Code, `view` in Copilot CLI), never through a shell command. Paths are relative to this skill's base directory. A principle shapes your work only if its text is in your context verbatim, and only a file-tool read puts it there.
 
 - When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`.
 
 - When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
+
+- Theta mode stays on until the human switches to another task or says to stop, and later messages need not repeat `/theta-mode`. After a resume or compaction, read this file again before the next reply, then the files whose rules still apply, including playbooks and extra playbooks.
 
 ## Principles
 
@@ -36,6 +38,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before a commit whose diff touches comments. |
+| `../self-review/SKILL.md` | The coordinator, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
 | `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
 
 ## Playbooks
