@@ -12,7 +12,7 @@ Find what is recorded (code, docs, history, threads); ask only what a person dec
 
 ## Steps
 
-1. **Locate the notes directory.** The user may bring a one-line idea or point at a directory of earlier investigation. If they point at one, read all of it before listing unknowns. If not, ask where notes go.
+1. **Locate the notes directory.** The user may bring a one-line idea or point at a directory of earlier investigation. If they point at one, read all of it before listing unknowns. If not, use the directory settled under Notes directory.
 2. **List the unknowns the work depends on.** An unknown earns a place only if a different answer changes what you produce.
 3. **Find the findable ones first.** Reading the code dissolves some questions and surfaces sharper ones.
 4. **Ask the rest in rounds.** Each round:
@@ -40,7 +40,7 @@ Contents:
 
 Keep an `index.md` that links every file and states the goal in a sentence, so a new session reads one file first. Edit entries in place to the current state. Keep no old values or "changed from" notes, even in parentheses. The checked date is enough.
 
-Location follows the project. Some repos keep notes in the tree, some owners keep them outside it. Use the directory the user names. If they name none, ask once, then stay consistent. Do not add files to a repo that has not asked for them.
+The directory the user names wins. Otherwise use `~/.agents/project-brain/<project>/`. `<project>` is the code repo's name, which is the main checkout's directory name. For a project that spans several repos, look it up under Projects in `~/.agents/project-brain/README.md`. If `~/.agents/project-brain/<project>/` does not exist, create it and continue. If `~/.agents/project-brain` itself does not exist, stop and tell the human, who sets it up. Do not add files to a repo that has not asked for them.
 
 ## When the human pushes back
 

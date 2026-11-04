@@ -1,0 +1,16 @@
+default: light
+modes:
+  light:
+    reviewers:
+      - sonnet
+    fixer: sonnet
+  standard:
+    reviewers:
+      - opus
+      - opus
+    fixer: opus
+  cross-vendor:
+    reviewers:
+      - opus
+      - sol
+    fixer: opus
