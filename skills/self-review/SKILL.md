@@ -11,7 +11,7 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 ## Setup
 
 - Start after the pull request's GitHub Actions checks pass. Fixes land afterwards as new commits. Every verifier, including the minor pass and escalation verifiers, starts after CI passes on the fix push. A project or company playbook may change this trigger and this default.
-- Stop if the change has no code diff. A plan or design is reviewed with the `theta-mode/playbooks/plan.md` Budget. The reply is that pointer and nothing else; do not review the document.
+- Stop if the change has no code diff. A plan or design is reviewed with the `theta-mode/playbooks/plan.md` Budget. The reply is that pointer only, with no status line and no findings table; do not review the document.
 - Read `modes.yaml` in this directory. Use the mode the caller names, else `mode` under `self-review:` in `~/.agents/project-brain/settings.yaml` (shape: `self-review:` then an indented `mode: standard`), else the mode an extra playbook names for this tool, else `default` in `modes.yaml`.
 - If `settings.yaml` does not exist, skip it. This use only reads; create nothing.
 - Reviewer count is the number of `reviewers` entries. Pass each entry as that agent's model.

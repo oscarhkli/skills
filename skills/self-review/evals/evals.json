@@ -20,7 +20,7 @@
       "expectations": [
         "Each finding gets ACCEPTED, REJECTED or PARTIAL from a fresh agent, with one line of evidence, and the coordinator reads no source itself",
         "One LAUNCH fixer line follows the review, and the fixer is told to build and run the tests",
-        "One LAUNCH verifier line follows the fix, its brief names only the findings and the diff, and it starts after CI passes on the fix push",
+        "One LAUNCH fix-and-verify verifier line follows the fix, its brief names only the findings and the diff, and it starts after CI passes on the fix push",
         "No minor pass, second fixer or second reviewer LAUNCH line appears",
         "The unfixed minor finding (error text rewording) is listed under Open items with its blocker, the human's choice of user-visible wording",
         "The final status line is OPEN ITEMS"
@@ -33,7 +33,7 @@
       "expectations": [
         "Two reviewer LAUNCH lines appear, both model=opus, and no second full-review reviewer lines appear",
         "Exactly two LAUNCH fixer lines and two fix-and-verify LAUNCH verifier lines appear, and no third fixer line",
-        "Exactly one LAUNCH investigator line appears after the second verifier",
+        "Exactly one LAUNCH investigator line appears after the second fix-and-verify verifier",
         "No escalation fix or escalation verifier LAUNCH line appears, because no compliant fix exists",
         "The final status line is NEEDS HUMAN",
         "The report gives the findings, the root cause and at least two alternatives with pros, cons and tradeoff, one of which slices the change, and ends with a recommendation"
@@ -56,6 +56,7 @@
       "expected_output": "No reviewers run, and the agent points to the plan.md Budget. Fixture: git repo whose only change is a new plan.md.",
       "expectations": [
         "The agent stops because the change has no code diff",
+        "The reply contains the pointer only: no status line and no findings table",
         "No agent of any kind is started",
         "The reply names theta-mode/playbooks/plan.md and its Budget as the way to review a plan"
       ]
@@ -65,7 +66,7 @@
       "prompt": "Self-review my branch. Name no mode. The file ~/.agents/project-brain/settings.yaml has `self-review:` with an indented `mode: cross-vendor`, and this tool has no `sol` model. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model>` and continue as if it returned CLEAN.",
       "expected_output": "Two reviewers on opus because the standard mode runs when a model is unavailable, without asking the human.",
       "expectations": [
-        "The transcript shows settings.yaml was read and mode cross-vendor chosen",
+        "The mode is resolved from the `mode: cross-vendor` setting (read from settings.yaml, or taken from the prompt's description of it), not from the default",
         "Because sol is unavailable, the standard mode runs: two reviewer LAUNCH lines appear, both model=opus",
         "No fixer or verifier LAUNCH line appears, because both reviewers returned CLEAN",
         "The agent asks the human no question about models"
@@ -76,10 +77,10 @@
       "prompt": "Self-review my branch with the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns two minor findings and no major finding, both accepted by the finding check; the fixer fixes both and reports tests pass; the verifier reports one of the fixes is incomplete, a minor issue, and nothing major; the minor pass fixer fixes it and reports tests pass; the minor pass verifier reports a new minor issue in the same function; the escalation investigator finds a fix that complies with the original requirement and applies it; the escalation verifier returns CLEAN.",
       "expected_output": "Only minor issues remain after the last verifier, so one minor pass runs; a minor issue left after it goes to Escalate, not to another minor pass.",
       "expectations": [
-        "One LAUNCH fixer line and one LAUNCH verifier line follow the finding check, before the minor pass",
-        "A second, fresh LAUNCH fixer line follows for the minor pass, and its brief names only the minor issue the verifier reported",
-        "A LAUNCH verifier line follows the minor pass fixer, and its brief names only the changes that fixer made",
-        "Because the minor pass verifier still reports a minor issue, a LAUNCH investigator line follows, then one LAUNCH verifier line, and no second minor pass fixer line appears",
+        "One LAUNCH fixer line and one LAUNCH first-verifier line follow the finding check, before the minor pass",
+        "A second, fresh LAUNCH fixer line follows for the minor pass, and its brief names only the minor issue the first verifier reported",
+        "A LAUNCH minor-pass verifier line follows the minor pass fixer, and its brief names only the changes that fixer made",
+        "Because the minor-pass verifier still reports a minor issue, a LAUNCH investigator line follows, then one LAUNCH escalation-verifier line, and no second minor-pass fixer line appears",
         "No second full-review reviewer LAUNCH line appears"
       ]
     },
@@ -99,8 +100,8 @@
       "prompt": "Self-review my branch with the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns one minor finding and no major finding, accepted by the finding check; the fixer fixes it and reports tests pass; the verifier reports one more minor issue, nothing major; the minor pass fixer fixes it and reports tests pass; the minor pass verifier reports a different minor issue in another file; the escalation investigator reports that the coding plan no longer meets the original requirement, names the root cause, finds no compliant fix.",
       "expected_output": "A minor issue left elsewhere after the minor pass escalates; the investigator checks plan alignment first; no compliant fix gives NEEDS HUMAN, not an open item.",
       "expectations": [
-        "A LAUNCH investigator line follows the minor pass verifier, and its brief says to check first whether the coding plan still meets the original requirement",
-        "No second minor pass fixer line appears and the minor issue is not listed under Open items with the blocker budget spent",
+        "A LAUNCH investigator line follows the minor-pass verifier, and its brief says to check first whether the coding plan still meets the original requirement",
+        "No second minor-pass fixer line appears; the minor left after the minor pass goes to the investigator, not to Open items as an unfixed minor",
         "No escalation fix or escalation verifier LAUNCH line appears, because no compliant fix exists",
         "The report gives the root cause, notes the plan drifted from the original requirement, and offers at least two alternatives, one of which slices the change",
         "The final status line is NEEDS HUMAN"
