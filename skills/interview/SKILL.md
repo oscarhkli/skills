@@ -40,7 +40,7 @@ Contents:
 
 Keep an `index.md` that links every file and states the goal in a sentence, so a new session reads one file first. Edit entries in place to the current state. Keep no old values or "changed from" notes, even in parentheses. The checked date is enough.
 
-The directory the user names wins. Otherwise use `~/.agents/project-brain/<project>/`. `<project>` is the code repo's name, which is the main checkout's directory name. For a project that spans several repos, look it up under Projects in `~/.agents/project-brain/README.md`. If `~/.agents/project-brain/<project>/` does not exist, create it and any missing parent directories, then continue. Do not add files to a repo that has not asked for them.
+The directory the user names wins. Otherwise use `~/.agents/project-brain/<project>/`. `<project>` is the name that `~/.agents/project-brain/README.md` gives the project; if the README does not name it, the code repo's name; if there is no repo, a short meaningful name you choose. If `~/.agents/project-brain/<project>/` does not exist, create it and any missing parent directories, then continue.
 
 ## When the human pushes back
 

@@ -22,4 +22,4 @@ A clean compile and a read-through of the diff prove nothing about behaviour. Ch
 
 Automate checks as tests that run the same way every time and catch regressions.
 
-Keep them in the codebase as unit, integration or end-to-end tests. If a script cannot live there, put it in `~/.agents/project-brain/<project>/verification/` (`<project>` is the main checkout's directory name) and tell the human its path.
+Keep them in the codebase as unit, integration or end-to-end tests. If a script cannot live there, put it in `~/.agents/project-brain/<project>/verification/` (`<project>` is the name that `~/.agents/project-brain/README.md` gives the project; if the README does not name it, the code repo's name; if there is no repo, a short meaningful name you choose) and tell the human its path.
