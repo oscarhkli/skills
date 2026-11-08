@@ -61,7 +61,8 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 
 - Spawn a `theta-agent` for every edit outside the coordinator's scratchpad, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree.
 - The coordinator reads only this skill's principle, playbook and skill files, its scratchpad files, and the reports and diffs it reviews.
-- The delegate that edits also commits, and pushes or opens the PR when the human asks. The coordinator may push a reviewed commit itself.
+- The delegate that edits also commits, and pushes or opens the PR when the human asks, except as the next bullet says. The coordinator may push a reviewed commit itself.
+- When a diff touches comments, the delegate commits locally and does not push. The coordinator runs the `no-comments` audit on the diff, then pushes or has a fresh delegate push.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
 - Do not start a delegate's edits that depend on a question you are asking the human.
 - Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.

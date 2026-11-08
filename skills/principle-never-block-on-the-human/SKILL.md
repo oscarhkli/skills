@@ -21,6 +21,8 @@ State any material assumption in the result. Prefer inspect, act, and verify ove
 
 Self-check: if you are about to ask "shall I start / investigate / proceed?" for something on this list, do it instead.
 
+Also: ending a reply with "I haven't checked X" or "I can run X if you want" for something on this list means do X before replying.
+
 ## Ask before acting
 
 - The action is destructive or difficult to reverse, such as deleting persistent data or rewriting history.
