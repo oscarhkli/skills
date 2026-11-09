@@ -3,6 +3,7 @@
 
 REPLY_HYGIENE_MODE=log (default) only appends to a JSONL log; block asks the agent to redo the reply.
 REPLY_HYGIENE_LOG overrides the log path.
+The payload's last_assistant_message is preferred over the transcript, which can lag the Stop event.
 """
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -38,6 +40,8 @@ BLOCK_REASON = (
     "In theta mode, end with a `Principles applied:` line."
 )
 SNIPPET_MAX = 160
+READ_RETRIES = 3
+RETRY_DELAY = 0.3
 
 
 def parse_entries(raw: str) -> list[dict]:
@@ -153,7 +157,7 @@ def log_path() -> Path:
     return Path.home() / ".agents" / "hooks" / "logs" / "reply_hygiene.jsonl"
 
 
-def append_log(tool: str, session: str, check: str, phrase: str, line: str) -> None:
+def append_log(tool: str, session: str, check: str, phrase: str, line: str, payload_keys: list[str] | None = None) -> None:
     record = {
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "tool": tool,
@@ -162,6 +166,8 @@ def append_log(tool: str, session: str, check: str, phrase: str, line: str) -> N
         "phrase": phrase,
         "snippet": line[:SNIPPET_MAX],
     }
+    if payload_keys is not None:
+        record["payload_keys"] = payload_keys
     path = log_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as f:
@@ -177,25 +183,51 @@ def transcript_file(payload: dict, session: str) -> Path | None:
     return None
 
 
+def payload_reply(payload: dict) -> str:
+    for key in ("last_assistant_message", "lastAssistantMessage"):
+        value = payload.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return ""
+
+
+def read_reply(path: Path, have_text: bool) -> tuple[list[dict], str, str]:
+    retries = 0 if have_text else READ_RETRIES
+    while True:
+        entries = parse_entries(path.read_text(encoding="utf-8", errors="replace"))
+        tool = detect_tool(entries)
+        reply = last_reply(entries, tool)
+        if reply or retries == 0:
+            return entries, tool, reply
+        retries -= 1
+        time.sleep(RETRY_DELAY)
+
+
 def run(payload: dict, mode: str) -> str | None:
     if payload.get("stop_hook_active") or payload.get("stopHookActive"):
         return None
     session = str(payload.get("session_id") or payload.get("sessionId") or "")
     guess = "copilot" if "sessionId" in payload or "transcriptPath" in payload else "claude"
+    keys = sorted(payload)
     path = transcript_file(payload, session)
+    given = payload_reply(payload)
+    entries: list[dict] = []
+    tool = "unknown"
+    reply = ""
     try:
         if path is None:
             raise OSError("no transcript path")
-        raw = path.read_text(encoding="utf-8", errors="replace")
+        entries, tool, reply = read_reply(path, bool(given))
     except OSError as exc:
-        append_log(guess, session, "transcript_unreadable", type(exc).__name__, str(path))
-        return None
-    entries = parse_entries(raw)
-    tool = detect_tool(entries)
-    reply = last_reply(entries, tool)
+        if not given:
+            append_log(guess, session, "transcript_unreadable", type(exc).__name__, str(path), keys)
+            return None
+    reply = given or reply
     if not reply:
-        append_log(tool if tool != "unknown" else guess, session, "no_reply_found", tool, str(path))
+        append_log(tool if tool != "unknown" else guess, session, "no_reply_found", tool, str(path), keys)
         return None
+    if tool == "unknown":
+        tool = guess
     theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(entries)
     hits = check_hedges(reply) + check_principles(reply, theta)
     for check, phrase, line in hits:

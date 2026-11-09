@@ -337,6 +337,71 @@ class ReplyHygieneTest(unittest.TestCase):
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
 
+    def test_payload_reply_is_checked_when_transcript_lacks_it(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
+        payload = {"session_id": "s", "transcript_path": str(path), "last_assistant_message": "Done.\nYour call."}
+        with mock.patch("time.sleep") as sleep:
+            run_main(payload)
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+        sleep.assert_not_called()
+
+    def test_payload_reply_camel_case_for_copilot(self):
+        env = Env(self)
+        path = env.transcript([copilot_user("hi")])
+        run_main({"sessionId": "c", "transcriptPath": str(path), "lastAssistantMessage": "Done.\nLet me know if."})
+        self.assertEqual([(r["tool"], r["check"]) for r in env.records()], [("copilot", "hedge")])
+
+    def test_payload_reply_still_uses_transcript_for_theta(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
+        run_main({"session_id": "s", "transcript_path": str(path), "last_assistant_message": "a\nb\nc\nd"})
+        self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
+
+    def test_payload_reply_is_checked_when_transcript_is_unreadable(self):
+        env = Env(self)
+        run_main({"session_id": "s", "transcript_path": str(Path(env.dir.name) / "none"), "last_assistant_message": "Done.\nYour call."})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
+    def test_empty_payload_reply_falls_back_to_transcript(self):
+        env = Env(self)
+        path = env.transcript([claude_reply("Done.\nYour call.")])
+        run_main({"session_id": "s", "transcript_path": str(path), "last_assistant_message": "  "})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
+    def test_transcript_read_is_retried_until_reply_appears(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
+        late = [THETA_USER, CLAUDE_TOOL_ONLY, claude_reply("Done.\nYour call.")]
+
+        def append_reply(_seconds):
+            path.write_text("\n".join(json.dumps(e) for e in late) + "\n", encoding="utf-8")
+
+        with mock.patch("time.sleep", side_effect=append_reply) as sleep:
+            run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+        self.assertEqual(sleep.call_count, 1)
+
+    def test_retries_are_bounded_then_no_reply_is_logged(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
+        with mock.patch("time.sleep") as sleep:
+            run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
+        self.assertEqual([c.args for c in sleep.call_args_list], [(0.3,)] * 3)
+
+    def test_failure_logs_record_payload_keys_without_values(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
+        with mock.patch("time.sleep"):
+            run_main({"session_id": "secret-id", "transcript_path": str(path), "hook_event_name": "Stop"})
+            run_main({"session_id": "secret-id", "transcript_path": str(path.with_name("none")), "cwd": "/x"})
+        got = [(r["check"], r["payload_keys"]) for r in env.records()]
+        self.assertEqual(got, [
+            ("no_reply_found", ["hook_event_name", "session_id", "transcript_path"]),
+            ("transcript_unreadable", ["cwd", "session_id", "transcript_path"]),
+        ])
+
     def test_snippet_is_capped(self):
         env = Env(self)
         path = env.transcript([claude_reply("your call " + "x" * 400)])
