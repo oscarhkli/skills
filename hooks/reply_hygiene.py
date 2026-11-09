@@ -18,7 +18,7 @@ HEDGES = [
     r"say so if",
     r"your call",
     r"left for you",
-    r"I haven't (?:confirmed|checked|verified)",
+    r"I haven['’]t (?:confirmed|checked|verified)",
     r"\bunverified\b",
     r"not verified",
     r"I can (?:do|run) .* if you",
@@ -77,27 +77,46 @@ def detect_tool(entries: list[dict]) -> str:
     return "unknown"
 
 
+def claude_prompt(entry: dict) -> str | None:
+    message = entry.get("message")
+    if entry.get("type") != "user" or entry.get("isSidechain") or not isinstance(message, dict):
+        return None
+    content = message.get("content")
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return None
+    blocks = [b for b in content if isinstance(b, dict)]
+    if any(b.get("type") == "tool_result" for b in blocks):
+        return None
+    return "\n".join(str(b.get("text", "")) for b in blocks if b.get("type") == "text")
+
+
+def copilot_prompt(entry: dict) -> str | None:
+    data = entry.get("data")
+    if entry.get("type") != "user.message" or not isinstance(data, dict):
+        return None
+    content = data.get("content")
+    return content if isinstance(content, str) else None
+
+
 def last_reply(entries: list[dict], tool: str) -> str:
-    extract = copilot_text if tool == "copilot" else claude_text
+    extract, prompt = (copilot_text, copilot_prompt) if tool == "copilot" else (claude_text, claude_prompt)
     for entry in reversed(entries):
+        if prompt(entry) is not None:
+            return ""
         text = extract(entry)
         if text:
             return text
     return ""
 
 
-def is_theta_claude(raw: str) -> bool:
-    return CLAUDE_THETA_MARKER in raw
+def is_theta_claude(entries: list[dict]) -> bool:
+    return any(CLAUDE_THETA_MARKER in (claude_prompt(e) or "") for e in entries)
 
 
 def is_theta_copilot(entries: list[dict]) -> bool:
-    for entry in entries:
-        data = entry.get("data")
-        if entry.get("type") == "user.message" and isinstance(data, dict):
-            content = data.get("content")
-            if isinstance(content, str) and "theta-mode" in content:
-                return True
-    return False
+    return any((copilot_prompt(e) or "").strip().startswith("/theta-mode") for e in entries)
 
 
 def check_hedges(reply: str) -> list[tuple[str, str, str]]:
@@ -139,7 +158,7 @@ def append_log(tool: str, session: str, check: str, phrase: str, line: str) -> N
     }
     path = log_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as f:
+    with path.open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
@@ -171,7 +190,7 @@ def run(payload: dict, mode: str) -> str | None:
     if not reply:
         append_log(tool if tool != "unknown" else guess, session, "no_reply_found", tool, str(path))
         return None
-    theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(raw)
+    theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(entries)
     hits = check_hedges(reply) + check_principles(reply, theta)
     for check, phrase, line in hits:
         append_log(tool, session, check, phrase, line)
@@ -182,7 +201,7 @@ def run(payload: dict, mode: str) -> str | None:
 
 def main() -> None:
     try:
-        payload = json.loads(sys.stdin.read() or "{}")
+        payload = json.loads(sys.stdin.buffer.read().decode("utf-8", "replace") or "{}")
         mode = os.environ.get("REPLY_HYGIENE_MODE", "log").strip().lower()
         out = run(payload if isinstance(payload, dict) else {}, mode)
         if out:

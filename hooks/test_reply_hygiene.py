@@ -2,6 +2,7 @@ import io
 import json
 import os
 import tempfile
+import types
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -22,6 +23,14 @@ def claude_reply(text, sidechain=False):
         "message": {"role": "assistant", "content": [{"type": "thinking", "thinking": ""}, {"type": "text", "text": text}]},
     }
 
+
+CLAUDE_TOOL_RESULT_USER = {
+    "type": "user",
+    "message": {
+        "role": "user",
+        "content": [{"type": "tool_result", "tool_use_id": "t1", "content": "<command-name>/theta-mode</command-name>"}],
+    },
+}
 
 CLAUDE_TOOL_ONLY = {
     "type": "assistant",
@@ -57,9 +66,15 @@ class Env:
         return [json.loads(ln) for ln in self.log.read_text(encoding="utf-8").splitlines()]
 
 
+def fake_stdin(data):
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    return types.SimpleNamespace(buffer=io.BytesIO(data))
+
+
 def run_main(stdin_payload):
     out = io.StringIO()
-    with mock.patch("sys.stdin", io.StringIO(json.dumps(stdin_payload))), redirect_stdout(out):
+    with mock.patch("sys.stdin", fake_stdin(json.dumps(stdin_payload))), redirect_stdout(out):
         with unittest.TestCase().assertRaises(SystemExit) as ctx:
             rh.main()
     return ctx.exception.code, out.getvalue()
@@ -93,14 +108,29 @@ class ReplyHygieneTest(unittest.TestCase):
         self.assertEqual(env.records(), [])
 
     def test_each_hedge_phrase(self):
-        phrases = [
-            "Your call.", "Left for you.", "I haven't checked it.", "I haven't verified it.",
-            "That is unverified.", "Not verified.", "I can do that now if you like.",
-            "I can run it if you prefer.", "Say so if needed.",
+        cases = [
+            ("Your call.", "Your call"),
+            ("Left for you.", "Left for you"),
+            ("I haven't checked it.", "I haven't checked"),
+            ("I haven\u2019t checked it.", "I haven\u2019t checked"),
+            ("I haven't verified it.", "I haven't verified"),
+            ("That is unverified.", "unverified"),
+            ("Not verified.", "Not verified"),
+            ("I can do that now if you like.", "I can do that now if you"),
+            ("I can run it if you prefer.", "I can run it if you"),
+            ("Say so if needed.", "Say so if"),
+            ("Do it if you want.", "if you want"),
         ]
-        for phrase in phrases:
-            with self.subTest(phrase=phrase):
-                self.assertEqual(len(rh.check_hedges("Result.\n" + phrase)), 1)
+        for text, want in cases:
+            with self.subTest(text=text):
+                got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, [want.lower()])
+
+    def test_hedge_on_second_to_last_line_after_trailers_are_dropped(self):
+        got = [phrase for _, phrase, _ in rh.check_hedges("Say so if x.\nDone.")]
+        self.assertEqual(got, ["Say so if"])
+        got = [phrase for _, phrase, _ in rh.check_hedges("Say so if x.\nDone.\nPrinciples applied: y")]
+        self.assertEqual(got, ["Say so if"])
 
     def test_hedge_before_trailing_theta_lines_is_logged(self):
         reply = "Fixed.\nSay so if you want it fixed.\nPrinciples applied: x\nPlaybooks read: none"
@@ -147,8 +177,123 @@ class ReplyHygieneTest(unittest.TestCase):
         self.assertEqual(env.records(), [])
 
     def test_copilot_theta_detection(self):
-        self.assertTrue(rh.is_theta_copilot([copilot_user("please /theta-mode this")]))
+        self.assertTrue(rh.is_theta_copilot([copilot_user("/theta-mode foo")]))
+        self.assertTrue(rh.is_theta_copilot([copilot_user("  /theta-mode")]))
+        self.assertFalse(rh.is_theta_copilot([copilot_user("stop theta-mode")]))
+        self.assertFalse(rh.is_theta_copilot([copilot_user("please /theta-mode this")]))
         self.assertFalse(rh.is_theta_copilot([copilot_user("hello")]))
+
+    def test_claude_theta_needs_a_real_user_prompt(self):
+        self.assertFalse(rh.is_theta_claude([CLAUDE_TOOL_RESULT_USER]))
+        self.assertFalse(rh.is_theta_claude([claude_reply("<command-name>/theta-mode</command-name>")]))
+        self.assertTrue(rh.is_theta_claude([THETA_USER]))
+        block_prompt = {"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": THETA_USER["message"]["content"]}]}}
+        self.assertTrue(rh.is_theta_claude([block_prompt]))
+
+    def test_claude_tool_result_marker_does_not_make_a_theta_session(self):
+        env = Env(self)
+        path = env.transcript([{"type": "user", "message": {"role": "user", "content": "hi"}}, CLAUDE_TOOL_RESULT_USER, claude_reply("a\nb\nc\nd")])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual(env.records(), [])
+
+    def test_earlier_turn_reply_is_not_rechecked_when_final_turn_has_no_text(self):
+        env = Env(self)
+        user = {"type": "user", "message": {"role": "user", "content": "go"}}
+        path = env.transcript([user, claude_reply("Done.\nYour call."), user, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, CLAUDE_TOOL_ONLY])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
+
+    def test_reply_after_tool_results_in_final_turn_is_used(self):
+        user = {"type": "user", "message": {"role": "user", "content": "go"}}
+        entries = [user, claude_reply("old"), user, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("new")]
+        self.assertEqual(rh.last_reply(entries, "claude"), "new")
+
+    def test_copilot_earlier_turn_reply_is_not_rechecked(self):
+        env = Env(self)
+        path = env.transcript([copilot_user("go"), copilot_reply("Done.\nYour call."), copilot_user("again"), copilot_reply("")])
+        run_main({"sessionId": "c", "transcriptPath": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
+
+    def test_crlf_transcript(self):
+        env = Env(self)
+        path = Path(env.dir.name) / "crlf.jsonl"
+        lines = [json.dumps(e) for e in [THETA_USER, claude_reply("Done.\nYour call.")]]
+        path.write_bytes("\r\n".join(lines).encode("utf-8") + b"\r\n")
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
+    def test_non_utf8_line_is_skipped(self):
+        env = Env(self)
+        path = Path(env.dir.name) / "bad.jsonl"
+        path.write_bytes(b"\xff\xfe not json\n" + json.dumps(claude_reply("Done.\nYour call.")).encode("utf-8") + b"\n")
+        code, out = run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
+    def test_empty_transcript_is_logged_as_no_reply(self):
+        env = Env(self)
+        path = Path(env.dir.name) / "empty.jsonl"
+        path.write_bytes(b"")
+        code, out = run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
+
+    def test_very_long_line_is_handled(self):
+        env = Env(self)
+        path = env.transcript([claude_reply("x" * 2_000_000 + "\nYour call.")])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
+    def test_log_write_failure_exits_zero_with_empty_stdout(self):
+        env = Env(self, mode="block")
+        blocker = Path(env.dir.name) / "file"
+        blocker.write_text("x", encoding="utf-8")
+        path = env.transcript([claude_reply("Done.\nYour call.")])
+        with mock.patch.dict(os.environ, {"REPLY_HYGIENE_LOG": str(blocker / "sub" / "out.jsonl")}):
+            code, out = run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual((code, out), (0, ""))
+
+    def test_camel_case_stop_hook_active_exits_without_reading(self):
+        env = Env(self)
+        code, out = run_main({"stopHookActive": True, "transcriptPath": "/nonexistent"})
+        self.assertEqual((code, out, env.records()), (0, "", []))
+
+    def test_non_object_payload_exits_zero(self):
+        env = Env(self)
+        code, out = run_main([])
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([r["check"] for r in env.records()], ["transcript_unreadable"])
+
+    def test_missing_transcript_path_is_logged(self):
+        env = Env(self)
+        code, out = run_main({})
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([r["check"] for r in env.records()], ["transcript_unreadable"])
+
+    def test_copilot_events_file_fallback_under_home(self):
+        env = Env(self)
+        home = Path(env.dir.name) / "home"
+        events = home / ".copilot" / "session-state" / "c1" / "events.jsonl"
+        events.parent.mkdir(parents=True)
+        events.write_text("\n".join(json.dumps(e) for e in [copilot_user("go"), copilot_reply("Done.\nYour call.")]) + "\n", encoding="utf-8")
+        with mock.patch.dict(os.environ, {"HOME": str(home), "USERPROFILE": str(home)}):
+            code, out = run_main({"sessionId": "c1"})
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([(r["tool"], r["check"]) for r in env.records()], [("copilot", "hedge")])
+
+    def test_log_is_opened_with_unix_newlines(self):
+        env = Env(self)
+        real_open = Path.open
+        seen = []
+
+        def spy(self, *args, **kwargs):
+            seen.append(kwargs.get("newline"))
+            return real_open(self, *args, **kwargs)
+
+        with mock.patch.object(Path, "open", spy):
+            rh.append_log("claude", "s", "hedge", "p", "line")
+        self.assertEqual(seen, ["\n"])
+        self.assertTrue(env.log.read_bytes().endswith(b"}\n"))
 
     def test_copilot_theta_without_principles_line_is_logged(self):
         env = Env(self)
@@ -191,7 +336,7 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_garbage_stdin_never_crashes(self):
         Env(self)
         out = io.StringIO()
-        with mock.patch("sys.stdin", io.StringIO("not json")), redirect_stdout(out):
+        with mock.patch("sys.stdin", fake_stdin("not json")), redirect_stdout(out):
             with self.assertRaises(SystemExit) as ctx:
                 rh.main()
         self.assertEqual((ctx.exception.code, out.getvalue()), (0, ""))
