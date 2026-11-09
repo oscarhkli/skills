@@ -19,3 +19,4 @@ Use it when about to open or rewrite a pull request description. The text is for
 - Apply `../unslop/SKILL.md` before posting: no review-round history, no em dashes.
 - End the description with the PR attribution line the session instructs.
 - Never include a `Claude-Session:` link.
+- After the PR's Actions checks pass, read `../../self-review/SKILL.md` and run it before telling the human the PR is ready for review.
