@@ -142,6 +142,22 @@ class ReplyHygieneTest(unittest.TestCase):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want])
 
+    def test_statements_containing_question_words_are_not_flagged(self):
+        for text in ["I see, marshall I see.", "You want me to be brief, so I was.", "Marshall I see nothing."]:
+            with self.subTest(text=text):
+                self.assertEqual(rh.check_hedges("Result.\n" + text), [])
+
+    def test_line_start_question_forms_are_flagged(self):
+        cases = [
+            ("Shall I merge?", "shall i"),
+            ("Want me to run it?", "want me to"),
+            ("- Want me to run it?", "- want me to"),
+        ]
+        for text, want in cases:
+            with self.subTest(text=text):
+                got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, [want])
+
     def test_decision_question_is_logged_for_review(self):
         got = rh.check_hedges("Option A keeps the route, option B drops it.\nShould I start with B?")
         self.assertEqual([phrase.lower() for _, phrase, _ in got], ["should i start"])
