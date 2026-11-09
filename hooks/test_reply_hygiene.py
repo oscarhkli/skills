@@ -102,6 +102,15 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(phrase=phrase):
                 self.assertEqual(len(rh.check_hedges("Result.\n" + phrase)), 1)
 
+    def test_hedge_before_trailing_theta_lines_is_logged(self):
+        reply = "Fixed.\nSay so if you want it fixed.\nPrinciples applied: x\nPlaybooks read: none"
+        got = [(c, line) for c, _, line in rh.check_hedges(reply)]
+        self.assertEqual(got, [("hedge", "Say so if you want it fixed.")])
+
+    def test_hedge_quoted_only_in_principles_line_is_ignored(self):
+        reply = "Fixed.\nTests pass.\nPrinciples applied: x (I haven't checked)\nPlaybooks read: none"
+        self.assertEqual(rh.check_hedges(reply), [])
+
     def test_clean_reply_logs_nothing(self):
         env = Env(self)
         path = env.transcript([claude_reply("Tests pass.")])

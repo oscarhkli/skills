@@ -24,6 +24,7 @@ HEDGES = [
     r"I can (?:do|run) .* if you",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
+TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 BLOCK_REASON = (
     "Do the action or the check now. If it is a real decision for the human, "
@@ -101,6 +102,8 @@ def is_theta_copilot(entries: list[dict]) -> bool:
 
 def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     lines = [ln for ln in reply.splitlines() if ln.strip()]
+    while lines and lines[-1].strip().startswith(TRAILER_PREFIXES):
+        lines.pop()
     hits = []
     for line in lines[-2:]:
         match = HEDGE_RE.search(line)
