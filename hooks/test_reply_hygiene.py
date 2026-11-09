@@ -126,6 +126,30 @@ class ReplyHygieneTest(unittest.TestCase):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want.lower()])
 
+    def test_question_form_closers(self):
+        cases = [
+            ("Do you want me to push the branch and open the PR?", "do you want me to"),
+            ("Want me to run the e2e tests too?", "want me to"),
+            ("Shall I proceed?", "shall i"),
+            ("Should I push it?", "should i push"),
+            ("Should I go ahead with the merge?", "should i go ahead"),
+            ("Should I commit now?", "should i commit"),
+            ("Would you like me to open the PR?", "would you like me to"),
+            ("Let me know if the wording needs work.", "let me know if"),
+        ]
+        for text, want in cases:
+            with self.subTest(text=text):
+                got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, [want])
+
+    def test_decision_question_is_logged_for_review(self):
+        got = rh.check_hedges("Option A keeps the route, option B drops it.\nShould I start with B?")
+        self.assertEqual([phrase.lower() for _, phrase, _ in got], ["should i start"])
+
+    def test_question_form_before_last_two_lines_is_ignored(self):
+        got = rh.check_hedges("Do you want me to push?\nline two\nline three")
+        self.assertEqual(got, [])
+
     def test_hedge_on_second_to_last_line_after_trailers_are_dropped(self):
         got = [phrase for _, phrase, _ in rh.check_hedges("Say so if x.\nDone.")]
         self.assertEqual(got, ["Say so if"])

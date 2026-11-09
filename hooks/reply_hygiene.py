@@ -22,6 +22,12 @@ HEDGES = [
     r"\bunverified\b",
     r"not verified",
     r"I can (?:do|run) .* if you",
+    r"do you want me to",
+    r"want me to",
+    r"shall I",
+    r"should I (?:push|merge|open|proceed|go ahead|start|run|commit)",
+    r"would you like me to",
+    r"let me know if",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
