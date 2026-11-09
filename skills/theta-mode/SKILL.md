@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 - Read each file this skill or its playbooks name in full with the file tool (`Read` in Claude Code, `view` in Copilot CLI), never through a shell command. Paths are relative to this skill's base directory. A principle shapes your work only if its text is in your context verbatim, and only a file-tool read puts it there.
 
-- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed. Write `Principles applied: none` only when you read none. When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`.
+- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed: the decision, edit or check it altered. For `principle-agent-can-say-no`, name the outside claim you checked and what the check showed; if you checked none, cite `principle-prove-it-works` or nothing. Write `Principles applied: none` only when you read none. When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`.
 
 - When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
 
@@ -24,7 +24,7 @@ Each read costs context, so read only the principles in this table whose row mat
 
 | Principle | Applies when |
 | --- | --- |
-| `principle-agent-can-say-no` | The human's proposal, correction or "drop X", or your own finding or reply, rests on a claim about code, tests, docs or a recorded decision, including whether an idea would work. |
+| `principle-agent-can-say-no` | You are about to build on a claim from outside you: the human's proposal, correction, "drop X" or instruction, or a story, spec, plan, note, README, doc or skill you were given or read. |
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
@@ -69,7 +69,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 
 The brief holds:
 
-- This file's absolute path, then the absolute path of every selected principle and other skill. A delegate that reports a finding or answers a fact gets `principle-agent-can-say-no`; one that edits gets `principle-lazy-senior-dev`. It reads each with the file tool before starting, since it has no other way to know the rules.
+- This file's absolute path, then the absolute path of every selected principle and other skill. A delegate that reports a finding or answers a fact gets `principle-prove-it-works`; one given a human claim or a document to build on gets `principle-agent-can-say-no`; one that edits gets `principle-lazy-senior-dev`. It reads each with the file tool before starting, since it has no other way to know the rules.
 - The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
