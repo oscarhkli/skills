@@ -25,12 +25,15 @@ scripts/install.sh -y     # replace without asking
 
 Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
 
+Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwriting a changed copy. Override the target with `AGENTS_HOOKS_DIR`. Registering a hook in `~/.claude/settings.json` or `~/.copilot/hooks/` is manual. `hooks/reply_hygiene.py` is a Stop hook that logs hedged or unfinished final replies to `~/.agents/hooks/logs/reply_hygiene.jsonl`; set `REPLY_HYGIENE_MODE=block` to make it ask for a redo. Run its tests with `python3 -I -m unittest discover -s hooks`.
+
 ## Layout
 
 ```
 skills/<name>/SKILL.md   one folder per skill; optional scripts/, references/, evals/
 agents/<name>.md         custom agents that skills call by name
-scripts/install.sh       deploys skills into ~/.agents/skills and agents into ~/.claude/agents, ~/.copilot/agents
+hooks/<name>.py          Stop hooks for Claude Code and Copilot CLI, with test_<name>.py
+scripts/install.sh       deploys skills into ~/.agents/skills and agents into ~/.claude/agents, ~/.copilot/agents, hooks into ~/.agents/hooks
 ```
 
 Evals live inside the skill they test and only exist where output is objectively checkable.
