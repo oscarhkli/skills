@@ -28,7 +28,7 @@ Each read costs context, so read only the principles in this table whose row mat
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
-| `principle-prove-it-works` | About to declare a task done or report a change complete, including a fix, feature or refactor. |
+| `principle-prove-it-works` | Any task that changes code: read it at the start, and again before reporting a change complete. |
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 
 ## Other skills
