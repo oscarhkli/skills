@@ -25,12 +25,31 @@ scripts/install.sh -y     # replace without asking
 
 Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
 
+Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwriting a changed copy. Override the target with `AGENTS_HOOKS_DIR`. Registering a hook in `~/.claude/settings.json` or `~/.copilot/hooks/` is manual. `hooks/reply_hygiene.py` is a Stop hook that logs hedged or unfinished final replies to `~/.agents/hooks/logs/reply_hygiene.jsonl`. Each record holds the session id and up to 160 characters of the matched line, and the log never rotates. After the `retro` log review finds most hits real, set `REPLY_HYGIENE_MODE=block` to make it ask for a redo. Run its tests with `python3 -I -m unittest discover -s hooks`.
+
+Register it in Claude Code, in `~/.claude/settings.json` (on Windows the command runs in Git Bash):
+
+```json
+{"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "python3 \"$HOME/.agents/hooks/reply_hygiene.py\""}]}]}}
+```
+
+Register it in Copilot CLI, in `~/.copilot/hooks/reply-hygiene.json` (on Windows the `powershell` command runs):
+
+```json
+{"version": 1, "hooks": {"agentStop": [{"type": "command",
+  "bash": "python3 \"$HOME/.agents/hooks/reply_hygiene.py\"",
+  "powershell": "python \"$HOME/.agents/hooks/reply_hygiene.py\""}]}}
+```
+
+Write `$HOME`, not `~`, because Windows PowerShell 5.1 does not expand `~`. On Windows, `python3` can be the Microsoft Store stub, so use `python` or `py -3` if it is. PowerShell has no `VAR=x cmd` form, so for block mode set the variable first: `"powershell": "$env:REPLY_HYGIENE_MODE='block'; python \"$HOME/.agents/hooks/reply_hygiene.py\""`. A hook that fails to start fails open in both tools, so check that the log file appears.
+
 ## Layout
 
 ```
 skills/<name>/SKILL.md   one folder per skill; optional scripts/, references/, evals/
 agents/<name>.md         custom agents that skills call by name
-scripts/install.sh       deploys skills into ~/.agents/skills and agents into ~/.claude/agents, ~/.copilot/agents
+hooks/<name>.py          Stop hooks for Claude Code and Copilot CLI, with test_<name>.py
+scripts/install.sh       deploys skills into ~/.agents/skills and agents into ~/.claude/agents, ~/.copilot/agents, hooks into ~/.agents/hooks
 ```
 
 Evals live inside the skill they test and only exist where output is objectively checkable.

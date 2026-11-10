@@ -1,6 +1,6 @@
 ---
 name: principle-prove-it-works
-description: Principle for finishing a task. Before declaring it done, prove it works by running the real thing, not by inference or a clean compile.
+description: Principle for finishing a task and for stating facts. Before declaring it done, prove it works by running the real thing, not by inference or a clean compile. Before stating a claim you or a delegate made, check it.
 disable-model-invocation: true
 ---
 
@@ -16,6 +16,7 @@ A clean compile and a read-through of the diff prove nothing about behaviour. Ch
 - **Capture what users see.** For visible behaviour, save evidence to a file: logs, a screenshot or an end-to-end test result. Link the file, do not paste it.
 - **Pick the lowest level.** Use the lowest level of the testing pyramid that proves the claim. Use end-to-end only when lower levels cannot show it, such as when wiring, UI or a cross-service flow is the risk. Judge this per change.
 - **Try every route.** Never stop at the first check that fails. Try tests, a throwaway script, a local run or a query against a dev database, inside or outside the repo. If none works, name the check, why it failed and the alternatives you tried, then propose the next best proof. A check you could not run is not a check you skipped.
+- **Check your own claims.** Before reporting, verify what you or a delegate said about coverage, precedent, behaviour or "done". Never cite what you did not check this session. Answer a human's question of fact after checking, not with an "I haven't checked" caveat.
 - **Report what ran.** One line per check with its result.
 
 ## Scripted verification

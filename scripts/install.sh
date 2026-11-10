@@ -76,3 +76,19 @@ if [ -d "$agents_src" ]; then
     done
   done
 fi
+
+hooks_src="$(dirname "$src")/hooks"
+hooks_dst="${AGENTS_HOOKS_DIR:-$HOME/.agents/hooks}"
+if [ -d "$hooks_src" ]; then
+  mkdir -p "$hooks_dst"
+  for f in "$hooks_src"/*.py; do
+    name="$(basename "$f")"
+    case "$name" in test_*) continue ;; esac
+    if cmp -s "$f" "$hooks_dst/$name"; then
+      echo "up-to-date hook $name ($hooks_dst)"
+    else
+      cp "$f" "$hooks_dst/$name"
+      echo "installed hook $name ($hooks_dst)"
+    fi
+  done
+fi
