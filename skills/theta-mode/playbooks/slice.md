@@ -17,7 +17,7 @@ Pick by what the goal needs. Mix them across the stories of one initiative.
 ## Rules
 
 - Independently deployable: after each story, everything is green and existing callers still work.
-- Aim for one problem per story. A story that closes two usually splits; two stories that close one usually merge. This is the default, not a ban. A story may close several related problems when splitting them leaves neither one deployable or reviewable alone.
+- Aim for one problem per story. A story that closes two usually splits. Two stories that together close one are either an enabler (a technical story with no visible change, which names its consumer) plus the story that delivers the change, or one story cut too thin, which merges. This is the default, not a ban. A story may close several related problems when splitting them leaves neither one deployable or reviewable alone.
 - Size is the reviewer's cognitive load, not line count. The number of files, layers touched and behaviour changes to hold in mind at once are signals, with no hard limit. If a story is too much to review in one sitting, look for two problems in it. A long list of one kind of mechanical edit is fine. The size gate in `plan.md` is the same kind of signal.
 - Docs travel with the story that makes them false. There is no separate docs story.
 
