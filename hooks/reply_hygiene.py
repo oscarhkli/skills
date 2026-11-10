@@ -18,14 +18,14 @@ from pathlib import Path
 HEDGES = [
     r"if you want",
     r"say so if",
-    r"your call",
-    r"left for you",
-    r"I haven['’]t (?:confirmed|checked|verified)",
+    r"\byour call\b",
+    r"(?<!nothing )(?<!nothing was )(?<!nothing is )\bleft for you\b",
+    r"I (?:haven['’]t|have not) (?:confirmed|checked|verified)",
     r"\bunverified\b",
-    r"not verified",
+    r"\bnot (?:yet )?verified\b",
     r"I can (?:do|run) .* if you",
     r"do you want me to",
-    r"^[\s>*\-#]*(?:and\s+)?want me to",
+    r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit)",
     r"would you like me to",
@@ -130,7 +130,17 @@ def is_theta_copilot(entries: list[dict]) -> bool:
 
 
 def check_hedges(reply: str) -> list[tuple[str, str, str]]:
-    lines = [ln for ln in reply.splitlines() if ln.strip()]
+    lines = []
+    inside = []
+    fenced = False
+    for ln in reply.splitlines():
+        if ln.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            inside = []
+        elif ln.strip():
+            (inside if fenced else lines).append(ln)
+    if fenced:
+        lines += inside
     while lines and lines[-1].strip().startswith(TRAILER_PREFIXES):
         lines.pop()
     hits = []

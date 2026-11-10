@@ -10,7 +10,11 @@ disable-model-invocation: true
 
 - Read each file this skill or its playbooks name in full with the file tool (`Read` in Claude Code, `view` in Copilot CLI), never through a shell command. Paths are relative to this skill's base directory. A principle shapes your work only if its text is in your context verbatim, and only a file-tool read puts it there.
 
-- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`. Cite only principles whose file you read this session, and state what actually changed: the decision, edit or check it altered. For `principle-agent-can-say-no`, name the outside claim you checked and what the check showed; if you checked none, cite `principle-prove-it-works` or nothing. Write `Principles applied: none` only when you read none. When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`.
+- When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`.
+
+- Cite only principles whose file you read this session, and state what actually changed: the decision, edit or check it altered. For `principle-agent-can-say-no`, name the outside claim you checked and what the check showed; if you checked none, cite nothing for it, and cite `principle-prove-it-works` only if you read it. Write `Principles applied: none` only when you read none.
+
+- When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`. An extra playbook source's `index.md` is not a playbook, so leave it off.
 
 - When naming a function, type or file to the human, give its package or path, so they need no search: `engine.GameState`, `checkEncoding` in `server/json_contract_test.go`. For a fact taken from a document, quote the document's own wording and name its file and heading, so the human can search for it.
 
@@ -28,7 +32,7 @@ Each read costs context, so read only the principles in this table whose row mat
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
-| `principle-prove-it-works` | Any task that changes code: read it at the start, and again before reporting a change complete. |
+| `principle-prove-it-works` | Any task that changes code, reports a finding or answers a question of fact: read it at the start, and again before reporting a change complete or giving the answer. |
 | `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 
 ## Other skills
@@ -37,7 +41,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 
 | Skill | Read when |
 | --- | --- |
-| `../no-comments/SKILL.md` | About to write or change a comment, or before a commit whose diff touches comments. |
+| `../no-comments/SKILL.md` | About to write or change a comment, or before pushing a diff that touches comments. |
 | `../self-review/SKILL.md` | The coordinator, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
 | `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
 
@@ -61,7 +65,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 
 - Spawn a `theta-agent` for every edit outside the coordinator's scratchpad, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree.
 - The coordinator reads only this skill's principle, playbook and skill files, its scratchpad files, and the reports and diffs it reviews.
-- The delegate that edits also commits, and pushes or opens the PR when the human asks, except as the next bullet says. The coordinator may push a reviewed commit itself.
+- The delegate that edits also commits, drafts the PR title and description when the human asks for them, and pushes or opens the PR when the human asks, except as the next bullet says. The coordinator may push a reviewed commit itself.
 - When a diff touches comments, the delegate commits locally and does not push. The coordinator runs the `no-comments` audit on the diff, then pushes or has a fresh delegate push.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
 - Do not start a delegate's edits that depend on a question you are asking the human.

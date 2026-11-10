@@ -114,8 +114,6 @@ class ReplyHygieneTest(unittest.TestCase):
             ("I haven't checked it.", "I haven't checked"),
             ("I haven\u2019t checked it.", "I haven\u2019t checked"),
             ("I haven't verified it.", "I haven't verified"),
-            ("That is unverified.", "unverified"),
-            ("Not verified.", "Not verified"),
             ("I can do that now if you like.", "I can do that now if you"),
             ("I can run it if you prefer.", "I can run it if you"),
             ("Say so if needed.", "Say so if"),
@@ -125,6 +123,28 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(text=text):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want.lower()])
+
+    def test_unverified_work_is_flagged(self):
+        cases = [
+            ("This is not verified yet.", "not verified"),
+            ("The change is unverified.", "unverified"),
+            ("The result was not verified by me.", "not verified"),
+            ("Still unverified.", "unverified"),
+            ("The tests are not verified.", "not verified"),
+            ("Not yet verified.", "Not yet verified"),
+            ("I have not verified it.", "I have not verified"),
+            ("It's unverified.", "unverified"),
+            ("The fix is not yet verified.", "not yet verified"),
+        ]
+        for text, want in cases:
+            with self.subTest(text=text):
+                got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, [want.lower()])
+
+    def test_known_false_positives_are_logged_for_the_retro_review(self):
+        for text in ["Signature not verified by GitHub.", "The field is unverified in the schema."]:
+            with self.subTest(text=text):
+                self.assertEqual(len(rh.check_hedges("Result.\n" + text)), 1)
 
     def test_question_form_closers(self):
         cases = [
@@ -143,7 +163,15 @@ class ReplyHygieneTest(unittest.TestCase):
                 self.assertEqual(got, [want])
 
     def test_statements_containing_question_words_are_not_flagged(self):
-        for text in ["I see, marshall I see.", "You want me to be brief, so I was.", "Marshall I see nothing."]:
+        for text in [
+            "I see, marshall I see.",
+            "You want me to be brief, so I was.",
+            "Marshall I see nothing.",
+            "Report goes to your caller.",
+            "The result arrives via your callback.",
+            "Nothing was left for you to do.",
+            "> Want me to rerun?",
+        ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
 
@@ -161,6 +189,22 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_decision_question_is_logged_for_review(self):
         got = rh.check_hedges("Option A keeps the route, option B drops it.\nShould I start with B?")
         self.assertEqual([phrase.lower() for _, phrase, _ in got], ["should i start"])
+
+    def test_fenced_lines_are_left_out_of_the_last_two_lines(self):
+        reply = "Done.\nTests pass.\n```\nwant me to\n```"
+        self.assertEqual(rh.check_hedges(reply), [])
+        got = rh.check_hedges("Want me to rerun?\n```\nx\n```")
+        self.assertEqual([phrase.lower() for _, phrase, _ in got], ["want me to"])
+
+    def test_unclosed_fence_keeps_the_lines_after_it(self):
+        cases = [
+            ("Done.\n```\ncode\n```\nTests pass.\n```\nWant me to rerun?", ["want me to"]),
+            ("Done.\n```\nWant me to rerun?\n```", []),
+        ]
+        for reply, want in cases:
+            with self.subTest(reply=reply):
+                got = [phrase.lower() for _, phrase, _ in rh.check_hedges(reply)]
+                self.assertEqual(got, want)
 
     def test_question_form_before_last_two_lines_is_ignored(self):
         got = rh.check_hedges("Do you want me to push?\nline two\nline three")

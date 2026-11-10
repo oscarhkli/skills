@@ -1,6 +1,6 @@
 ---
 name: principle-prove-it-works
-description: Principle for finishing a task. Before declaring it done, prove it works by running the real thing, not by inference or a clean compile.
+description: Principle for finishing a task and for stating facts. Before declaring it done, prove it works by running the real thing, not by inference or a clean compile. Before stating a claim you or a delegate made, check it.
 disable-model-invocation: true
 ---
 
