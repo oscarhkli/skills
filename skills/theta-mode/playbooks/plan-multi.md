@@ -1,24 +1,24 @@
 # Multi-PR plan playbook
 
-For work split into several PRs or phases, possibly built by agents in parallel. Read `plan.md` first. Each slice gets its own plan in that shape. This file adds the layer above them.
+For work split into several PRs or phases, possibly built by agents in parallel. Read `slice.md` first, then `plan.md`. Each slice gets a brief per `slice.md`, and its plan in `plan.md`'s shape is written when it is next. This file adds the layer above them.
 
 ## Slicing
 
 - Slice vertically: each slice delivers a working, mergeable change, not a layer that only works once the others land.
 - Each file, finding or task belongs to exactly one slice. Check by listing every owner and finding no gaps or overlaps. Two slices editing the same file is a dependency; record it.
-- A slice that trips the size gate in `plan.md` is split before it is planned further.
+- A slice that trips the size gate in `plan.md` is checked for two problems in one (see `slice.md`) before it is planned further.
 - Put shared prerequisites, such as a type, helper or test fixture several slices need, in their own first slice.
 
 ## Index (README)
 
-One README next to the slice plans holds:
+One README next to the slice briefs and plans holds:
 
 - Goal and why the work is split, at most 10 lines.
 - A table: slice, scope, depends on, can run in parallel with, owner agent.
 - The merge order, and why each dependency exists.
 - Shared files and the slice that owns each edit.
 - Counts that must reconcile, such as findings per slice summing to the total.
-- Kickoff: the one-line prompt that starts a slice, so the human does not retype context. Each slice plan's Start here supplies the rest.
+- Kickoff: the one-line prompt that starts a slice, so the human does not retype context. Each slice plan's Start here supplies the rest once it is written.
 
 ## Dependencies and concurrency
 
@@ -29,7 +29,7 @@ One README next to the slice plans holds:
 
 ## Keeping slices current
 
-- When a slice changes something its dependents rely on, such as a name, a signature, a file owner or a decision, spawn one `theta-agent` per affected dependent. Each updates that slice's plan and its row in the index. Then rerun the index check below.
+- When a slice changes something its dependents rely on, such as a name, a signature, a file owner or a decision, spawn one `theta-agent` per affected dependent. Each updates that slice's brief, or its plan if one exists, and its row in the index. Then rerun the index check below.
 - When a slice merges, refresh the deferred and decision sections of every remaining slice's PR. Delete the ones that are now settled.
 
 ## PR comments
