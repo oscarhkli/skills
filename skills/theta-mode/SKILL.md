@@ -54,6 +54,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | `playbooks/plan-multi.md` | Agents will build stories in parallel, or PR comments for a multi-PR set are being written. Read it after `slice.md`. |
 | `playbooks/prototype.md` | A design question or a claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer. |
 | `playbooks/create-pr.md` | About to open a pull request, or write or rewrite its title or description. |
+| `playbooks/watch-pr.md` | After opening a PR or pushing any commit to an open PR, before reporting the PR ready. |
 | `playbooks/review-others.md` | Drafting review comments the human will post on someone else's document or code. Not for reviewing an agent's own PR. |
 
 ### Extra playbooks
