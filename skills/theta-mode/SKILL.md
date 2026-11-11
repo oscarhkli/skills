@@ -42,7 +42,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before pushing a diff that touches comments. |
-| `../self-review/SKILL.md` | The coordinator, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
+| `../self-review/SKILL.md` | The coordinator, once at the last stage, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
 | `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
 
 ## Playbooks
