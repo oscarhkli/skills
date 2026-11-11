@@ -1,6 +1,6 @@
 # Plan playbook
 
-A plan is a document a fresh `theta-agent` can execute without this conversation. Its shape follows the plan-mode artifact: why, approach, critical files, reuse, verification. Plan mode itself is not required. This file covers one plan for one PR. For work spanning several PRs, also read `plan-multi.md`.
+A plan is a document a fresh `theta-agent` can execute without this conversation. Its shape follows the plan-mode artifact: why, approach, critical files, reuse, verification. Plan mode itself is not required. This file covers one plan for one PR. For work spanning several PRs, read `slice.md` first.
 
 ## Before drafting
 
@@ -52,4 +52,4 @@ Major means a delegate would build the wrong thing, a test passes without provin
 
 If the second step 4 still finds a major issue, stop and skip step 5. Plan an alternative: slice the work, or build a prototype (`prototype.md`) to test the claim against real code. Report both to the human.
 
-Size gate, before step 2: if Critical files lists more than 8 production plus test files, slice first.
+Size gate, before step 2: apply the size rule in `slice.md`. If the plan outgrows one reviewable change, slice first. As a signal, not a limit, when Critical files lists more than about 8 production files that change behaviour, check that rule before planning further. Mechanical edits, such as renames and signature additions or removals that only propagate, do not count.

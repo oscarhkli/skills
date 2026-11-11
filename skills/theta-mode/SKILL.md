@@ -50,8 +50,8 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | Playbook | Read it when |
 | --- | --- |
 | `playbooks/plan.md` | Asked for a plan. Read it before drafting. |
-| `playbooks/slice.md` | Asked to split an initiative or large goal into stories, or to choose how to slice. Read it before `plan-multi.md`. |
-| `playbooks/plan-multi.md` | The work spans more than one PR or phase, or agents will work in parallel. Read it after `plan.md`. |
+| `playbooks/slice.md` | Asked to split an initiative or large goal into stories, to choose how to slice, or when the work spans more than one PR or phase. Read it before `plan.md`. |
+| `playbooks/plan-multi.md` | Agents will build stories in parallel, or PR comments for a multi-PR set are being written. Read it after `slice.md`. |
 | `playbooks/prototype.md` | A design question or a claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer. |
 | `playbooks/create-pr.md` | About to open a pull request, or write or rewrite its title or description. |
 | `playbooks/review-others.md` | Drafting review comments the human will post on someone else's document or code. Not for reviewing an agent's own PR. |
