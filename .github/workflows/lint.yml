@@ -3,6 +3,9 @@ name: lint
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   markdown:
     runs-on: ubuntu-latest
