@@ -26,7 +26,7 @@ Pick by what the goal needs. Mix them across the stories of one initiative.
 
 ## A story is a brief
 
-A brief says what and why. It never says how: no file names, test names or line numbers. It holds:
+A brief says what and why. It adds a how only for a non-obvious technical constraint a planner could not find from the code. `plan.md` owns the how: files, tests and steps. It holds:
 
 - The problem it closes.
 - The behaviour change for each consumer (browser, CLI, API, other services), or "none, technical story".
@@ -35,7 +35,7 @@ A brief says what and why. It never says how: no file names, test names or line 
 
 ## Just in time
 
-- Write the implementation plan (`plan.md`) only for the next story, after the previous one merged. Later stories stay briefs.
+- Write a story's implementation plan (owned by `plan.md`) when that story is next to start, after the stories it depends on have merged. Stories with no dependency on each other may start together. Later stories stay briefs.
 - After each merge, re-read the remaining briefs against what shipped. Fix their assumptions before planning the next story.
 
 ## Index (README)
