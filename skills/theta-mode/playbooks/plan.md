@@ -7,7 +7,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Read `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follow it, unless the request already settles scope and constraints.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
 - If a design question is open, read `prototype.md` and run it before choosing.
-- Write to the directory the human names, else the repo's plan directory, else the project's directory in project brain.
+- Write to the directory the human names, else `project-brain`.
 
 ## Structure
 
