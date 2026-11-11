@@ -46,6 +46,13 @@ def copilot_user(text):
     return {"type": "user.message", "data": {"content": text}}
 
 
+USER_GO = {"type": "user", "message": {"role": "user", "content": "go"}}
+
+
+def copilot_tool_call():
+    return {"type": "assistant.message", "data": {"content": "", "toolRequests": [{"name": "bash"}]}}
+
+
 class Env:
     def __init__(self, test, mode="log"):
         self.dir = tempfile.TemporaryDirectory()
@@ -109,11 +116,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_each_hedge_phrase(self):
         cases = [
-            ("Your call.", "Your call"),
             ("Left for you.", "Left for you"),
-            ("I haven't checked it.", "I haven't checked"),
-            ("I haven\u2019t checked it.", "I haven\u2019t checked"),
-            ("I haven't verified it.", "I haven't verified"),
             ("I can do that now if you like.", "I can do that now if you"),
             ("I can run it if you prefer.", "I can run it if you"),
             ("Say so if needed.", "Say so if"),
@@ -124,27 +127,18 @@ class ReplyHygieneTest(unittest.TestCase):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want.lower()])
 
-    def test_unverified_work_is_flagged(self):
-        cases = [
-            ("This is not verified yet.", "not verified"),
-            ("The change is unverified.", "unverified"),
-            ("The result was not verified by me.", "not verified"),
-            ("Still unverified.", "unverified"),
-            ("The tests are not verified.", "not verified"),
-            ("Not yet verified.", "Not yet verified"),
-            ("I have not verified it.", "I have not verified"),
-            ("It's unverified.", "unverified"),
-            ("The fix is not yet verified.", "not yet verified"),
-        ]
-        for text, want in cases:
+    def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
+        for text in [
+            "Still unverified: that the payload carries the field.",
+            "I haven't checked which side is newer.",
+            "I have not verified it.",
+            "I haven\u2019t confirmed the version.",
+            "The fix is not yet verified.",
+            "The result was not verified by me.",
+            "That is your call, and it is open.",
+        ]:
             with self.subTest(text=text):
-                got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
-                self.assertEqual(got, [want.lower()])
-
-    def test_known_false_positives_are_logged_for_the_retro_review(self):
-        for text in ["Signature not verified by GitHub.", "The field is unverified in the schema."]:
-            with self.subTest(text=text):
-                self.assertEqual(len(rh.check_hedges("Result.\n" + text)), 1)
+                self.assertEqual(rh.check_hedges("Result.\n" + text), [])
 
     def test_question_form_closers(self):
         cases = [
@@ -237,14 +231,26 @@ class ReplyHygieneTest(unittest.TestCase):
         self.assertEqual((code, out, env.records()), (0, "", []))
 
     def test_sidechain_and_tool_only_entries_are_skipped(self):
-        entries = [claude_reply("Real reply."), claude_reply("Sub reply, your call.", sidechain=True), CLAUDE_TOOL_ONLY]
+        entries = [claude_reply("Real reply."), claude_reply("Sub reply, left for you.", sidechain=True), CLAUDE_TOOL_ONLY]
         self.assertEqual(rh.last_reply(entries, "claude"), "Real reply.")
 
     def test_claude_theta_without_principles_line_is_logged(self):
         env = Env(self)
-        path = env.transcript([THETA_USER, claude_reply("a\nb\nc\nd")])
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("a\nb\nc\nd")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
+
+    def test_theta_answer_without_tool_use_in_the_turn_is_clean(self):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("ok"), USER_GO, claude_reply("a\nb\nc\nd")])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual(env.records(), [])
+
+    def test_copilot_theta_answer_without_tool_use_is_clean(self):
+        env = Env(self)
+        path = env.transcript([copilot_user("/theta-mode go"), copilot_reply("a\nb\nc\nd")])
+        run_main({"sessionId": "c", "transcriptPath": str(path)})
+        self.assertEqual(env.records(), [])
 
     def test_claude_theta_with_principles_line_or_short_reply_is_clean(self):
         for text in ["a\nb\nc\nPrinciples applied: none", "a\nb\nc"]:
@@ -283,7 +289,7 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_earlier_turn_reply_is_not_rechecked_when_final_turn_has_no_text(self):
         env = Env(self)
         user = {"type": "user", "message": {"role": "user", "content": "go"}}
-        path = env.transcript([user, claude_reply("Done.\nYour call."), user, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, CLAUDE_TOOL_ONLY])
+        path = env.transcript([user, claude_reply("Done.\nLet me know if."), user, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, CLAUDE_TOOL_ONLY])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
 
@@ -294,14 +300,14 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_copilot_earlier_turn_reply_is_not_rechecked(self):
         env = Env(self)
-        path = env.transcript([copilot_user("go"), copilot_reply("Done.\nYour call."), copilot_user("again"), copilot_reply("")])
+        path = env.transcript([copilot_user("go"), copilot_reply("Done.\nLet me know if."), copilot_user("again"), copilot_reply("")])
         run_main({"sessionId": "c", "transcriptPath": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["no_reply_found"])
 
     def test_crlf_transcript(self):
         env = Env(self)
         path = Path(env.dir.name) / "crlf.jsonl"
-        lines = [json.dumps(e) for e in [THETA_USER, claude_reply("Done.\nYour call.")]]
+        lines = [json.dumps(e) for e in [THETA_USER, claude_reply("Done.\nLet me know if.")]]
         path.write_bytes("\r\n".join(lines).encode("utf-8") + b"\r\n")
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
@@ -309,7 +315,7 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_non_utf8_line_is_skipped(self):
         env = Env(self)
         path = Path(env.dir.name) / "bad.jsonl"
-        path.write_bytes(b"\xff\xfe not json\n" + json.dumps(claude_reply("Done.\nYour call.")).encode("utf-8") + b"\n")
+        path.write_bytes(b"\xff\xfe not json\n" + json.dumps(claude_reply("Done.\nLet me know if.")).encode("utf-8") + b"\n")
         code, out = run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual((code, out), (0, ""))
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
@@ -324,7 +330,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_very_long_line_is_handled(self):
         env = Env(self)
-        path = env.transcript([claude_reply("x" * 2_000_000 + "\nYour call.")])
+        path = env.transcript([claude_reply("x" * 2_000_000 + "\nLet me know if.")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
 
@@ -332,7 +338,7 @@ class ReplyHygieneTest(unittest.TestCase):
         env = Env(self, mode="block")
         blocker = Path(env.dir.name) / "file"
         blocker.write_text("x", encoding="utf-8")
-        path = env.transcript([claude_reply("Done.\nYour call.")])
+        path = env.transcript([claude_reply("Done.\nLet me know if.")])
         with mock.patch.dict(os.environ, {"REPLY_HYGIENE_LOG": str(blocker / "sub" / "out.jsonl")}):
             code, out = run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual((code, out), (0, ""))
@@ -359,7 +365,7 @@ class ReplyHygieneTest(unittest.TestCase):
         home = Path(env.dir.name) / "home"
         events = home / ".copilot" / "session-state" / "c1" / "events.jsonl"
         events.parent.mkdir(parents=True)
-        events.write_text("\n".join(json.dumps(e) for e in [copilot_user("go"), copilot_reply("Done.\nYour call.")]) + "\n", encoding="utf-8")
+        events.write_text("\n".join(json.dumps(e) for e in [copilot_user("go"), copilot_reply("Done.\nLet me know if.")]) + "\n", encoding="utf-8")
         with mock.patch.dict(os.environ, {"HOME": str(home), "USERPROFILE": str(home)}):
             code, out = run_main({"sessionId": "c1"})
         self.assertEqual((code, out), (0, ""))
@@ -381,7 +387,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_copilot_theta_without_principles_line_is_logged(self):
         env = Env(self)
-        path = env.transcript([copilot_user("/theta-mode go"), copilot_reply("a\nb\nc\nd")])
+        path = env.transcript([copilot_user("/theta-mode go"), copilot_tool_call(), copilot_reply("a\nb\nc\nd")])
         run_main({"sessionId": "c", "transcriptPath": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
@@ -400,7 +406,7 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_payload_reply_is_checked_when_transcript_lacks_it(self):
         env = Env(self)
         path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
-        payload = {"session_id": "s", "transcript_path": str(path), "last_assistant_message": "Done.\nYour call."}
+        payload = {"session_id": "s", "transcript_path": str(path), "last_assistant_message": "Done.\nLet me know if."}
         with mock.patch("time.sleep") as sleep:
             run_main(payload)
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
@@ -420,19 +426,19 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_payload_reply_is_checked_when_transcript_is_unreadable(self):
         env = Env(self)
-        run_main({"session_id": "s", "transcript_path": str(Path(env.dir.name) / "none"), "last_assistant_message": "Done.\nYour call."})
+        run_main({"session_id": "s", "transcript_path": str(Path(env.dir.name) / "none"), "last_assistant_message": "Done.\nLet me know if."})
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
 
     def test_empty_payload_reply_falls_back_to_transcript(self):
         env = Env(self)
-        path = env.transcript([claude_reply("Done.\nYour call.")])
+        path = env.transcript([claude_reply("Done.\nLet me know if.")])
         run_main({"session_id": "s", "transcript_path": str(path), "last_assistant_message": "  "})
         self.assertEqual([r["check"] for r in env.records()], ["hedge"])
 
     def test_transcript_read_is_retried_until_reply_appears(self):
         env = Env(self)
         path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
-        late = [THETA_USER, CLAUDE_TOOL_ONLY, claude_reply("Done.\nYour call.")]
+        late = [THETA_USER, CLAUDE_TOOL_ONLY, claude_reply("Done.\nLet me know if.")]
 
         def append_reply(_seconds):
             path.write_text("\n".join(json.dumps(e) for e in late) + "\n", encoding="utf-8")
@@ -464,13 +470,13 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_snippet_is_capped(self):
         env = Env(self)
-        path = env.transcript([claude_reply("your call " + "x" * 400)])
+        path = env.transcript([claude_reply("let me know if " + "x" * 400)])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual(len(env.records()[0]["snippet"]), 160)
 
     def test_block_mode_prints_decision_on_hit_only(self):
         env = Env(self, mode="block")
-        path = env.transcript([claude_reply("Done.\nYour call.")])
+        path = env.transcript([claude_reply("Done.\nLet me know if.")])
         code, out = run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual(code, 0)
         self.assertEqual(json.loads(out), {"decision": "block", "reason": rh.BLOCK_REASON})

@@ -18,11 +18,7 @@ from pathlib import Path
 HEDGES = [
     r"if you want",
     r"say so if",
-    r"\byour call\b",
     r"(?<!nothing )(?<!nothing was )(?<!nothing is )\bleft for you\b",
-    r"I (?:haven['’]t|have not) (?:confirmed|checked|verified)",
-    r"\bunverified\b",
-    r"\bnot (?:yet )?verified\b",
     r"I can (?:do|run) .* if you",
     r"do you want me to",
     r"^[\s*\-#]*(?:and\s+)?want me to",
@@ -121,6 +117,29 @@ def last_reply(entries: list[dict], tool: str) -> str:
     return ""
 
 
+def claude_tool_call(entry: dict) -> bool:
+    message = entry.get("message")
+    if entry.get("type") != "assistant" or entry.get("isSidechain") or not isinstance(message, dict):
+        return False
+    content = message.get("content")
+    return isinstance(content, list) and any(isinstance(b, dict) and b.get("type") == "tool_use" for b in content)
+
+
+def copilot_tool_call(entry: dict) -> bool:
+    data = entry.get("data")
+    return entry.get("type") == "assistant.message" and isinstance(data, dict) and bool(data.get("toolRequests"))
+
+
+def turn_used_tools(entries: list[dict], tool: str) -> bool:
+    called, prompt = (copilot_tool_call, copilot_prompt) if tool == "copilot" else (claude_tool_call, claude_prompt)
+    for entry in reversed(entries):
+        if prompt(entry) is not None:
+            return False
+        if called(entry):
+            return True
+    return False
+
+
 def is_theta_claude(entries: list[dict]) -> bool:
     return any(CLAUDE_THETA_MARKER in (claude_prompt(e) or "") for e in entries)
 
@@ -151,9 +170,9 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     return hits
 
 
-def check_principles(reply: str, theta: bool) -> list[tuple[str, str, str]]:
+def check_principles(reply: str, owed: bool) -> list[tuple[str, str, str]]:
     lines = [ln for ln in reply.splitlines() if ln.strip()]
-    if not theta or len(lines) <= 3:
+    if not owed or len(lines) <= 3:
         return []
     if any(ln.lstrip().startswith("Principles applied:") for ln in lines):
         return []
@@ -239,7 +258,8 @@ def run(payload: dict, mode: str) -> str | None:
     if tool == "unknown":
         tool = guess
     theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(entries)
-    hits = check_hedges(reply) + check_principles(reply, theta)
+    owed = theta and turn_used_tools(entries, tool)
+    hits = check_hedges(reply) + check_principles(reply, owed)
     for check, phrase, line in hits:
         append_log(tool, session, check, phrase, line)
     if hits and mode == "block":
