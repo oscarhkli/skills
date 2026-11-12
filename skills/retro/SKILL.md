@@ -72,7 +72,7 @@ Each action has:
 - Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
 - Layer: 1-5.
-- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skills repo through a worktree, branch and PR, not directly in the installed skills directory.
+- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, branch and PR, not directly in the installed skills directory.
 - Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
 

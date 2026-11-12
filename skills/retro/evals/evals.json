@@ -18,6 +18,7 @@
         "Each finding cites its session, turn and a quote from the human",
         "The plan states that the drafting was done by delegates, which do not load memory, so the no-line-number rule never reached them",
         "The fix for the line-number problem is a skill, playbook, reference or brief change, not a new or edited memory entry",
+        "Any action that changes a skill, playbook or principle says to make the change in the skill's source repo through a worktree, branch and PR, not by editing the installed skills directory",
         "Every action has a Tradeoffs part naming at least one con or pitfall",
         "The plan flags the typo question as a violation of the existing CLAUDE.md rule 'Fix trivial reversible things without asking'",
         "Any proposed lint or hook targets only a pattern-decidable check, such as file:line references, and the plan does not propose linting length or tone",
