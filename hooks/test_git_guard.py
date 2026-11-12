@@ -1,3 +1,4 @@
+import importlib
 import io
 import json
 import os
@@ -111,22 +112,71 @@ class DenyAllowTest(unittest.TestCase):
                 self.assertIsNone(self.check(cmd, repos.work))
 
     def test_project_brain_may_push_main(self):
-        repos = Repos(self)
-        for cmd in ("git push origin main", "git push", "git push origin HEAD"):
-            with self.subTest(cmd):
-                with mock.patch.object(gg, "PROJECT_BRAIN", repos.work):
+        for url in (
+            "https://github.com/oscarhkli/project-brain.git",
+            "https://github.com/oscarhkli/project-brain",
+            "git@github.com:oscarhkli/project-brain.git",
+            "https://github.com/OscarHKLi/Project-Brain.git/",
+        ):
+            repos = Repos(self)
+            git(repos.work, "remote", "set-url", "origin", url)
+            for cmd in ("git push origin main", "git push", "git push origin HEAD"):
+                with self.subTest(url + " " + cmd):
                     self.assertIsNone(self.check(cmd, repos.work))
+
+    def test_other_remotes_keep_the_default_branch_rule(self):
+        for url in (
+            "https://github.com/other/project-brain.git",
+            "https://github.com/oscarhkli/project-brain-fork.git",
+            "https://github.com/oscarhkli/notproject-brain.git",
+            "",
+        ):
+            repos = Repos(self)
+            if url:
+                git(repos.work, "remote", "set-url", "origin", url)
+            else:
+                git(repos.work, "remote", "remove", "origin")
+            with self.subTest(url):
+                self.assertIsNotNone(self.check("git push origin main", repos.work))
 
     def test_project_brain_exception_does_not_cover_force(self):
         repos = Repos(self)
-        with mock.patch.object(gg, "PROJECT_BRAIN", repos.work):
-            self.assertIsNotNone(self.check("git push --force origin main", repos.work))
+        git(repos.work, "remote", "set-url", "origin", "https://github.com/oscarhkli/project-brain.git")
+        self.assertIsNotNone(self.check("git push --force origin main", repos.work))
+
+    def test_import_needs_no_home_directory(self):
+        with mock.patch.object(Path, "home", side_effect=RuntimeError("no home")):
+            importlib.reload(gg)
+        importlib.reload(gg)
+
+    def test_windows_cwd_strings_do_not_crash(self):
+        for cwd in ("C:\\Users\\me\\repo", "C:/Users/me/repo", "\\\\server\\share\\repo"):
+            with self.subTest(cwd):
+                self.assertIsNotNone(gg.check("git push origin main", cwd))
+                self.assertIsNone(gg.check("git push", cwd))
+                self.assertIsNotNone(gg.check("git push -f", cwd))
+
+    def test_git_executable_spellings(self):
+        for exe in (
+            "git.exe",
+            "GIT.EXE",
+            "C:\\Program Files\\Git\\cmd\\git.exe",
+            "C:/Program Files/Git/cmd/git.exe",
+            "/usr/bin/git",
+        ):
+            with self.subTest(exe):
+                self.assertIsNotNone(gg.git_call([exe, "push", "-f"]))
+        for exe in ("digit", "git-lfs.exe", "C:\\tools\\mygit.exe"):
+            with self.subTest(exe):
+                self.assertIsNone(gg.git_call([exe, "push", "-f"]))
 
 
 class MainTest(unittest.TestCase):
     def run_main(self, payload):
         out, err = io.StringIO(), io.StringIO()
-        with mock.patch("sys.stdin", io.StringIO(payload)), mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
+        raw = payload if isinstance(payload, bytes) else payload.encode("utf-8")
+        stdin = io.TextIOWrapper(io.BytesIO(raw), encoding="cp1252", errors="strict")
+        with mock.patch("sys.stdin", stdin), mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
             code = gg.main()
         return code, out.getvalue(), err.getvalue()
 
@@ -147,6 +197,25 @@ class MainTest(unittest.TestCase):
         for payload in ("", "not json", "[]", json.dumps({"tool_input": {}})):
             with self.subTest(payload):
                 self.assertEqual(self.run_main(payload), (0, "", ""))
+
+    def test_stdin_is_read_as_utf8_whatever_the_console_code_page(self):
+        body = json.dumps({"tool_input": {"command": "git commit -m '\u4fee\u6b63' && git add -A"}, "cwd": "/"}, ensure_ascii=False).encode("utf-8")
+        for name, raw in (("plain", body), ("bom", b"\xef\xbb\xbf" + body)):
+            with self.subTest(name):
+                code, out, err = self.run_main(raw)
+                self.assertEqual(code, 0)
+                self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "ask")
+
+    def test_internal_errors_allow_silently(self):
+        for cwd in (5, "a\x00b", ["x"]):
+            with self.subTest(repr(cwd)):
+                payload = json.dumps({"tool_input": {"command": "git push"}, "cwd": cwd})
+                self.assertEqual(self.run_main(payload), (0, "", ""))
+        with mock.patch.object(gg, "check", side_effect=RuntimeError("boom")):
+            self.assertEqual(self.run_main(json.dumps({"tool_input": {"command": "x"}})), (0, "", ""))
+        with mock.patch.object(gg.subprocess, "run", side_effect=FileNotFoundError("git")):
+            payload = json.dumps({"tool_input": {"command": "git push"}, "cwd": "/"})
+            self.assertEqual(self.run_main(payload), (0, "", ""))
 
 
 if __name__ == "__main__":

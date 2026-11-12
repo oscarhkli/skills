@@ -9,9 +9,9 @@ import re
 import shlex
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
-PROJECT_BRAIN = Path.home() / "GitRepo" / "project-brain"
+PROJECT_BRAIN_REMOTE = re.compile(r"(^|[/:])oscarhkli/project-brain(\.git)?/*$", re.IGNORECASE)
 DEFAULT_BRANCHES = {"main", "master"}
 SEPARATORS = {"&&", "||", ";", "|", "&", "\n", "(", ")"}
 ENV_ASSIGN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -37,7 +37,7 @@ def git_call(seg: list[str]) -> tuple[str, list[str], str | None] | None:
     i = 0
     while i < len(seg) and ENV_ASSIGN.match(seg[i]):
         i += 1
-    if i >= len(seg) or Path(seg[i]).name != "git":
+    if i >= len(seg) or PureWindowsPath(seg[i]).name.lower() not in {"git", "git.exe"}:
         return None
     i += 1
     workdir = None
@@ -90,8 +90,7 @@ def check_push(args: list[str], cwd: str) -> str | None:
             positional.append(a)
     if any(p.startswith("+") for p in positional[1:]):
         return "a + refspec force-pushes."
-    top = run_git(cwd, "rev-parse", "--show-toplevel")
-    if top and Path(top).resolve() == PROJECT_BRAIN.resolve():
+    if PROJECT_BRAIN_REMOTE.search(run_git(cwd, "config", "--get", "remote.origin.url") or ""):
         return None
     reason = "pushing to the default branch skips the PR."
     if "--all" in args or "--mirror" in args:
@@ -121,12 +120,15 @@ def check(cmd: str, cwd: str) -> str | None:
 
 def main() -> int:
     try:
-        payload = json.loads(sys.stdin.read())
+        payload = json.loads(sys.stdin.buffer.read().decode("utf-8-sig", errors="replace"))
         cmd = payload["tool_input"]["command"]
         cwd = payload.get("cwd") or "."
     except (ValueError, KeyError, TypeError, AttributeError):
         return 0
-    reason = check(cmd, cwd)
+    try:
+        reason = check(cmd, cwd)
+    except Exception:
+        return 0
     if reason:
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
