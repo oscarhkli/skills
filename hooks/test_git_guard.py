@@ -37,9 +37,6 @@ class Repos:
         git(self.work, "commit", "-q", "--allow-empty", "-m", "base")
         git(self.work, "push", "-q", "-u", "origin", "main")
 
-    def commit_local(self):
-        git(self.work, "commit", "-q", "--allow-empty", "-m", "local")
-
     def feature_branch(self):
         git(self.work, "checkout", "-q", "-b", "feat/x")
 
@@ -113,37 +110,6 @@ class DenyAllowTest(unittest.TestCase):
             with self.subTest("on feature " + cmd):
                 self.assertIsNone(self.check(cmd, repos.work))
 
-    def test_amend(self):
-        repos = Repos(self)
-        repos.feature_branch()
-        cases = [
-            ("amend pushed commit", "git commit --amend", None, True),
-            ("amend with message", 'git commit --amend -m "x"', None, True),
-            ("amend no edit", "git commit --amend --no-edit", None, True),
-            ("amend flag last", "git commit -m x --amend", None, True),
-            ("plain commit", 'git commit -m "x"', None, False),
-            ("amend word in message", 'git commit -m "do not git commit --amend"', None, False),
-            ("amend unpushed commit", "git commit --amend --no-edit", "local", False),
-            ("plain commit unpushed", "git commit -m x", "local", False),
-        ]
-        for name, cmd, setup, deny in cases:
-            with self.subTest(name):
-                r = Repos(self)
-                r.feature_branch()
-                if setup == "local":
-                    r.commit_local()
-                self.assertEqual(self.check(cmd, r.work) is not None, deny)
-
-    def test_amend_outside_repo_is_allowed(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            self.assertIsNone(self.check("git commit --amend", tmp))
-
-    def test_amend_honours_dash_c(self):
-        repos = Repos(self)
-        repos.feature_branch()
-        got = self.check(f"git -C {repos.work} commit --amend --no-edit", "/")
-        self.assertIsNotNone(got)
-
     def test_project_brain_may_push_main(self):
         repos = Repos(self)
         for cmd in ("git push origin main", "git push", "git push origin HEAD"):
@@ -151,11 +117,10 @@ class DenyAllowTest(unittest.TestCase):
                 with mock.patch.object(gg, "PROJECT_BRAIN", repos.work):
                     self.assertIsNone(self.check(cmd, repos.work))
 
-    def test_project_brain_exception_does_not_cover_force_or_amend(self):
+    def test_project_brain_exception_does_not_cover_force(self):
         repos = Repos(self)
         with mock.patch.object(gg, "PROJECT_BRAIN", repos.work):
             self.assertIsNotNone(self.check("git push --force origin main", repos.work))
-            self.assertIsNotNone(self.check("git commit --amend --no-edit", repos.work))
 
 
 class MainTest(unittest.TestCase):

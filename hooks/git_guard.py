@@ -102,14 +102,6 @@ def check_push(args: list[str], cwd: str) -> str | None:
     return reason if any(t in DEFAULT_BRANCHES for t in targets) else None
 
 
-def check_commit(args: list[str], cwd: str) -> str | None:
-    if "--amend" not in args:
-        return None
-    if run_git(cwd, "branch", "-r", "--contains", "HEAD"):
-        return "commit --amend on a pushed commit rewrites remote history."
-    return None
-
-
 def check(cmd: str, cwd: str) -> str | None:
     try:
         segs = segments(cmd)
@@ -121,7 +113,7 @@ def check(cmd: str, cwd: str) -> str | None:
             continue
         sub, args, workdir = call
         where = str(Path(cwd, workdir)) if workdir else cwd
-        reason = {"add": lambda: check_add(args), "push": lambda: check_push(args, where), "commit": lambda: check_commit(args, where)}.get(sub, lambda: None)()
+        reason = {"add": lambda: check_add(args), "push": lambda: check_push(args, where)}.get(sub, lambda: None)()
         if reason:
             return reason
     return None
