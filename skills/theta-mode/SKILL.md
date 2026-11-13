@@ -71,6 +71,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 - The delegate that edits also commits, drafts the PR title and description when the human asks for them, and pushes or opens the PR when the human asks, except as the next bullet says. The coordinator may push a reviewed commit itself.
 - When a diff touches comments, the delegate commits locally and does not push. The coordinator runs the `no-comments` audit on the diff, then pushes or has a fresh delegate push.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
+- Pass every delegate a `model` by its task role: `research`, `plan`, `review`, `code`, `test` or `text`. Use `models.<role>` in `~/.agents/project-brain/settings.yaml` (shape: `models:` then an indented `code: sonnet`), else `opus` for `research`, `plan` and `review` and `sonnet` for `code`, `test` and `text`. If `settings.yaml` does not exist, skip it and create nothing. If the client has no such model or no model parameter, omit it. Never ask the human about models. `self-review` picks its own.
 - Do not start a delegate's edits that depend on a question you are asking the human.
 - Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.
 
@@ -80,5 +81,6 @@ The brief holds:
 - The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
+- The delegate's `model` and its role.
 
 The report lists, by absolute path, every skill, principle and playbook file the delegate read, and names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.
