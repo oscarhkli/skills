@@ -47,11 +47,11 @@ When `~/.agents/hooks/logs/reply_hygiene.jsonl` exists, read its entries since t
 - False positive: the phrase matched but the reply was fine. Propose a tighter pattern in `hooks/reply_hygiene.py` of the repo that deploys the hook, with a test case in `hooks/test_reply_hygiene.py`.
 - `transcript_unreadable` or `no_reply_found`: the hook failed. Propose a fix to the hook.
 
-When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, propose setting it. Each proposal is a layer 2 action under Output.
+When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, propose setting it. Each proposal is an action under Output.
 
 ## Layers
 
-Read `../principle-agent-trust-pyramid/SKILL.md` (relative to this file) for the five layers.
+Read `../principle-agent-trust-pyramid/SKILL.md` (relative to this file) for the five layers. Use only those five layers. Do not add or rename a layer, and do not assign a tool a layer the principle does not give it.
 
 For each intervention, find the cause and the highest layer that removes it. Spend effort at the top. Each layer down catches less and costs more attention.
 
