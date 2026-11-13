@@ -29,6 +29,7 @@ Each read costs context, so read only the principles in this table whose row mat
 | Principle | Applies when |
 | --- | --- |
 | `principle-agent-can-say-no` | You are about to build on a claim from outside you: the human's proposal, correction, "drop X" or instruction, or a story, spec, plan, note, README, doc or skill you were given or read. |
+| `principle-agent-trust-pyramid` | Planning or developing a change, proposing a rule, check or skill, or deciding where a correction lands. |
 | `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
 | `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
 | `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |

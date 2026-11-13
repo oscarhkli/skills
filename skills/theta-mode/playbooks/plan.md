@@ -4,7 +4,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 ## Before drafting
 
-- Read `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follow it, unless the request already settles scope and constraints.
+- The coordinator, not the drafting delegate, reads `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follows it, because a delegate cannot ask the human. It passes the answers verbatim in the drafting brief. Skip the interview only when the request already settles scope and constraints.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
 - If a design question is open, read `prototype.md` and run it before choosing.
 - Write to the directory the human names, else `project-brain`.
@@ -31,12 +31,12 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
-- Tell the delegate to apply the `unslop` skill to the plan files before it reports.
+- Tell the delegate to apply the `unslop` skill to the plan files before it reports, and to paste the Goal section into its report word for word.
 - Path check: a `theta-agent` checks every path, line number, count and command against the code before you present the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
 - The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
-- Present the plan and wait. Do not edit code until the human says so.
+- Present the plan as its path, the Goal copied word for word from the delegate's report, and `Say go to implement.` Add no summary and no question. Do not edit code until the human says so.
 
 ## Budget
 

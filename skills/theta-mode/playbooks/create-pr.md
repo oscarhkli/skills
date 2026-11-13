@@ -8,7 +8,7 @@ Use it when about to open or rewrite a pull request description. The text is for
 - **What:** what changed, as behaviour a reviewer can see.
 - **Scope:** what is in, and what is explicitly out.
 - **Tradeoffs:** alternatives rejected and costs accepted. Include prototype results briefly: the finding and the decision it drove (see `prototype.md`).
-- **Verification:** what was run and the result, honestly. Say what was not run.
+- **Verification:** what was run and the result, honestly. Say what was not run. Each limitation or skipped check says who is affected, what happens, and whether it needs a fix, in plain words. A tool name carries a clause saying what it is.
 
 ## Rules
 

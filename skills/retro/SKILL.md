@@ -51,18 +51,13 @@ When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, pr
 
 ## Layers
 
-Starting point from poteto's retro layers: https://x.com/poteto/status/2111133080526495985
+Read `../principle-agent-trust-pyramid/SKILL.md` (relative to this file) for the five layers.
 
 For each intervention, find the cause and the highest layer that removes it. Spend effort at the top. Each layer down catches less and costs more attention.
 
-1. Codebase: better architecture, types, invariants and boundaries, so the easy path is the right one. This removes a problem for good.
-2. Static analysis: lint rules, tests, CI, formatters, hooks. Cheap in tokens, catches issues before review.
-3. Prose: comments, AGENTS.md rules, skills. Not enforceable and relies on agent judgment, so use sparingly.
-4. Human review: does not scale. Reserve it for what the layers above cannot check.
-
 When a finding is a repeatable check, propose a verification skill, script or process instead of a prose rule. A lint or hook earns its place only when a pattern decides the result with few false positives. Length, tone and structure are judgment, not lint.
 
-At layer 3, prefer a skill, playbook or reference over memory, since they are portable across tools and reach delegates. For style and format, a worked sample in `references/` beats a list of rules.
+At the prose layer, prefer a skill, playbook or reference over memory, since they are portable across tools and reach delegates. For style and format, a worked sample in `references/` beats a list of rules.
 
 ## Before proposing
 
@@ -76,7 +71,7 @@ Each action has:
 
 - Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
-- Layer: 1-4.
+- Layer: 1-5.
 - Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, branch and PR, not directly in the installed skills directory.
 - Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
