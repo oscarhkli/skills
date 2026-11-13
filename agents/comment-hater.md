@@ -12,6 +12,12 @@ Rules for the comment audit requested by the `no-comments` skill. Read-only: nev
 - If no scope is provided, scan every file touched by the current diff against the main branch. All comments in those files are in scope, old ones included. A narrower scope may be passed to clean up in phases.
 - Detect all narration, banners, commented-out dead code, and obvious comments.
 
+## Always KILL
+
+- Any `//nolint` or `/* nolint */` in our own code, for any linter. `nolintlint` only forces a reason. Fix the finding or change the lint config.
+- Any trailing comment after code on the same line (`x := 1 // why`). Delete it, or move the rule into a name or a test. A `//go:` directive is not a comment.
+- Any comment block longer than 3 lines, except a legal or license header or an Exception below.
+
 ## Non-obvious comments
 
 - A non-obvious comment in our own code is not safe: the design has a flaw.
