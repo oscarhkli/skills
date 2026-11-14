@@ -23,11 +23,14 @@ HEDGES = [
     r"do you want me to",
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
-    r"should I (?:push|merge|open|proceed|go ahead|start|run|commit)",
+    r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
+    r"\bI haven['\u2019]t (?:tested|checked|run|verified|confirmed)",
     r"would you like me to",
     r"let me know if",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
+HARNESS_PROMPT_START = "Another Claude session sent a message"
+HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 BLOCK_REASON = (
@@ -83,7 +86,18 @@ def detect_tool(entries: list[dict]) -> str:
     return "unknown"
 
 
+def harness_event(text: str) -> bool:
+    stripped = text.strip()
+    reminder_only = stripped.startswith("<system-reminder>") and stripped.endswith("</system-reminder>")
+    return stripped.startswith(HARNESS_PROMPT_START) or HARNESS_PROMPT_TAG in text or reminder_only
+
+
 def claude_prompt(entry: dict) -> str | None:
+    text = claude_user_text(entry)
+    return None if text is None or harness_event(text) else text
+
+
+def claude_user_text(entry: dict) -> str | None:
     message = entry.get("message")
     if entry.get("type") != "user" or entry.get("isSidechain") or not isinstance(message, dict):
         return None
