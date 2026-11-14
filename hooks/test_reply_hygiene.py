@@ -130,9 +130,8 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
-            "I haven't checked which side is newer.",
             "I have not verified it.",
-            "I haven\u2019t confirmed the version.",
+            "I tested it and it passes.",
             "The fix is not yet verified.",
             "The result was not verified by me.",
             "That is your call, and it is open.",
@@ -155,6 +154,29 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(text=text):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want])
+
+    def test_untested_admissions_and_should_i_offers(self):
+        cases = [
+            ("I haven't tested it yet. Should I try it?", ["I haven't tested"]),
+            ("Should I add that to the TD-009 note?", ["Should I add"]),
+            ("I haven\u2019t confirmed the version.", ["I haven\u2019t confirmed"]),
+            ("I haven't checked which side is newer.", ["I haven't checked"]),
+            ("Should I check the log or edit the config?", ["Should I check"]),
+        ]
+        for text, want in cases:
+            with self.subTest(text=text):
+                got = [phrase for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, want)
+
+    def test_tested_statements_and_fenced_offers_are_not_flagged(self):
+        for reply in [
+            "Result.\nI tested it and the suite passes.",
+            "Result.\nWe have tested, checked and run it.",
+            "Result.\n```\nI haven't tested it. Should I try it?\n```\nDone.\nAll green.",
+            "I haven't tested it.\nThe suite passes.\nAll green.",
+        ]:
+            with self.subTest(reply=reply):
+                self.assertEqual(rh.check_hedges(reply), [])
 
     def test_statements_containing_question_words_are_not_flagged(self):
         for text in [
@@ -239,6 +261,34 @@ class ReplyHygieneTest(unittest.TestCase):
         path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("a\nb\nc\nd")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
+
+    def test_hand_back_messages_stay_in_the_turn_that_owes_the_line(self):
+        hand_back = {
+            "type": "user",
+            "message": {"role": "user", "content": "Another Claude session sent a message:\n<agent-message from=\"a1\">\n[Subagent hand-back] report</agent-message>"},
+        }
+        notification = {
+            "type": "user",
+            "message": {"role": "user", "content": [{"type": "text", "text": "<task-notification>\n<task-id>a1</task-id>\n</task-notification>"}]},
+        }
+        reminder = {"type": "user", "message": {"role": "user", "content": "<system-reminder>\n<tools-used-before-summary>Skill</tools-used-before-summary>\n</system-reminder>"}}
+        for event in [hand_back, notification, reminder]:
+            with self.subTest(event=event["message"]["content"]):
+                self.assertIsNone(rh.claude_prompt(event))
+                env = Env(self)
+                path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, event, claude_reply("a\nb\nc\nd")])
+                run_main({"session_id": "s", "transcript_path": str(path)})
+                self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
+
+    def test_prompt_with_a_system_reminder_and_human_text_is_still_a_prompt(self):
+        blocks = [{"type": "text", "text": "<system-reminder>x</system-reminder>"}, {"type": "text", "text": "go on"}]
+        entry = {"type": "user", "message": {"role": "user", "content": blocks}}
+        self.assertIsNotNone(rh.claude_prompt(entry))
+
+    def test_human_prompt_after_a_hand_back_still_starts_a_new_turn(self):
+        hand_back = {"type": "user", "message": {"role": "user", "content": "Another Claude session sent a message:\nx"}}
+        entries = [THETA_USER, CLAUDE_TOOL_ONLY, hand_back, USER_GO, claude_reply("a\nb\nc\nd")]
+        self.assertFalse(rh.turn_used_tools(entries, "claude"))
 
     def test_theta_answer_without_tool_use_in_the_turn_is_clean(self):
         env = Env(self)
