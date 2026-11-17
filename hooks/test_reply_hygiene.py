@@ -310,6 +310,39 @@ class ReplyHygieneTest(unittest.TestCase):
                 run_main({"session_id": "s", "transcript_path": str(path)})
                 self.assertEqual(env.records(), [])
 
+    def principles_checks(self, text):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply(text)])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        return [r["check"] for r in env.records()]
+
+    def test_pending_delegate_announcement_is_not_flagged(self):
+        replies = [
+            "Two delegates are running in separate worktrees.\n- **A:** builds it.\n- **B:** checks it.\n\nI'll report both together when they finish.",
+            "A Haiku delegate is applying the edits to the backlog.\n- one\n- two\n\nI'll show you the diagram when it reports.",
+            "A delegate is now reading the code.\nIt lists each rule.\nIt cites the file.\n\nI'll send you the table once it reports.",
+        ]
+        for text in replies:
+            with self.subTest(text=text):
+                self.assertEqual(self.principles_checks(text), [])
+
+    def test_report_without_principles_line_is_still_flagged(self):
+        replies = [
+            "The check is back.\n- **Story 1:** passes.\n- **Story 2:** fails.\n\nStory 2 needs a fix before merge.",
+            "Yes, it fits. A delegate is measuring before it rates the item.\n- **One:** counts.\n- **Two:** lint.\n\nI'll report the counts when it finishes.",
+            "The fixes are pushed, and a delegate is now re-checking them.\n- **One:** done.\n- **Two:** done.\n\nI'll report the result when it finishes.",
+            "A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
+            "The prototype is back and two claims fail.\n- **Submit:** aliases.\n- **Config:** aliases.\n\nI'll report once the second prototype finishes.",
+            "A delegate is cleaning up the worktree.\n- It checks the PR.\n- It removes the branch.\n\nDecision for you: remove the prototypes too? I'd recommend it.",
+        ]
+        for text in replies:
+            with self.subTest(text=text):
+                self.assertEqual(self.principles_checks(text), ["missing_principles_line"])
+
+    def test_pending_delegate_reply_with_a_blocking_ask_is_still_a_hedge(self):
+        text = "Two delegates are running.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
+        self.assertEqual(self.principles_checks(text), ["hedge", "missing_principles_line"])
+
     def test_non_theta_long_reply_is_clean(self):
         env = Env(self)
         path = env.transcript([claude_reply("a\nb\nc\nd\ne")])
