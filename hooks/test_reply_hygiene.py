@@ -321,6 +321,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "Two delegates are running in separate worktrees.\n- **A:** builds it.\n- **B:** checks it.\n\nI'll report both together when they finish.",
             "A Haiku delegate is applying the edits to the backlog.\n- one\n- two\n\nI'll show you the diagram when it reports.",
             "A delegate is now reading the code.\nIt lists each rule.\nIt cites the file.\n\nI'll send you the table once it reports.",
+            "A subagent is still checking the lock.\n- It reads server.go.\n- It runs the tests.\n\nI will report the result when it finishes.",
+            "Two subagents are running in parallel.\n- **A:** edits the hook.\n- **B:** checks the log.\n\ni'll Report both when they finish.",
+            "A delegate is drafting the PR text.\n- Decision: keep the rule strict.\n- It follows the unslop skill.\n\nI'll report the link when it finishes.",
         ]
         for text in replies:
             with self.subTest(text=text):
@@ -334,6 +337,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
             "The prototype is back and two claims fail.\n- **Submit:** aliases.\n- **Config:** aliases.\n\nI'll report once the second prototype finishes.",
             "A delegate is cleaning up the worktree.\n- It checks the PR.\n- It removes the branch.\n\nDecision for you: remove the prototypes too? I'd recommend it.",
+            "A delegate is done.\n- **One:** checked.\n- **Two:** checked.\nI fixed the lock in server.go and it passes.\n\nI'll report the commit later.",
+            "The agent is right about the lock.\n- **One:** it is shared.\n- **Two:** it is held.\n\nI'll report back.",
+            "A delegate is running the tests.\n- I edited server.go.\n- I added a test.\n\nI'll report the commit when it finishes.",
         ]
         for text in replies:
             with self.subTest(text=text):

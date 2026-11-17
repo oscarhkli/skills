@@ -32,8 +32,15 @@ HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
-PENDING_DELEGATE_RE = re.compile(r"^(?:[\w-]+\s+){0,3}(?:delegates?|agents?)\s+(?:is|are)\b", re.IGNORECASE)
-REPORT_BACK_RE = re.compile(r"^I['\u2019]ll (?:report|send|show|compare|confirm|share|give)\b")
+PENDING_DELEGATE_RE = re.compile(
+    r"^(?:[\w-]+\s+){0,3}(?:delegates?|subagents?|agents?)\s+(?:is|are)\s+(?:(?:now|still|currently|also|both|all)\s+)?\w+ing\b",
+    re.IGNORECASE,
+)
+REPORT_BACK_RE = re.compile(r"^I(?:['\u2019]ll| will) (?:report|send|show|compare|confirm|share|give)\b", re.IGNORECASE)
+WORK_CLAIM_RE = re.compile(
+    r"\b(?:fixed|found|edited|added|removed|ran|passed|failed|changed|created|deleted|merged|pushed|committed)\b",
+    re.IGNORECASE,
+)
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 BLOCK_REASON = (
     "Do the action or the check now. If it is a real decision for the human, "
@@ -189,6 +196,8 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
 def announces_pending_delegate(lines: list[str]) -> bool:
     first = re.split(r"(?<=[.!?])\s+", lines[0].strip())[0]
     last = re.split(r"(?<=[.!?])\s+", lines[-1].strip())[-1].lstrip("*- ")
+    if any(WORK_CLAIM_RE.search(ln) for ln in lines):
+        return False
     return bool(PENDING_DELEGATE_RE.match(first) and REPORT_BACK_RE.match(last))
 
 
