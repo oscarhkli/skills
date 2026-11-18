@@ -20,6 +20,8 @@ Highest first. Cost rises downward.
 4. Prose: rules, skills, `AGENTS.md`. An agent has to read and follow them.
 5. Human review: last resort.
 
+A hook counts as layer 4, prose.
+
 ## Rules
 
 - **Pick the highest layer that works.** When planning or building a change, or deciding where a correction lands, name the layer.

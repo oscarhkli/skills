@@ -51,7 +51,7 @@ When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, pr
 
 ## Layers
 
-Read `../principle-agent-trust-pyramid/SKILL.md` (relative to this file) for the five layers. Use only those five layers. Do not add or rename a layer, and do not assign a tool a layer the principle does not give it.
+Read `../principle-agent-trust-pyramid/SKILL.md` (relative to this file) for the five layers. Use only those five layers. Do not add or rename a layer, and do not assign a tool a layer the principle does not give it. A hook counts as layer 4, prose.
 
 For each intervention, find the cause and the highest layer that removes it. Spend effort at the top. Each layer down catches less and costs more attention.
 

@@ -24,7 +24,7 @@ HEDGES = [
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
-    r"\bI haven['\u2019]t (?:tested|checked|run|verified|confirmed)",
+    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)",
     r"would you like me to",
     r"let me know if",
 ]
@@ -98,12 +98,12 @@ def detect_tool(entries: list[dict]) -> str:
 def harness_event(text: str) -> bool:
     stripped = text.strip()
     reminder_only = stripped.startswith("<system-reminder>") and stripped.endswith("</system-reminder>")
-    return stripped.startswith(HARNESS_PROMPT_START) or HARNESS_PROMPT_TAG in text or reminder_only
+    return stripped.startswith((HARNESS_PROMPT_START, HARNESS_PROMPT_TAG)) or reminder_only
 
 
 def claude_prompt(entry: dict) -> str | None:
     text = claude_user_text(entry)
-    return None if text is None or harness_event(text) else text
+    return None if text is None or entry.get("isMeta") or harness_event(text) else text
 
 
 def claude_user_text(entry: dict) -> str | None:

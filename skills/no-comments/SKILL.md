@@ -16,7 +16,7 @@ If no scope is provided, the scope is every file touched by the current diff aga
 
 - Run the audit with the scope.
 - Inspect the report and the diff. Reject scope escapes, deletions protected by an exception, and misjudged `KILL` flags.
-- A `Keep` survives only with proof that the comment concerns something we cannot change.
+- A `Keep` survives only with proof that the comment concerns something we cannot change, or matches a `comment-hater` Exception.
 - Fix every trivial `KILL` by deleting the comment.
 - A trivial `Refactor` is local and behaviour-preserving (rename, extract a variable or function, state a rule in a test name). Make the change directly when existing tests cover the code. When nothing covers it, write a characterization test first.
 - For a non-trivial `Refactor`, investigate yourself: read the affected code and tests, sketch the target design, list blast radius and migration steps. Then implement the additive first step: add the new design beside the old one, keep existing signatures and callers unchanged, and run the tests. Switching callers and deleting the old API stay in the report. Ask the human only about decisions that change observable behaviour or public contracts.

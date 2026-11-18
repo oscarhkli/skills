@@ -15,6 +15,9 @@
         "The doc comment on the internal retries function is 2 lines or fewer, or the comment is gone",
         "The keep-alive comment with the issues/412 link is still present",
         "The `Gateway requires the exact header casing` comment is still present",
+        "The trailing `// three attempts` comment after `return 3` is removed",
+        "The `//nolint:gosec` comment is removed, or flagged as a behaviour-changing fix (changing Sign's return value) that was deliberately left for the human; and the `// @ts-ignore` comment above it is removed",
+        "The `//go:noinline` directive above Sign is still present and is not counted as a killed comment",
         "`go test ./...` passes in the final state",
         "The final report gives a kill count and lists the kept comments"
       ]

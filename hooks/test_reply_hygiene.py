@@ -130,7 +130,9 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
-            "I have not verified it.",
+            "I haven't run into problems.",
+            "I have not run into problems.",
+            "I haven't checked in the change.",
             "I tested it and it passes.",
             "The fix is not yet verified.",
             "The result was not verified by me.",
@@ -161,6 +163,8 @@ class ReplyHygieneTest(unittest.TestCase):
             ("Should I add that to the TD-009 note?", ["Should I add"]),
             ("I haven\u2019t confirmed the version.", ["I haven\u2019t confirmed"]),
             ("I haven't checked which side is newer.", ["I haven't checked"]),
+            ("I have not verified it.", ["I have not verified"]),
+            ("I have not run the suite.", ["I have not run"]),
             ("Should I check the log or edit the config?", ["Should I check"]),
         ]
         for text, want in cases:
@@ -279,6 +283,24 @@ class ReplyHygieneTest(unittest.TestCase):
                 path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, event, claude_reply("a\nb\nc\nd")])
                 run_main({"session_id": "s", "transcript_path": str(path)})
                 self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
+
+    def test_skill_body_message_stays_in_the_turn_that_owes_the_line(self):
+        skill_body = {
+            "type": "user",
+            "isMeta": True,
+            "message": {"role": "user", "content": [{"type": "text", "text": "Base directory for this skill: /x\n\n# Skill"}]},
+        }
+        skill_call = {
+            "type": "assistant",
+            "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Skill", "input": {}}]},
+        }
+        self.assertIsNone(rh.claude_prompt(skill_body))
+        entries = [THETA_USER, skill_call, CLAUDE_TOOL_RESULT_USER, skill_body, claude_reply("a\nb\nc\nd")]
+        self.assertTrue(rh.turn_used_tools(entries, "claude"))
+
+    def test_prompt_that_quotes_the_task_notification_tag_is_still_a_prompt(self):
+        entry = {"type": "user", "message": {"role": "user", "content": "Why does the hook skip <task-notification> entries?"}}
+        self.assertIsNotNone(rh.claude_prompt(entry))
 
     def test_prompt_with_a_system_reminder_and_human_text_is_still_a_prompt(self):
         blocks = [{"type": "text", "text": "<system-reminder>x</system-reminder>"}, {"type": "text", "text": "go on"}]
