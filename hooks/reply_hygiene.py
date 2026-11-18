@@ -24,7 +24,7 @@ HEDGES = [
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
-    r"\bI haven['\u2019]t (?:tested|checked|run|verified|confirmed)",
+    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)",
     r"would you like me to",
     r"let me know if",
 ]
@@ -32,6 +32,15 @@ HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
+PENDING_DELEGATE_RE = re.compile(
+    r"^(?:[\w-]+\s+){0,3}(?:delegates?|subagents?|agents?)\s+(?:is|are)\s+(?:(?:now|still|currently|also|both|all)\s+)?\w+ing\b",
+    re.IGNORECASE,
+)
+REPORT_BACK_RE = re.compile(r"\bI(?:['\u2019]ll| will) (?:then )?(?:report|send|show|compare|confirm|share|give|ask)\b", re.IGNORECASE)
+WORK_CLAIM_RE = re.compile(
+    r"\b(?:fixed|found|edited|added|removed|ran|passed|failed|changed|created|deleted|merged|pushed|committed)\b",
+    re.IGNORECASE,
+)
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 BLOCK_REASON = (
     "Do the action or the check now. If it is a real decision for the human, "
@@ -89,12 +98,12 @@ def detect_tool(entries: list[dict]) -> str:
 def harness_event(text: str) -> bool:
     stripped = text.strip()
     reminder_only = stripped.startswith("<system-reminder>") and stripped.endswith("</system-reminder>")
-    return stripped.startswith(HARNESS_PROMPT_START) or HARNESS_PROMPT_TAG in text or reminder_only
+    return stripped.startswith((HARNESS_PROMPT_START, HARNESS_PROMPT_TAG)) or reminder_only
 
 
 def claude_prompt(entry: dict) -> str | None:
     text = claude_user_text(entry)
-    return None if text is None or harness_event(text) else text
+    return None if text is None or entry.get("isMeta") or harness_event(text) else text
 
 
 def claude_user_text(entry: dict) -> str | None:
@@ -184,11 +193,22 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     return hits
 
 
+def announces_pending_delegate(lines: list[str]) -> bool:
+    first_line = re.split(r"(?<=[.!?])\s+", lines[0].strip())
+    last = re.split(r"(?<=[.!?])\s+", lines[-1].strip())[-1].lstrip("*- ")
+    if any(WORK_CLAIM_RE.search(ln) for ln in lines):
+        return False
+    answers_first = re.match(r"(?:yes|no)\b", first_line[0], re.IGNORECASE)
+    return bool(not answers_first and any(PENDING_DELEGATE_RE.match(sentence) for sentence in first_line) and REPORT_BACK_RE.search(last))
+
+
 def check_principles(reply: str, owed: bool) -> list[tuple[str, str, str]]:
     lines = [ln for ln in reply.splitlines() if ln.strip()]
     if not owed or len(lines) <= 3:
         return []
     if any(ln.lstrip().startswith("Principles applied:") for ln in lines):
+        return []
+    if announces_pending_delegate(lines):
         return []
     return [("missing_principles_line", "Principles applied:", lines[-1].strip())]
 

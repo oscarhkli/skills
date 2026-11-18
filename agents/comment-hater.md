@@ -31,9 +31,8 @@ Flag every non-obvious comment in our own code for refactoring.
 
 - Legal or license headers.
 - Doc comments that define public API contracts or exported functions. Do not delete them, but still check the content: flag narration, restated signatures and implementation detail. A public doc comment longer than 5 lines is flagged to be rewritten shorter or for a refactor of the API.
-- Non-obvious behaviour caused by an external dependency, platform, or protocol we cannot change. A comment that states such a requirement is the proof: keep it, and do not change the code to make it unnecessary.
-- Directive comments that a tool reads and acts on, such as `// prettier-ignore`, `/// <reference ...>` and `//go:` directives.
-- Comments forced by an external dependency, platform, vendor or protocol we cannot change.
+- Non-obvious behaviour or a comment forced by an external dependency, platform, vendor or protocol we cannot change. A comment that states such a requirement is the proof: keep it, and do not change the code to make it unnecessary.
+- Directive comments that a tool reads and acts on, other than the Always KILL items, such as `// prettier-ignore` and `/// <reference ...>`.
 - Issue or RFC links that explain a constraint the code cannot express.
 
 This list may grow when the human reports more in a later stage. When unsure, kill the comment.

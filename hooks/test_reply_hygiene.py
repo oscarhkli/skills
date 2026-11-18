@@ -130,7 +130,9 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
-            "I have not verified it.",
+            "I haven't run into problems.",
+            "I have not run into problems.",
+            "I haven't checked in the change.",
             "I tested it and it passes.",
             "The fix is not yet verified.",
             "The result was not verified by me.",
@@ -161,6 +163,8 @@ class ReplyHygieneTest(unittest.TestCase):
             ("Should I add that to the TD-009 note?", ["Should I add"]),
             ("I haven\u2019t confirmed the version.", ["I haven\u2019t confirmed"]),
             ("I haven't checked which side is newer.", ["I haven't checked"]),
+            ("I have not verified it.", ["I have not verified"]),
+            ("I have not run the suite.", ["I have not run"]),
             ("Should I check the log or edit the config?", ["Should I check"]),
         ]
         for text, want in cases:
@@ -280,6 +284,24 @@ class ReplyHygieneTest(unittest.TestCase):
                 run_main({"session_id": "s", "transcript_path": str(path)})
                 self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
+    def test_skill_body_message_stays_in_the_turn_that_owes_the_line(self):
+        skill_body = {
+            "type": "user",
+            "isMeta": True,
+            "message": {"role": "user", "content": [{"type": "text", "text": "Base directory for this skill: /x\n\n# Skill"}]},
+        }
+        skill_call = {
+            "type": "assistant",
+            "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Skill", "input": {}}]},
+        }
+        self.assertIsNone(rh.claude_prompt(skill_body))
+        entries = [THETA_USER, skill_call, CLAUDE_TOOL_RESULT_USER, skill_body, claude_reply("a\nb\nc\nd")]
+        self.assertTrue(rh.turn_used_tools(entries, "claude"))
+
+    def test_prompt_that_quotes_the_task_notification_tag_is_still_a_prompt(self):
+        entry = {"type": "user", "message": {"role": "user", "content": "Why does the hook skip <task-notification> entries?"}}
+        self.assertIsNotNone(rh.claude_prompt(entry))
+
     def test_prompt_with_a_system_reminder_and_human_text_is_still_a_prompt(self):
         blocks = [{"type": "text", "text": "<system-reminder>x</system-reminder>"}, {"type": "text", "text": "go on"}]
         entry = {"type": "user", "message": {"role": "user", "content": blocks}}
@@ -309,6 +331,47 @@ class ReplyHygieneTest(unittest.TestCase):
                 path = env.transcript([THETA_USER, claude_reply(text)])
                 run_main({"session_id": "s", "transcript_path": str(path)})
                 self.assertEqual(env.records(), [])
+
+    def principles_checks(self, text):
+        env = Env(self)
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply(text)])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        return [r["check"] for r in env.records()]
+
+    def test_pending_delegate_announcement_is_not_flagged(self):
+        replies = [
+            "Two delegates are running in separate worktrees.\n- **A:** builds it.\n- **B:** checks it.\n\nI'll report both together when they finish.",
+            "A Haiku delegate is applying the edits to the backlog.\n- one\n- two\n\nI'll show you the diagram when it reports.",
+            "A delegate is now reading the code.\nIt lists each rule.\nIt cites the file.\n\nI'll send you the table once it reports.",
+            "A subagent is still checking the lock.\n- It reads server.go.\n- It runs the tests.\n\nI will report the result when it finishes.",
+            "Two subagents are running in parallel.\n- **A:** edits the hook.\n- **B:** checks the log.\n\ni'll Report both when they finish.",
+            "A delegate is drafting the PR text.\n- Decision: keep the rule strict.\n- It follows the unslop skill.\n\nI'll report the link when it finishes.",
+            "The retro is running. A research delegate is reading this session's transcript and the skills it touched.\n- It lists each miss.\n- It cites the file.\n\nWhen it reports I'll then ask you about priorities and scope, and edit nothing until you approve.",
+            "My first attempt was denied. A second delegate is now editing a project-brain worktree and will commit locally only.\n- It touches one file.\n- It runs the checks.\n\nWhen it finishes I'll ask whether to push and open a PR for it.",
+        ]
+        for text in replies:
+            with self.subTest(text=text):
+                self.assertEqual(self.principles_checks(text), [])
+
+    def test_report_without_principles_line_is_still_flagged(self):
+        replies = [
+            "The check is back.\n- **Story 1:** passes.\n- **Story 2:** fails.\n\nStory 2 needs a fix before merge.",
+            "Yes, it fits. A delegate is measuring before it rates the item.\n- **One:** counts.\n- **Two:** lint.\n\nI'll report the counts when it finishes.",
+            "The fixes are pushed, and a delegate is now re-checking them.\n- **One:** done.\n- **Two:** done.\n\nI'll report the result when it finishes.",
+            "A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
+            "The prototype is back and two claims fail.\n- **Submit:** aliases.\n- **Config:** aliases.\n\nI'll report once the second prototype finishes.",
+            "A delegate is cleaning up the worktree.\n- It checks the PR.\n- It removes the branch.\n\nDecision for you: remove the prototypes too? I'd recommend it.",
+            "A delegate is done.\n- **One:** checked.\n- **Two:** checked.\nI fixed the lock in server.go and it passes.\n\nI'll report the commit later.",
+            "The agent is right about the lock.\n- **One:** it is shared.\n- **Two:** it is held.\n\nI'll report back.",
+            "A delegate is running the tests.\n- I edited server.go.\n- I added a test.\n\nI'll report the commit when it finishes.",
+        ]
+        for text in replies:
+            with self.subTest(text=text):
+                self.assertEqual(self.principles_checks(text), ["missing_principles_line"])
+
+    def test_pending_delegate_reply_with_a_blocking_ask_is_still_a_hedge(self):
+        text = "Two delegates are running.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
+        self.assertEqual(self.principles_checks(text), ["hedge", "missing_principles_line"])
 
     def test_non_theta_long_reply_is_clean(self):
         env = Env(self)

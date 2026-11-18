@@ -5,10 +5,10 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 ## Before drafting
 
 - The coordinator, not the drafting delegate, reads `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follows it, because a delegate cannot ask the human. It passes the answers verbatim in the drafting brief. Skip the interview only when the request already settles scope and constraints.
-- A plan is a design question. Read `../principle-redesign-from-scratch/SKILL.md` and `../principle-agent-trust-pyramid/SKILL.md` (relative to `theta-mode`'s base directory). Choose the design by root cause, language idiom and the highest trust layer first, then size the diff and the stories. A smaller diff or a quicker fix is not a reason to pick a design.
+- A plan is a design question. The coordinator reads `../principle-redesign-from-scratch/SKILL.md` and `../principle-agent-trust-pyramid/SKILL.md` (relative to `theta-mode`'s base directory) and puts both paths in the drafting brief, so the delegate reads them too. Choose the design by root cause, language idiom and the highest trust layer first, then size the diff and the stories. A smaller diff or a quicker fix is not a reason to pick a design.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
 - If a design question is open, read `prototype.md` and run it before choosing.
-- Write to the directory the human names, else `project-brain`.
+- Write to the directory the human names, else `~/.agents/project-brain/<project>/`, where `<project>` is the name its `README.md` gives the project.
 
 ## Structure
 

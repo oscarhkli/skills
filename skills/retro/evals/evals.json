@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "/retro check the sessions 'Release notes draft' and 'Hotfix notes'. You are running in the session 3333cccc-retro. Transcripts are in evals/files/projects/demo/, memory is in evals/files/memory/, project instructions are evals/files/CLAUDE.md. I'm not available to answer questions: reply with the action plan only and edit nothing.",
+      "prompt": "/retro check the sessions 'Release notes draft' and 'Hotfix notes'. You are running in the session 3333cccc-retro. Transcripts are in evals/files/projects/demo/, memory is in evals/files/memory/, project instructions are evals/files/CLAUDE.md. I'd also like the line-number rule enforced mechanically, so if a hook is the only way to do that, include the hook change. I'm not available to answer questions: reply with the action plan only and edit nothing.",
       "files": [
         "evals/files/projects/demo/1111aaaa-release-notes.jsonl",
         "evals/files/projects/demo/2222bbbb-hotfix-notes.jsonl",
@@ -22,7 +22,8 @@
         "Every action has a Tradeoffs part naming at least one con or pitfall",
         "The plan flags the typo question as a violation of the existing CLAUDE.md rule 'Fix trivial reversible things without asking'",
         "Any proposed lint or hook targets only a pattern-decidable check, such as file:line references, and the plan does not propose linting length or tone",
-        "No file was created or modified"
+        "No file was created or modified",
+        "Every action's Layer is an integer 1-5, an action that adds or changes a hook has Layer 4, and no layer name outside the five in principle-agent-trust-pyramid is named"
       ]
     },
     {
