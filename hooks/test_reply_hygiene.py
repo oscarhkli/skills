@@ -346,6 +346,8 @@ class ReplyHygieneTest(unittest.TestCase):
             "A subagent is still checking the lock.\n- It reads server.go.\n- It runs the tests.\n\nI will report the result when it finishes.",
             "Two subagents are running in parallel.\n- **A:** edits the hook.\n- **B:** checks the log.\n\ni'll Report both when they finish.",
             "A delegate is drafting the PR text.\n- Decision: keep the rule strict.\n- It follows the unslop skill.\n\nI'll report the link when it finishes.",
+            "The retro is running. A research delegate is reading this session's transcript and the skills it touched.\n- It lists each miss.\n- It cites the file.\n\nWhen it reports I'll then ask you about priorities and scope, and edit nothing until you approve.",
+            "My first attempt was denied. A second delegate is now editing a project-brain worktree and will commit locally only.\n- It touches one file.\n- It runs the checks.\n\nWhen it finishes I'll ask whether to push and open a PR for it.",
         ]
         for text in replies:
             with self.subTest(text=text):

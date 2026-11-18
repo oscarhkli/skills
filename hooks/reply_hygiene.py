@@ -36,7 +36,7 @@ PENDING_DELEGATE_RE = re.compile(
     r"^(?:[\w-]+\s+){0,3}(?:delegates?|subagents?|agents?)\s+(?:is|are)\s+(?:(?:now|still|currently|also|both|all)\s+)?\w+ing\b",
     re.IGNORECASE,
 )
-REPORT_BACK_RE = re.compile(r"^I(?:['\u2019]ll| will) (?:report|send|show|compare|confirm|share|give)\b", re.IGNORECASE)
+REPORT_BACK_RE = re.compile(r"\bI(?:['\u2019]ll| will) (?:then )?(?:report|send|show|compare|confirm|share|give|ask)\b", re.IGNORECASE)
 WORK_CLAIM_RE = re.compile(
     r"\b(?:fixed|found|edited|added|removed|ran|passed|failed|changed|created|deleted|merged|pushed|committed)\b",
     re.IGNORECASE,
@@ -194,11 +194,12 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
 
 
 def announces_pending_delegate(lines: list[str]) -> bool:
-    first = re.split(r"(?<=[.!?])\s+", lines[0].strip())[0]
+    first_line = re.split(r"(?<=[.!?])\s+", lines[0].strip())
     last = re.split(r"(?<=[.!?])\s+", lines[-1].strip())[-1].lstrip("*- ")
     if any(WORK_CLAIM_RE.search(ln) for ln in lines):
         return False
-    return bool(PENDING_DELEGATE_RE.match(first) and REPORT_BACK_RE.match(last))
+    answers_first = re.match(r"(?:yes|no)\b", first_line[0], re.IGNORECASE)
+    return bool(not answers_first and any(PENDING_DELEGATE_RE.match(sentence) for sentence in first_line) and REPORT_BACK_RE.search(last))
 
 
 def check_principles(reply: str, owed: bool) -> list[tuple[str, str, str]]:
