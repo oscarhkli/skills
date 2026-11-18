@@ -20,7 +20,7 @@ Highest first. Cost rises downward.
 4. Prose: rules, skills, `AGENTS.md`. An agent has to read and follow them.
 5. Human review: last resort.
 
-A hook counts as layer 4, prose.
+A hook counts as layer 4, prose, because hooks are hard to manage for now and a skill with a script is easier to manage, so a hook is a last resort.
 
 ## Rules
 
