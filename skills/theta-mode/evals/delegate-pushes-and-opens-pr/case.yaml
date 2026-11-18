@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: delegate-pushes-and-opens-pr
+expected_outcome: |
+  Given a plan to implement, the coordinator spawns a code delegate whose brief says to push the feature branch and open the PR, and the final reply does not ask the human for permission to push.
+context:
+  scaffold_script: place-files.sh
