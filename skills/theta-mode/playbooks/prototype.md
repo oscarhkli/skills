@@ -20,6 +20,7 @@ Test: could one grep, one file read or one command answer it with evidence? If y
 - A prototype is boxed: one fresh subagent, one build round, one report. An unanswered question is reported as open, not chased with another round. The human decides.
 - One open question gets at most 3 prototypes by default, one per candidate answer, each built by its own fresh subagent. Each prototype checks only the few assumptions behind its own candidate.
 - The coordinator writes the candidate and its assumptions in plain words in the brief, each assumption with the result that would disprove it.
+- A library, tool or generator named in a reply or plan comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one. Put this in every research brief.
 
 ## Where
 

@@ -42,6 +42,7 @@ A brief says what and why. It adds a how only for a non-obvious technical constr
 
 One README next to the briefs and plans holds:
 
+- The index opens with the merge-order tree (plain text or mermaid), then one line per story naming its backlog item by title in words, not only its ID.
 - Goal and why the work is split, at most 10 lines.
 - A table: story, scope, depends on, can run in parallel with, owner agent.
 - The merge order, and why each dependency exists.
@@ -51,6 +52,8 @@ One README next to the briefs and plans holds:
 
 ## Dependencies and concurrency
 
+- Before presenting stories, list the backlog items and open PRs that touch the same files, and put the resulting order in the index.
+- A plan that closes more than one backlog item is an initiative with its own ID (`IN-NNN` in project-brain), made at the first draft.
 - A story starts from the default branch plus the stories it depends on. Say which, by name.
 - Stories with no dependency between them run concurrently.
 - When a dependency merges after a story has started, rebase and rerun the story's verification.
