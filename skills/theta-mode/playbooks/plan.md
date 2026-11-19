@@ -9,12 +9,13 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
 - If a design question is open, read `prototype.md` and run it before choosing.
 - Write to the directory the human names, else `~/.agents/project-brain/<project>/`, where `<project>` is the name its `README.md` gives the project.
+- A library, tool or generator named in a reply or plan comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one. Put this in every research brief.
 
 ## Structure
 
 - Start here: repo, base branch, the files to read first and the terms the plan uses, each defined in plain words. A fresh agent starts from this section alone.
 - Goal: what and why, at most 10 lines.
-- Context: the current state, with file paths and line numbers checked against the code.
+- Context: the current state, with file paths and symbols checked against the code. No line numbers in stories or plans: another change in flight shifts them.
 - Approach: the chosen design only, not the alternatives.
 - Critical files: path and what is added, changed or deleted.
 - Reuse: existing functions, helpers and test fixtures to use instead of writing new ones.
@@ -33,7 +34,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports, and to paste the Goal section into its report word for word.
-- Path check: a `theta-agent` checks every path, line number, count and command against the code before you present the plan.
+- Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
 - The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
