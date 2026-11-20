@@ -312,7 +312,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_claude_theta_without_principles_line_is_logged(self):
         env = Env(self)
-        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("a\nb\nc\nd")])
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nd")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
@@ -330,7 +330,7 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(event=event["message"]["content"]):
                 self.assertIsNone(rh.claude_prompt(event))
                 env = Env(self)
-                path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, event, claude_reply("a\nb\nc\nd")])
+                path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, event, claude_reply("Pushed the fix\nb\nc\nd")])
                 run_main({"session_id": "s", "transcript_path": str(path)})
                 self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
@@ -345,7 +345,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "Skill", "input": {}}]},
         }
         self.assertIsNone(rh.claude_prompt(skill_body))
-        entries = [THETA_USER, skill_call, CLAUDE_TOOL_RESULT_USER, skill_body, claude_reply("a\nb\nc\nd")]
+        entries = [THETA_USER, skill_call, CLAUDE_TOOL_RESULT_USER, skill_body, claude_reply("Pushed the fix\nb\nc\nd")]
         self.assertTrue(rh.turn_used_tools(entries, "claude"))
 
     def test_prompt_that_quotes_the_task_notification_tag_is_still_a_prompt(self):
@@ -359,12 +359,12 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_human_prompt_after_a_hand_back_still_starts_a_new_turn(self):
         hand_back = {"type": "user", "message": {"role": "user", "content": "Another Claude session sent a message:\nx"}}
-        entries = [THETA_USER, CLAUDE_TOOL_ONLY, hand_back, USER_GO, claude_reply("a\nb\nc\nd")]
+        entries = [THETA_USER, CLAUDE_TOOL_ONLY, hand_back, USER_GO, claude_reply("Pushed the fix\nb\nc\nd")]
         self.assertFalse(rh.turn_used_tools(entries, "claude"))
 
     def test_theta_answer_without_tool_use_in_the_turn_is_clean(self):
         env = Env(self)
-        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("ok"), USER_GO, claude_reply("a\nb\nc\nd")])
+        path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("ok"), USER_GO, claude_reply("Pushed the fix\nb\nc\nd")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual(env.records(), [])
 
@@ -405,22 +405,56 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_report_without_principles_line_is_still_flagged(self):
         replies = [
-            "The check is back.\n- **Story 1:** passes.\n- **Story 2:** fails.\n\nStory 2 needs a fix before merge.",
-            "Yes, it fits. A delegate is measuring before it rates the item.\n- **One:** counts.\n- **Two:** lint.\n\nI'll report the counts when it finishes.",
+            "The fix is pushed.\n- **Story 1:** passes.\n- **Story 2:** fails.\n\nStory 2 needs a fix before merge.",
+            "Yes, it fits and is pushed. A delegate is measuring before it rates the item.\n- **One:** counts.\n- **Two:** lint.\n\nI'll report the counts when it finishes.",
             "The fixes are pushed, and a delegate is now re-checking them.\n- **One:** done.\n- **Two:** done.\n\nI'll report the result when it finishes.",
-            "A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
-            "The prototype is back and two claims fail.\n- **Submit:** aliases.\n- **Config:** aliases.\n\nI'll report once the second prototype finishes.",
-            "A delegate is cleaning up the worktree.\n- It checks the PR.\n- It removes the branch.\n\nDecision for you: remove the prototypes too? I'd recommend it.",
-            "A delegate is done.\n- **One:** checked.\n- **Two:** checked.\nI fixed the lock in server.go and it passes.\n\nI'll report the commit later.",
-            "The agent is right about the lock.\n- **One:** it is shared.\n- **Two:** it is held.\n\nI'll report back.",
-            "A delegate is running the tests.\n- I edited server.go.\n- I added a test.\n\nI'll report the commit when it finishes.",
+            "Both fixes are pushed. A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
+            "Committed the prototype and two claims fail.\n- **Submit:** aliases.\n- **Config:** aliases.\n\nI'll report once the second prototype finishes.",
+            "Drafted the cleanup. A delegate is cleaning up the worktree.\n- It checks the PR.\n- It removes the branch.\n\nDecision for you: remove the prototypes too? I'd recommend it.",
+            "Opened the PR. A delegate is done.\n- **One:** checked.\n- **Two:** checked.\nI fixed the lock in server.go and it passes.\n\nI'll report the commit later.",
+            "Pushed the fix. The agent is right about the lock.\n- **One:** it is shared.\n- **Two:** it is held.\n\nI'll report back.",
+            "Committed the edit. A delegate is running the tests.\n- I edited server.go.\n- I added a test.\n\nI'll report the commit when it finishes.",
         ]
         for text in replies:
             with self.subTest(text=text):
                 self.assertEqual(self.principles_checks(text), ["missing_principles_line"])
 
+    def test_first_line_that_claims_a_change_owes_the_principles_line(self):
+        firsts = [
+            "PR #17 now has the 8-story plan and index (commits `9feff1f`)",
+            "Both fixes are pushed to PR #17 as `9f01b93`",
+            "The docs/design.md fix is pushed to PR #129 as `e8bfdfd`",
+            "Implemented the hook change in hooks/reply_hygiene.py",
+            "PR #30 is open as PR on the skills repo",
+            "The ending-question check is open as skills PR #30: a link",
+            "The PR for the hook is open",
+            "Fixed in commit `9f01b93`",
+        ]
+        for first in firsts:
+            with self.subTest(first=first):
+                self.assertEqual(self.principles_checks(first + "\n- one\n- two\n\nDone."), ["missing_principles_line"])
+
+    def test_first_line_without_a_change_claim_does_not_owe_the_principles_line(self):
+        firsts = [
+            "PR #17 is merged, main is pulled and the worktree is removed",
+            "My recommendation: merge stories 4, 5 and 6 first",
+            "#1 What server/openapi_wire_test.go is about",
+            "The check is back and story 2 fails",
+        ]
+        for first in firsts:
+            with self.subTest(first=first):
+                self.assertEqual(self.principles_checks(first + "\n- one\n- two\n\nDone."), [])
+
+    def test_change_claim_with_the_principles_line_is_never_flagged(self):
+        text = "Both fixes are pushed to PR #17 as `9f01b93`\n- one\n- two\n\nPrinciples applied: none"
+        self.assertEqual(self.principles_checks(text), [])
+
+    def test_change_claim_on_a_later_line_does_not_owe_the_principles_line(self):
+        text = "Here is the status.\n- one\n- two\n\nBoth fixes are pushed to PR #17."
+        self.assertEqual(self.principles_checks(text), [])
+
     def test_pending_delegate_reply_with_a_blocking_ask_is_still_a_hedge(self):
-        text = "Two delegates are running.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
+        text = "Two delegates are running and the fix is pushed.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
         self.assertEqual(self.principles_checks(text), ["hedge", "missing_principles_line"])
 
     def test_non_theta_long_reply_is_clean(self):
@@ -445,7 +479,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_claude_tool_result_marker_does_not_make_a_theta_session(self):
         env = Env(self)
-        path = env.transcript([{"type": "user", "message": {"role": "user", "content": "hi"}}, CLAUDE_TOOL_RESULT_USER, claude_reply("a\nb\nc\nd")])
+        path = env.transcript([{"type": "user", "message": {"role": "user", "content": "hi"}}, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nd")])
         run_main({"session_id": "s", "transcript_path": str(path)})
         self.assertEqual(env.records(), [])
 
@@ -550,7 +584,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_copilot_theta_without_principles_line_is_logged(self):
         env = Env(self)
-        path = env.transcript([copilot_user("/theta-mode go"), copilot_tool_call(), copilot_reply("a\nb\nc\nd")])
+        path = env.transcript([copilot_user("/theta-mode go"), copilot_tool_call(), copilot_reply("Pushed the fix\nb\nc\nd")])
         run_main({"sessionId": "c", "transcriptPath": str(path)})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
@@ -584,7 +618,7 @@ class ReplyHygieneTest(unittest.TestCase):
     def test_payload_reply_still_uses_transcript_for_theta(self):
         env = Env(self)
         path = env.transcript([THETA_USER, CLAUDE_TOOL_ONLY])
-        run_main({"session_id": "s", "transcript_path": str(path), "last_assistant_message": "a\nb\nc\nd"})
+        run_main({"session_id": "s", "transcript_path": str(path), "last_assistant_message": "Pushed the fix\nb\nc\nd"})
         self.assertEqual([r["check"] for r in env.records()], ["missing_principles_line"])
 
     def test_payload_reply_is_checked_when_transcript_is_unreadable(self):
