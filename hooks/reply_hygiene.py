@@ -29,6 +29,7 @@ HEDGES = [
     r"let me know if",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
+OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
@@ -193,6 +194,34 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     return hits
 
 
+def last_paragraph(reply: str) -> list[str]:
+    paragraphs: list[list[str]] = [[]]
+    fenced = False
+    for ln in reply.splitlines():
+        if ln.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            paragraphs.append([])
+        elif fenced:
+            continue
+        elif not ln.strip():
+            paragraphs.append([])
+        elif not ln.strip().startswith(TRAILER_PREFIXES):
+            paragraphs[-1].append(ln.strip())
+    return next((p for p in reversed(paragraphs) if p), [])
+
+
+def check_offer_question(reply: str) -> list[tuple[str, str, str]]:
+    hits = []
+    for line in last_paragraph(reply):
+        if line.startswith((">", '"', "“")):
+            continue
+        for sentence in re.split(r"(?<=[.!?])\s+", line):
+            match = OFFER_RE.match(sentence)
+            if match and sentence.endswith("?"):
+                hits.append(("offer_question", match.group(0), sentence))
+    return hits
+
+
 def announces_pending_delegate(lines: list[str]) -> bool:
     first_line = re.split(r"(?<=[.!?])\s+", lines[0].strip())
     last = re.split(r"(?<=[.!?])\s+", lines[-1].strip())[-1].lstrip("*- ")
@@ -293,7 +322,8 @@ def run(payload: dict, mode: str) -> str | None:
         tool = guess
     theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(entries)
     owed = theta and turn_used_tools(entries, tool)
-    hits = check_hedges(reply) + check_principles(reply, owed)
+    hedges = check_hedges(reply)
+    hits = hedges + ([] if hedges else check_offer_question(reply)) + check_principles(reply, owed)
     for check, phrase, line in hits:
         append_log(tool, session, check, phrase, line)
     if hits and mode == "block":
