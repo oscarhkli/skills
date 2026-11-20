@@ -1,30 +1,29 @@
 # Plan playbook
 
-A plan is a document a fresh `theta-agent` can execute without this conversation. Its shape follows the plan-mode artifact: why, approach, critical files, reuse, verification. Plan mode itself is not required. This file covers one plan for one PR. For work spanning several PRs, read `slice.md` first.
+A plan is the how for one PR, written when that story is next to start, so a fresh `theta-agent` can run it without this conversation. Its shape follows the plan-mode artifact: why, approach, critical files, reuse, verification. Plan mode itself is not required. A backlog paragraph, an initiative README and a story brief are not plans. A small item needs only a paragraph in `backlog.md`. A brief (`slice.md`) holds the what, the why and the non-obvious constraints. Write a plan only when a fresh agent could not find the how from the code. For work spanning several PRs, read `slice.md` first.
 
 ## Before drafting
 
 - The coordinator, not the drafting delegate, reads `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follows it, because a delegate cannot ask the human. It passes the answers verbatim in the drafting brief. Skip the interview only when the request already settles scope and constraints.
 - A plan is a design question. The coordinator reads `../principle-redesign-from-scratch/SKILL.md` and `../principle-agent-trust-pyramid/SKILL.md` (relative to `theta-mode`'s base directory) and puts both paths in the drafting brief, so the delegate reads them too. Choose the design by root cause, language idiom and the highest trust layer first, then size the diff and the stories. A smaller diff or a quicker fix is not a reason to pick a design.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
+- When the first test needs a spec, write a stub spec first.
 - If a design question is open, read `prototype.md` and run it before choosing.
 - Write to the directory the human names, else `~/.agents/project-brain/<project>/`, where `<project>` is the name its `README.md` gives the project.
 - A library, tool or generator named in a reply or plan comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one. Put this in every research brief.
 
 ## Structure
 
+- Give each section one line of intent. State each fact once, in the section that owns it.
 - Start here: repo, base branch, the files to read first and the terms the plan uses, each defined in plain words. A fresh agent starts from this section alone.
 - Goal: what and why, at most 10 lines.
 - Context: the current state, with file paths and symbols checked against the code. No line numbers in stories or plans: another change in flight shifts them.
 - Approach: the chosen design only, not the alternatives.
 - Critical files: path and what is added, changed or deleted.
 - Reuse: existing functions, helpers and test fixtures to use instead of writing new ones.
-- Checklist: pre-work, work, post-work.
 - Tasks: what to do, roughly where, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
-- Observable results: what differs when the task is done.
-- Verification: the exact commands and expected output. How is it proven that the problem is solved? Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser; a layer that fits none of them, such as scene tests with mocks, goes with the nearest one)? A layer left out says why. Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
+- Verification: how the problem is shown solved, with the exact commands and expected output. It also holds what counts as success. Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser; a layer that fits none of them, such as scene tests with mocks, goes with the nearest one)? A layer left out says why. Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
 - Review gate: who or what checks before the PR is ready. For a code PR the gate names the review: a fresh `theta-agent` runs `/code-review high` on the branch, and a separate `theta-agent` evaluates each finding and fixes the ones that hold. The PR's Verification section lists what was fixed and what was skipped. Name the review only when the plan's author wants it; it is not a default for every PR.
-- Acceptance criteria: what counts as success.
 - PR handling: ready for review unless the human asks for a draft; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
 - Open items: minor findings left unfixed and questions left unanswered.
 - Appendix: findings, data and long lists.
@@ -34,7 +33,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports, to remove line-number references (`:123`, `L123`, "line 123") from every file it writes, design docs and backlog entries included, and to paste the Goal section into its report word for word.
-- Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan.
+- Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan. It runs each count, status and command and does not read it off the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
 - The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
