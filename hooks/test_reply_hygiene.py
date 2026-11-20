@@ -245,6 +245,56 @@ class ReplyHygieneTest(unittest.TestCase):
         reply = "Fixed.\nTests pass.\nPrinciples applied: x (I haven't checked)\nPlaybooks read: none"
         self.assertEqual(rh.check_hedges(reply), [])
 
+    def test_offer_question_in_last_paragraph_is_flagged(self):
+        cases = [
+            "Want me to add a test?",
+            "Should I add a test?",
+            "Do you want me to add a test?",
+            "Shall I add a test?",
+            "Would you like me to add a test?",
+            "Should I wire it into the hook as well?",
+            "The hook is updated.\n\nI found the cause. Want me to add a test? It takes a minute.",
+            "Done.\n\n- Should I add a test?",
+            "Done.\n\nWant me to add a test?\n\nPrinciples applied: x\nPlaybooks read: none",
+            "Done.\n\n```\nok\n```\n\nShould I add a test?",
+        ]
+        for text in cases:
+            with self.subTest(text=text):
+                got = [check for check, _, _ in rh.check_offer_question(text)]
+                self.assertEqual(got, ["offer_question"])
+
+    def test_offer_question_snippet_is_the_matching_sentence(self):
+        got = rh.check_offer_question("Done.\n\nI found the cause. Want me to add a test? It takes a minute.")
+        self.assertEqual(got, [("offer_question", "Want me to", "Want me to add a test?")])
+
+    def test_non_offer_endings_are_not_flagged(self):
+        cases = [
+            "Done.\n\nSay go to implement.",
+            "Done.\n\nWhich of these two options do you want, A or B?",
+            "Done.\n\nYou asked: Want me to add a test?",
+            "Done.\n\n> Want me to add a test?",
+            "Done.\n\n\"Should I add a test?\" was the question.",
+            "Done.\n\n```\nShould I add a test?\n```",
+            "Should I add a test?\n\nNo. The suite already covers it.",
+            "Should I add a test?\n\nNo.\n\nPrinciples applied: x",
+            "Done.\n\nYou should, I think, add a test.",
+        ]
+        for text in cases:
+            with self.subTest(text=text):
+                self.assertEqual(rh.check_offer_question(text), [])
+
+    def test_offer_question_is_logged_with_its_own_check_name(self):
+        env = Env(self)
+        path = env.transcript([claude_reply("Done.\n\nShould I wire it into the hook as well?")])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["offer_question"])
+
+    def test_existing_hedge_hit_is_not_logged_twice(self):
+        env = Env(self)
+        path = env.transcript([claude_reply("Done.\n\nShould I push it?")])
+        run_main({"session_id": "s", "transcript_path": str(path)})
+        self.assertEqual([r["check"] for r in env.records()], ["hedge"])
+
     def test_clean_reply_logs_nothing(self):
         env = Env(self)
         path = env.transcript([claude_reply("Tests pass.")])
