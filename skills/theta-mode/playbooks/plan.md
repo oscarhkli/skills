@@ -33,7 +33,7 @@ A plan is a document a fresh `theta-agent` can execute without this conversation
 
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Give the delegate absolute paths, not references to the conversation.
-- Tell the delegate to apply the `unslop` skill to the plan files before it reports, and to paste the Goal section into its report word for word.
+- Tell the delegate to apply the `unslop` skill to the plan files before it reports, to remove line-number references (`:123`, `L123`, "line 123") from every file it writes, design docs and backlog entries included, and to paste the Goal section into its report word for word.
 - Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess.
