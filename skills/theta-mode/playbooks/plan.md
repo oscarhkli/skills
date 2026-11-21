@@ -19,7 +19,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 - Start here: repo, base branch, and the files to read first. A fresh agent starts from this section alone. No Terms list: define a term only when the code, the backlog and `docs/design.md` cannot show it, in one clause, inline where it is first used.
 - Goal: what and why, at most 10 lines.
 - Context: the current state, with file paths and symbols checked against the code. No line numbers in stories or plans: another change in flight shifts them.
-- Approach: the chosen design only, not the alternatives.
+- Approach: the chosen design only, not the alternatives. Decisions the plan can default go here, not in Open items.
 - Critical files: path and what is added, changed or deleted.
 - Reuse: existing functions, helpers and test fixtures to use instead of writing new ones.
 - Tasks: what to do, roughly where, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
@@ -36,7 +36,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 - Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan. It runs each count, status and command and does not read it off the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
 - Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on and every term it had to guess, and lists every sentence it could not act on as a delete candidate.
-- The three checks run once per plan, under the Budget. If one was not run, put it in an "Owed checks" list in the plan README and say so in the reply.
+- The three checks run once per plan, under the Budget, and all three always run: the coordinator launches the cold read with the other two.
 - Present the plan as its path, the Goal copied word for word from the delegate's report, and `Say go to implement.` Add no summary and no question. Do not edit code until the human says so.
 
 ## Budget
