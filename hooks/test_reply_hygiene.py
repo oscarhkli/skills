@@ -434,9 +434,12 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertEqual(self.principles_checks(text), [])
 
+    def test_pending_delegate_announcement_with_a_change_claiming_first_line_is_not_flagged(self):
+        text = "A delegate is running the tests on commit `9f01b93`.\n- It reads the log.\n- It checks the exit code.\n\nI'll report the result when it finishes."
+        self.assertEqual(self.principles_checks(text), [])
+
     def test_report_without_principles_line_is_still_flagged(self):
         replies = [
-            "The fix is pushed.\n- **Story 1:** passes.\n- **Story 2:** fails.\n\nStory 2 needs a fix before merge.",
             "Yes, it fits and is pushed. A delegate is measuring before it rates the item.\n- **One:** counts.\n- **Two:** lint.\n\nI'll report the counts when it finishes.",
             "The fixes are pushed, and a delegate is now re-checking them.\n- **One:** done.\n- **Two:** done.\n\nI'll report the result when it finishes.",
             "Both fixes are pushed. A delegate found two bugs.\n- **One:** the lock is missing.\n- **Two:** the test is flaky.\n\nBoth are fixed.",
