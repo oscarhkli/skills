@@ -45,7 +45,7 @@ WORK_CLAIM_RE = re.compile(
     re.IGNORECASE,
 )
 CHANGE_CLAIM_RE = re.compile(
-    r"\b(?:pushed|committed|opened|implemented|drafted)\b|\bopen as (?:\w+ )?PR\b|\bPR\b.{0,24}\bis open\b|\bcommits? `[0-9a-f]{7,40}`|\bPR #\d+ now has\b",
+    r"\b(?:pushed|committed|implemented|drafted)\b|(?<!is )(?<!was )(?<!are )\b(?:fixed|added|updated|removed|wrote|created|edited|renamed|merged)\b|\bopened (?:an? |the )?PR\b|\bopen as (?:\w+ )?PR\b|\bPR\b.{0,24}\bis open\b|\bcommits? `[0-9a-f]{7,40}`|\bPR #\d+ now has\b",
     re.IGNORECASE,
 )
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"

@@ -451,6 +451,11 @@ class ReplyHygieneTest(unittest.TestCase):
             "Both fixes are pushed to PR #17 as `9f01b93`",
             "The docs/design.md fix is pushed to PR #129 as `e8bfdfd`",
             "Implemented the hook change in hooks/reply_hygiene.py",
+            "Added the retry to server.go and tests pass",
+            "Fixed the lock",
+            "Merged PR #5",
+            "Updated the docs",
+            "Opened the PR for the hook",
             "PR #30 is open as PR on the skills repo",
             "The ending-question check is open as skills PR #30: a link",
             "The PR for the hook is open",
@@ -466,6 +471,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "My recommendation: merge stories 4, 5 and 6 first",
             "#1 What server/openapi_wire_test.go is about",
             "The check is back and story 2 fails",
+            "I opened the file and the lock is shared",
         ]
         for first in firsts:
             with self.subTest(first=first):
