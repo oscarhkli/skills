@@ -82,6 +82,7 @@ The brief holds:
 - The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
+- For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (project-brain is edited only in a worktree and PR), and the rule to update the plan to match what shipped after a PR merges, without asking.
 - For an editing delegate: stop and report before changing observable behaviour or adding exported API, unless the human already approved it. The report lists every behaviour change.
 - The delegate's `model` and its role.
 

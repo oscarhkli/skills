@@ -43,11 +43,11 @@ Read the whole transcript and collect each time the human stepped in:
 
 When `~/.agents/hooks/logs/reply_hygiene.jsonl` exists, read its entries since the previous retro (the newest earlier transcript whose first human turn is `/retro`), or all of them if there is none. Judge each entry by its `snippet` and the reply in its `session` transcript:
 
-- Real hit: the reply hedged, or a theta-mode reply has no `Principles applied:` line. Treat it as an intervention signal.
+- Real hit: the reply hedged (`blocked` says whether the hook made the agent redo it), or a theta-mode reply has no `Principles applied:` line (judge `missing_principles_line` by `first_line`). Treat it as an intervention signal.
 - False positive: the phrase matched but the reply was fine. Propose a tighter pattern in `hooks/reply_hygiene.py` of the repo that deploys the hook, with a test case in `hooks/test_reply_hygiene.py`.
 - `transcript_unreadable` or `no_reply_found`: the hook failed. Propose a fix to the hook.
 
-When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, propose setting it. Each proposal is an action under Output.
+When most blocked hits are false positives, tighten the pattern and add a test case. When most `missing_principles_line` hits are real, propose adding it to REPLY_HYGIENE_BLOCK. Each proposal is an action under Output.
 
 ## Layers
 
@@ -72,7 +72,7 @@ Each action has:
 - Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
 - Layer: 1-5.
-- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, branch and PR, not directly in the installed skills directory.
+- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, one branch and one PR per repo, not directly in the installed skills directory.
 - Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
 
@@ -83,3 +83,5 @@ Order actions by layer, top first, and mark the quick wins. Drop one-offs that n
 The `interview` skill is manual-only, so read `../interview/SKILL.md` (relative to this file) and follow it. What the transcript and instructions already answer is not a question. Ask only what the human decides: which interventions mattered and which were one-offs, the priority order, and global or project scope. Attach your best answer to each as the default. Keep notes only if the human names a directory.
 
 After approval, execute the approved actions, or write them up as tasks if they are too large for this session.
+
+All approved changes to one repo land in one branch and one pull request, with one commit per action and each action named in the PR description's sections. Never open one PR per action: many small PRs are hard for the human to review. Changes to different repos get one PR per repo. An action that cannot be reviewed with the rest ships alone, and the plan says why (for example, a hook that blocks replies needs deploying separately).

@@ -54,13 +54,18 @@ def copilot_tool_call():
 
 
 class Env:
-    def __init__(self, test, mode="log"):
+    def __init__(self, test, mode="log", block=None):
         self.dir = tempfile.TemporaryDirectory()
         test.addCleanup(self.dir.cleanup)
         self.log = Path(self.dir.name) / "logs" / "out.jsonl"
-        patcher = mock.patch.dict(os.environ, {"REPLY_HYGIENE_LOG": str(self.log), "REPLY_HYGIENE_MODE": mode})
+        patcher = mock.patch.dict(os.environ, {"REPLY_HYGIENE_LOG": str(self.log)})
         patcher.start()
         test.addCleanup(patcher.stop)
+        for name, value in (("REPLY_HYGIENE_MODE", mode), ("REPLY_HYGIENE_BLOCK", block)):
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
 
     def transcript(self, entries):
         path = Path(self.dir.name) / "t.jsonl"
@@ -120,7 +125,7 @@ class ReplyHygieneTest(unittest.TestCase):
             ("I can do that now if you like.", "I can do that now if you"),
             ("I can run it if you prefer.", "I can run it if you"),
             ("Say so if needed.", "Say so if"),
-            ("Do it if you want.", "if you want"),
+            ("Do it if you want.", "Do it if you want"),
             ("Which do you want?", "Which do you want"),
             ("Which one do you want first?", "Which one do you want"),
         ]
@@ -139,6 +144,10 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want X I'll do it.",
             "If you want, run it.",
             "If you want me to push it I'll do it",
+            "Say if you want it run.",
+            "I can update the README if you want.",
+            "I can also refactor it if you want.",
+            "I can create the file if you want.",
         ]:
             with self.subTest(text=text):
                 got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
@@ -154,6 +163,11 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want to know what I can do, read the README.",
             "If you want to know why I will not, see the log.",
             "If you want X\nI can see why.",
+            "Say if you want them cut.",
+            "I can pull TD-072 earlier if you want.",
+            "I can update my view if you want to know why.",
+            "Use refactor if you want speed.",
+            "I can check the docs if you want to know more.",
         ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
@@ -722,6 +736,127 @@ class ReplyHygieneTest(unittest.TestCase):
         self.assertEqual(json.loads(out), {"decision": "block", "reason": rh.BLOCK_REASON})
         clean = env.transcript([claude_reply("Done.")])
         self.assertEqual(run_main({"session_id": "s", "transcript_path": str(clean)}), (0, ""))
+
+    def stop_with(self, text, mode=None, block=None, entries=None):
+        env = Env(self, mode=mode, block=block)
+        path = env.transcript(entries or [claude_reply(text)])
+        out = run_main({"session_id": "s", "transcript_path": str(path)})
+        return env, out
+
+    def test_hedge_and_offer_question_block_by_default(self):
+        for text in ["Done.\nLet me know if.", "Done.\n\nShould I wire it into the hook as well?", "Done.\n\nWant me to add a test?"]:
+            with self.subTest(text=text):
+                env, (code, out) = self.stop_with(text)
+                self.assertEqual(code, 0)
+                self.assertEqual(json.loads(out)["decision"], "block")
+                self.assertEqual([r["blocked"] for r in env.records()], [True])
+
+    def test_missing_principles_line_logs_without_blocking_by_default(self):
+        entries = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nd")]
+        env, out = self.stop_with("", entries=entries)
+        self.assertEqual(out, (0, ""))
+        self.assertEqual([(r["check"], r["blocked"]) for r in env.records()], [("missing_principles_line", False)])
+
+    def test_block_list_overrides_the_defaults(self):
+        principles = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nd")]
+        cases = [
+            ("hedge,offer_question,missing_principles_line", principles, True),
+            (" missing_principles_line , ", principles, True),
+            ("", [claude_reply("Done.\nLet me know if.")], False),
+            ("offer_question", [claude_reply("Done.\nLet me know if.")], False),
+            ("hedge", [claude_reply("Done.\nLet me know if.")], True),
+        ]
+        for block, entries, blocks in cases:
+            with self.subTest(block=block):
+                env, (_, out) = self.stop_with("", block=block, entries=entries)
+                self.assertEqual(bool(out), blocks)
+                self.assertEqual([r["blocked"] for r in env.records()], [blocks])
+
+    def test_mode_log_forces_log_only_for_every_check(self):
+        env, out = self.stop_with("Done.\nLet me know if.", mode="log", block="hedge")
+        self.assertEqual(out, (0, ""))
+        self.assertEqual([r["blocked"] for r in env.records()], [False])
+
+    def test_mode_block_blocks_every_check(self):
+        principles = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nd")]
+        env, (_, out) = self.stop_with("", mode="block", block="", entries=principles)
+        self.assertEqual(json.loads(out)["decision"], "block")
+        self.assertEqual([r["blocked"] for r in env.records()], [True])
+
+    def test_only_blocking_hits_are_marked_blocked(self):
+        text = "Two delegates are running and the fix is pushed.\n- one\n- two\n\nDecision for you: should I add it to the plan?"
+        entries = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply(text)]
+        env, (_, out) = self.stop_with("", entries=entries)
+        self.assertEqual(json.loads(out)["decision"], "block")
+        self.assertEqual([(r["check"], r["blocked"]) for r in env.records()], [("hedge", True), ("missing_principles_line", False)])
+
+    def test_failure_checks_never_block_even_in_block_mode(self):
+        env = Env(self, mode="block")
+        code, out = run_main({"session_id": "s", "transcript_path": str(Path(env.dir.name) / "none")})
+        self.assertEqual((code, out), (0, ""))
+        self.assertEqual([r["blocked"] for r in env.records()], [False])
+
+    def test_loop_guard_and_one_block_per_turn(self):
+        env = Env(self, mode=None)
+        path = env.transcript([claude_reply("Done.\nLet me know if.")])
+        first = run_main({"session_id": "s", "transcript_path": str(path)})
+        again = run_main({"session_id": "s", "transcript_path": str(path), "stop_hook_active": True})
+        self.assertEqual(json.loads(first[1])["decision"], "block")
+        self.assertEqual(again, (0, ""))
+        self.assertEqual(len(env.records()), 1)
+
+    def test_missing_principles_line_record_keeps_first_and_last_line(self):
+        entries = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply("Pushed the fix\nb\nc\nlast line")]
+        env, _ = self.stop_with("", entries=entries)
+        record = env.records()[0]
+        self.assertEqual((record["first_line"], record["snippet"]), ("Pushed the fix", "last line"))
+
+    def test_other_records_have_no_first_line(self):
+        env, _ = self.stop_with("Done.\nLet me know if.")
+        self.assertNotIn("first_line", env.records()[0])
+
+    def test_legitimate_asks_and_disclosures_are_not_blocked(self):
+        for text in [
+            "Done.\n\nDecision for you: A keeps the route, B drops it. I'd pick B.",
+            "Done.\n\nStill unverified: that the payload carries the field.",
+            "Done.\n\nI haven't run the e2e suite because it needs credentials.",
+            "Done.\n\nI have not verified the deploy because it requires production access.",
+            "Done.\n\nI haven't confirmed the vendor plan since it needs a human decision on cost.",
+        ]:
+            with self.subTest(text=text):
+                env, out = self.stop_with(text)
+                self.assertEqual((out, env.records()), ((0, ""), []))
+
+    def test_the_frustrating_phrases_block_end_to_end(self):
+        for text in [
+            "Done.\n\nWant me to add a test?",
+            "Done.\n\nDo you want me to add a test?",
+            "Done.\n\nShall I add a test?",
+            "Done.\n\nWould you like me to add a test?",
+            "Done.\n\nI can run the suite if you want.",
+            "Done.\n\nI can do the rename if you want it.",
+            "Done.\n\nI haven't tested it.",
+            "Done.\n\nI haven't checked the other callers.",
+            "Done.\n\nI haven't run the suite.",
+            "Done.\n\nI haven't verified the output.",
+            "Done.\n\nI haven't confirmed the version.",
+            "Done.\n\nI haven't run the suite because it is slow.",
+            "Done.\n\nI haven't tested it because I ran out of time.",
+        ]:
+            with self.subTest(text=text):
+                env, (_, out) = self.stop_with(text)
+                self.assertEqual(json.loads(out)["decision"], "block")
+                self.assertEqual([r["blocked"] for r in env.records()], [True])
+
+    def test_block_reason_tells_the_agent_to_do_the_work_and_names_the_allowances(self):
+        for part in ["do X before replying", "needs credentials, a human decision, or cost or production access", "Decision for you:"]:
+            with self.subTest(part=part):
+                self.assertIn(part, rh.BLOCK_REASON)
+
+    def test_block_reason_leads_with_the_blocker_question(self):
+        self.assertTrue(rh.BLOCK_REASON.startswith(
+            "Who is blocking you? Do the action or the check now, or name the one decision only the human can make."
+        ))
 
     def test_block_mode_does_not_block_on_unreadable_transcript(self):
         env = Env(self, mode="block")

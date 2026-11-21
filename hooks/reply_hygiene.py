@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""Stop hook for Claude Code and Copilot CLI: flag hedged or unfinished final replies.
-
-REPLY_HYGIENE_MODE=log (default) only appends to a JSONL log; block asks the agent to redo the reply.
-REPLY_HYGIENE_LOG overrides the log path.
-The payload's last_assistant_message is preferred over the transcript, which can lag the Stop event.
-"""
+"""Stop hook: flag hedged or unfinished final replies, log each hit, and block the blocking checks once per turn.
+Env: REPLY_HYGIENE_BLOCK, REPLY_HYGIENE_MODE, REPLY_HYGIENE_LOG; defaults live in DEFAULT_BLOCKING."""
 from __future__ import annotations
 
 import json
@@ -16,7 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HEDGES = [
-    r"(?<=[\w`\"'\u2019,]\s)if you want\b",
+    r"(?<=[\w`\"'\u2019,]\s)if you want\b(?!\s+to\b)(?=\s+me to\b|[^.?!\n]*\b(?:run|ran|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)(?:s|ed|d|ing)?\b)",
+    r"\b(?:run|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)\b[^.?!\n]*?(?<=[\w`\"'\u2019,]\s)if you want\b(?=[ \t]*(?:[.,;?!\n]|$)|\s+(?:that|it|me)\b)",
     r"\bif you want\b(?:(?!\b(?:what|why|how|who|when|where|which|whether|that)\b)[^.?!\n])*?[, \t](?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
     r"\bif you want\b[^.?!\n]*?,\s*say\b",
     r"\bif you want\s*,",
@@ -27,7 +24,7 @@ HEDGES = [
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
-    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)",
+    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)(?![^.?!\n]*\b(?:because|since|needs?|requires?)\b[^.?!\n]*\b(?:credentials?|secrets?|tokens?|passwords?|api keys?|production|prod|costs?|billing|paid|human|approval|your (?:call|decision))\b)",
     r"would you like me to",
     r"let me know if",
     r"\bwhich (?:one )?do you want\b",
@@ -51,9 +48,12 @@ CHANGE_CLAIM_RE = re.compile(
     re.IGNORECASE,
 )
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
+DEFAULT_BLOCKING = frozenset({"hedge", "offer_question"})
 BLOCK_REASON = (
-    "Do the action or the check now. If it is a real decision for the human, "
-    "state the decision, the options with pros and cons, and your pick. "
+    "Who is blocking you? Do the action or the check now, or name the one decision only the human can make. "
+    "Ending with \"I haven't tested/checked/run/verified X\" or \"want me to X\" for reversible, in-scope work means do X before replying. "
+    "Allowed: \"I haven't X\" only when you cannot do X (it needs credentials, a human decision, or cost or production access) and the reply names why. "
+    "Allowed: \"Decision for you: ...\" for a materially different scope or an irreversible action, with the options, pros and cons, and your pick. "
     "In theta mode, end with a `Principles applied:` line."
 )
 SNIPPET_MAX = 160
@@ -257,7 +257,28 @@ def log_path() -> Path:
     return Path.home() / ".agents" / "hooks" / "logs" / "reply_hygiene.jsonl"
 
 
-def append_log(tool: str, session: str, check: str, phrase: str, line: str, payload_keys: list[str] | None = None) -> None:
+def blocking_checks() -> frozenset[str] | None:
+    mode = os.environ.get("REPLY_HYGIENE_MODE", "").strip().lower()
+    if mode == "log":
+        return frozenset()
+    if mode == "block":
+        return None
+    listed = os.environ.get("REPLY_HYGIENE_BLOCK")
+    if listed is None:
+        return DEFAULT_BLOCKING
+    return frozenset(name.strip() for name in listed.split(",") if name.strip())
+
+
+def append_log(
+    tool: str,
+    session: str,
+    check: str,
+    phrase: str,
+    line: str,
+    payload_keys: list[str] | None = None,
+    blocked: bool = False,
+    first_line: str | None = None,
+) -> None:
     record = {
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "tool": tool,
@@ -265,7 +286,10 @@ def append_log(tool: str, session: str, check: str, phrase: str, line: str, payl
         "check": check,
         "phrase": phrase,
         "snippet": line[:SNIPPET_MAX],
+        "blocked": blocked,
     }
+    if first_line is not None:
+        record["first_line"] = first_line[:SNIPPET_MAX]
     if payload_keys is not None:
         record["payload_keys"] = payload_keys
     path = log_path()
@@ -303,7 +327,7 @@ def read_reply(path: Path, have_text: bool) -> tuple[list[dict], str, str]:
         time.sleep(RETRY_DELAY)
 
 
-def run(payload: dict, mode: str) -> str | None:
+def run(payload: dict, blocking: frozenset[str] | None) -> str | None:
     if payload.get("stop_hook_active") or payload.get("stopHookActive"):
         return None
     session = str(payload.get("session_id") or payload.get("sessionId") or "")
@@ -332,9 +356,12 @@ def run(payload: dict, mode: str) -> str | None:
     owed = theta and turn_used_tools(entries, tool)
     hedges = check_hedges(reply)
     hits = hedges + ([] if hedges else check_offer_question(reply)) + check_principles(reply, owed)
-    for check, phrase, line in hits:
-        append_log(tool, session, check, phrase, line)
-    if hits and mode == "block":
+    first_line = next((ln.strip() for ln in reply.splitlines() if ln.strip()), "")
+    blocked = [blocking is None or check in blocking for check, _, _ in hits]
+    for (check, phrase, line), hit_blocks in zip(hits, blocked):
+        extra = {"first_line": first_line} if check == "missing_principles_line" else {}
+        append_log(tool, session, check, phrase, line, blocked=hit_blocks, **extra)
+    if any(blocked):
         return json.dumps({"decision": "block", "reason": BLOCK_REASON})
     return None
 
@@ -342,8 +369,7 @@ def run(payload: dict, mode: str) -> str | None:
 def main() -> None:
     try:
         payload = json.loads(sys.stdin.buffer.read().decode("utf-8", "replace") or "{}")
-        mode = os.environ.get("REPLY_HYGIENE_MODE", "log").strip().lower()
-        out = run(payload if isinstance(payload, dict) else {}, mode)
+        out = run(payload if isinstance(payload, dict) else {}, blocking_checks())
         if out:
             print(out)
     except Exception:
