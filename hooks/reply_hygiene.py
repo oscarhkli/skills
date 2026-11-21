@@ -16,7 +16,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HEDGES = [
-    r"if you want",
+    r"(?<=[\w`\"'\u2019,]\s)if you want\b",
+    r"\bif you want\b(?:(?!\b(?:what|why|how|who|when|where|which|whether|that)\b)[^.?!\n])*?[, \t](?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
+    r"\bif you want\b[^.?!\n]*?,\s*say\b",
+    r"\bif you want\s*,",
     r"say so if",
     r"(?<!nothing )(?<!nothing was )(?<!nothing is )\bleft for you\b",
     r"I can (?:do|run) .* if you",
@@ -27,8 +30,10 @@ HEDGES = [
     r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)",
     r"would you like me to",
     r"let me know if",
+    r"\bwhich (?:one )?do you want\b",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
+OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
@@ -39,6 +44,10 @@ PENDING_DELEGATE_RE = re.compile(
 REPORT_BACK_RE = re.compile(r"\bI(?:['\u2019]ll| will) (?:then )?(?:report|send|show|compare|confirm|share|give|ask)\b", re.IGNORECASE)
 WORK_CLAIM_RE = re.compile(
     r"\b(?:fixed|found|edited|added|removed|ran|passed|failed|changed|created|deleted|merged|pushed|committed)\b",
+    re.IGNORECASE,
+)
+CHANGE_CLAIM_RE = re.compile(
+    r"\b(?:pushed|committed|implemented|drafted)\b|(?<!is )(?<!was )(?<!are )\b(?:fixed|added|updated|removed|wrote|created|edited|renamed|merged)\b|\bopened (?:an? |the )?PR\b|\bopen as (?:\w+ )?PR\b|\bPR\b.{0,24}\bis open\b|\bcommits? `[0-9a-f]{7,40}`|\bPR #\d+ now has\b",
     re.IGNORECASE,
 )
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
@@ -193,6 +202,34 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     return hits
 
 
+def last_paragraph(reply: str) -> list[str]:
+    paragraphs: list[list[str]] = [[]]
+    fenced = False
+    for ln in reply.splitlines():
+        if ln.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+            paragraphs.append([])
+        elif fenced:
+            continue
+        elif not ln.strip():
+            paragraphs.append([])
+        elif not ln.strip().startswith(TRAILER_PREFIXES):
+            paragraphs[-1].append(ln.strip())
+    return next((p for p in reversed(paragraphs) if p), [])
+
+
+def check_offer_question(reply: str) -> list[tuple[str, str, str]]:
+    hits = []
+    for line in last_paragraph(reply):
+        if line.startswith((">", '"', "“")):
+            continue
+        for sentence in re.split(r"(?<=[.!?])\s+", line):
+            match = OFFER_RE.match(sentence)
+            if match and sentence.rstrip("*_\"')").endswith("?"):
+                hits.append(("offer_question", match.group(0), sentence))
+    return hits
+
+
 def announces_pending_delegate(lines: list[str]) -> bool:
     first_line = re.split(r"(?<=[.!?])\s+", lines[0].strip())
     last = re.split(r"(?<=[.!?])\s+", lines[-1].strip())[-1].lstrip("*- ")
@@ -208,7 +245,7 @@ def check_principles(reply: str, owed: bool) -> list[tuple[str, str, str]]:
         return []
     if any(ln.lstrip().startswith("Principles applied:") for ln in lines):
         return []
-    if announces_pending_delegate(lines):
+    if announces_pending_delegate(lines) or not CHANGE_CLAIM_RE.search(lines[0]):
         return []
     return [("missing_principles_line", "Principles applied:", lines[-1].strip())]
 
@@ -293,7 +330,8 @@ def run(payload: dict, mode: str) -> str | None:
         tool = guess
     theta = is_theta_copilot(entries) if tool == "copilot" else is_theta_claude(entries)
     owed = theta and turn_used_tools(entries, tool)
-    hits = check_hedges(reply) + check_principles(reply, owed)
+    hedges = check_hedges(reply)
+    hits = hedges + ([] if hedges else check_offer_question(reply)) + check_principles(reply, owed)
     for check, phrase, line in hits:
         append_log(tool, session, check, phrase, line)
     if hits and mode == "block":
