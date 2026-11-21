@@ -25,7 +25,41 @@ scripts/install.sh -y     # replace without asking
 
 Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
 
-Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwriting a changed copy. Override the target with `AGENTS_HOOKS_DIR`. Registering a hook in `~/.claude/settings.json` or `~/.copilot/hooks/` is manual. `hooks/reply_hygiene.py` is a Stop hook that logs hedged or unfinished final replies, including an offer question in the last paragraph that starts a sentence after other text, such as "Done. Want me to push?" (check `offer_question`), and a long theta-mode reply that lacks the `Principles applied:` line when its first line claims a change such as "pushed", "fixed", "merged" or "PR #N now has" (check `missing_principles_line`), to `~/.agents/hooks/logs/reply_hygiene.jsonl`. Each record holds the session id, the check name, `blocked` (true when the hit made the hook ask for a redo) and up to 160 characters of the matched line. A `missing_principles_line` record also holds `first_line`, so a verdict can be judged from the log. The log never rotates. The hook blocks per check: `hedge` and `offer_question` block by default, each asking the agent for a redo once per turn, and `missing_principles_line` only logs. `REPLY_HYGIENE_BLOCK` replaces that list with comma-separated check names (empty blocks nothing). `REPLY_HYGIENE_MODE=log` forces log-only for every check and `REPLY_HYGIENE_MODE=block` blocks every check; both win over `REPLY_HYGIENE_BLOCK`. Read errors, `transcript_unreadable` and `no_reply_found` never block. The defaults live in the script, so the Copilot hook JSON below needs no change. An "I haven't tested/checked/run/verified X" ending passes only when the same line says X cannot be done and why (for example, it needs credentials, a human decision, or cost or production access); otherwise the hook tells the agent to do X first. A wrongly blocked reply is fixed by tightening the pattern and adding a test, not by switching back to log-only. Run its tests with `python3 -I -m unittest discover -s hooks`.
+Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwriting a changed copy.
+
+- Set `AGENTS_HOOKS_DIR` to install somewhere else.
+- Registering a hook in `~/.claude/settings.json` or `~/.copilot/hooks/` is manual.
+- Run the tests with `python3 -I -m unittest discover -s hooks`.
+
+`hooks/reply_hygiene.py` is a Stop hook. It checks the final reply of each turn and logs hits.
+
+- Checks:
+  - `hedge`: the last two lines offer work instead of doing it ("if you want", "let me know if").
+    - "I haven't tested/checked/run/verified X" also counts.
+    - It passes when the same line says why X cannot be done (credentials, human decision, cost).
+  - `offer_question`: the last paragraph has a sentence that starts with "Want me to" or similar,
+    such as "Done. Want me to push?". It is skipped when `hedge` already hit.
+  - `missing_principles_line`: a theta-mode reply over 3 lines, after tool use, lacks a
+    `Principles applied:` line and its first line claims a change ("pushed", "fixed", "merged").
+- Blocking by default:
+  - `hedge` and `offer_question` block.
+  - `missing_principles_line` only logs.
+- Environment variables:
+  - `REPLY_HYGIENE_BLOCK`: comma-separated check names that block. It replaces the default list.
+    - Empty blocks nothing.
+  - `REPLY_HYGIENE_MODE=log`: every check only logs.
+  - `REPLY_HYGIENE_MODE=block`: every check blocks.
+    - Both modes win over `REPLY_HYGIENE_BLOCK`.
+  - `REPLY_HYGIENE_LOG`: log file path.
+- A block:
+  - Asks the agent to do the action or name the one decision only the human can make.
+  - Fires once per turn: the hook does nothing when `stop_hook_active` is set.
+  - Never fires for `transcript_unreadable` or `no_reply_found`, which are logged only.
+- The log is `~/.agents/hooks/logs/reply_hygiene.jsonl`, one JSON record per hit, never rotated.
+  - Fields: `ts`, `tool`, `session`, `check`, `phrase`, `snippet`, `blocked`.
+  - `snippet` is the matched line, cut to 160 characters.
+  - `missing_principles_line` adds `first_line`.
+  - `transcript_unreadable` and `no_reply_found` add `payload_keys`.
 
 Register it in Claude Code, in `~/.claude/settings.json` (on Windows the command runs in Git Bash):
 
@@ -41,7 +75,12 @@ Register it in Copilot CLI, in `~/.copilot/hooks/reply-hygiene.json` (on Windows
   "powershell": "python \"$HOME/.agents/hooks/reply_hygiene.py\""}]}}
 ```
 
-Write `$HOME`, not `~`, because Windows PowerShell 5.1 does not expand `~`. On Windows, `python3` can be the Microsoft Store stub, so use `python` or `py -3` if it is. PowerShell has no `VAR=x cmd` form, so to override a default set the variable first: `"powershell": "$env:REPLY_HYGIENE_BLOCK='hedge'; python \"$HOME/.agents/hooks/reply_hygiene.py\""`. A hook that fails to start fails open in both tools, so check that the log file appears.
+Write `$HOME`, not `~`, because Windows PowerShell 5.1 does not expand `~`.
+
+- On Windows, `python3` can be the Microsoft Store stub. Use `python` or `py -3` then.
+- PowerShell has no `VAR=x cmd` form. To override a default, set the variable first:
+  `"powershell": "$env:REPLY_HYGIENE_BLOCK='hedge'; python \"$HOME/.agents/hooks/reply_hygiene.py\""`
+- A hook that fails to start fails open in both tools, so check that the log file appears.
 
 ## Layout
 
