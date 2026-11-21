@@ -136,6 +136,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want a PR from this branch, say so and I'll open one.",
             "If you want its content kept, I can recover it from git history.",
             "The roadmap item could be dropped, or take it now if you want story 7 watched.",
+            "If you want X I'll do it.",
+            "If you want, run it.",
+            "If you want me to push it I'll do it",
         ]:
             with self.subTest(text=text):
                 got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
@@ -283,6 +286,8 @@ class ReplyHygieneTest(unittest.TestCase):
             "Done.\n\n- Should I add a test?",
             "Done.\n\nWant me to add a test?\n\nPrinciples applied: x\nPlaybooks read: none",
             "Done.\n\n```\nok\n```\n\nShould I add a test?",
+            "Done.\n\n**Want me to add a test?**",
+            "Done.\n\nWant me to add a test?\"",
         ]
         for text in cases:
             with self.subTest(text=text):
@@ -295,7 +300,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
     def test_non_offer_endings_are_not_flagged(self):
         cases = [
-            "Done.\n\nSay go to implement.",
+            "Done.\n\nWant me to add a test. I will.",
             "Done.\n\nWhich of these two options do you want, A or B?",
             "Done.\n\nYou asked: Want me to add a test?",
             "Done.\n\n> Want me to add a test?",
@@ -303,7 +308,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "Done.\n\n```\nShould I add a test?\n```",
             "Should I add a test?\n\nNo. The suite already covers it.",
             "Should I add a test?\n\nNo.\n\nPrinciples applied: x",
-            "Done.\n\nYou should, I think, add a test.",
+            "Done.\n\nI wonder whether I should add a test?",
         ]
         for text in cases:
             with self.subTest(text=text):

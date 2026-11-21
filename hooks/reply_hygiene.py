@@ -17,7 +17,9 @@ from pathlib import Path
 
 HEDGES = [
     r"(?<=[\w`\"'\u2019,]\s)if you want\b",
-    r"\bif you want\b[^.?!]*?,\s*(?:I(?:['\u2019]ll| will| can| could)|tell me|say)\b",
+    r"\bif you want\b[^.?!\n]*?[,\s]\s*(?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
+    r"\bif you want\b[^.?!\n]*?,\s*say\b",
+    r"\bif you want\s*,",
     r"say so if",
     r"(?<!nothing )(?<!nothing was )(?<!nothing is )\bleft for you\b",
     r"I can (?:do|run) .* if you",
@@ -223,7 +225,7 @@ def check_offer_question(reply: str) -> list[tuple[str, str, str]]:
             continue
         for sentence in re.split(r"(?<=[.!?])\s+", line):
             match = OFFER_RE.match(sentence)
-            if match and sentence.endswith("?"):
+            if match and sentence.rstrip("*_\"')").endswith("?"):
                 hits.append(("offer_question", match.group(0), sentence))
     return hits
 
