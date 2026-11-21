@@ -1,6 +1,6 @@
 # Plan playbook
 
-A plan is the how for one PR, written when that story is next to start, so a fresh `theta-agent` can run it without this conversation. Its shape follows the plan-mode artifact: why, approach, critical files, reuse, verification. Plan mode itself is not required. A backlog paragraph, an initiative README and a story brief are not plans. A small item needs only a paragraph in `backlog.md`. A brief (`slice.md`) holds the what, the why and the non-obvious constraints. Write a plan only when a fresh agent could not find the how from the code. For work spanning several PRs, read `slice.md` first.
+A plan is the how for one PR, written when that story is next to start, so a fresh `theta-agent` can run it without this conversation. Its shape follows the plan-mode artifact: why, approach, reuse, verification. Plan mode itself is not required. A backlog paragraph, an initiative README and a story brief are not plans. A small item needs only a paragraph in `backlog.md`. A brief (`slice.md`) holds the what, the why and the non-obvious constraints. Write a plan only when a fresh agent could not find the how from the code. For work spanning several PRs, read `slice.md` first.
 
 ## Before drafting
 
