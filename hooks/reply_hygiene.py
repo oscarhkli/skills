@@ -17,7 +17,7 @@ from pathlib import Path
 
 HEDGES = [
     r"(?<=[\w`\"'\u2019,]\s)if you want\b",
-    r"\bif you want\b[^.?!\n]*?[,\s]\s*(?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
+    r"\bif you want\b(?:(?!\b(?:what|why|how|who|when|where|which|whether|that)\b)[^.?!\n])*?[, \t](?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
     r"\bif you want\b[^.?!\n]*?,\s*say\b",
     r"\bif you want\s*,",
     r"say so if",

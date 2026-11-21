@@ -151,6 +151,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want fewer items to track, the alternative is one plan with two PRs.",
             "If you want a fourth option, `WithRoomIDGenerator` would be the natural one.",
             "- **Possible gap:** if you want agents in other repos to find the backlog, add a line.",
+            "If you want to know what I can do, read the README.",
+            "If you want to know why I will not, see the log.",
+            "If you want X\nI can see why.",
         ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
