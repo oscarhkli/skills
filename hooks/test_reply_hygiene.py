@@ -121,6 +121,8 @@ class ReplyHygieneTest(unittest.TestCase):
             ("I can run it if you prefer.", "I can run it if you"),
             ("Say so if needed.", "Say so if"),
             ("Do it if you want.", "if you want"),
+            ("Which do you want?", "Which do you want"),
+            ("Which one do you want first?", "Which one do you want"),
         ]
         for text, want in cases:
             with self.subTest(text=text):
@@ -137,6 +139,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "The fix is not yet verified.",
             "The result was not verified by me.",
             "That is your call, and it is open.",
+            "Pick the one that matches what you want.",
         ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
