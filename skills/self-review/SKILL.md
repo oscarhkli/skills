@@ -23,10 +23,11 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 
 Prompt skeletons: [references/reviewer-brief.md](references/reviewer-brief.md).
 
-1. Full review, once. Start all reviewers in parallel, each on the whole change, with a different lens.:
+1. Full review, once. Start all reviewers in parallel, each on the whole change, with a different lens:
    - Lens 1: requirements and correctness.
    - Lens 2: tests prove their claims, edge cases, user paths.
-   - With one reviewer, that reviewer gets both lenses in one brief.
+   - Lens 3: needless code, layers, or text a deletion would replace (read `../principle-lazy-senior-dev/SKILL.md`); findings minor.
+   - With one reviewer, that reviewer gets all three lenses in one brief.
    - A reviewer that finds a build or test failure reports it as a finding. The coordinator decides what to do with it.
    - A reviewer that cannot complete stops the run as REVIEW FAILED. Do not treat the other review as enough.
    - Every brief (reviewer, verifier, fixer) holds the absolute paths of `theta-mode/SKILL.md` and of every principle whose Roles cell lists its role: `reviewer` for reviewers and verifiers, `implementer` for fixers. This holds however the agents are spawned.

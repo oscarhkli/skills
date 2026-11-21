@@ -43,11 +43,11 @@ Read the whole transcript and collect each time the human stepped in:
 
 When `~/.agents/hooks/logs/reply_hygiene.jsonl` exists, read its entries since the previous retro (the newest earlier transcript whose first human turn is `/retro`), or all of them if there is none. Judge each entry by its `snippet` and the reply in its `session` transcript:
 
-- Real hit: the reply hedged, or a theta-mode reply has no `Principles applied:` line. Treat it as an intervention signal.
+- Real hit: the reply hedged (`blocked` says whether the hook made the agent redo it), or a theta-mode reply has no `Principles applied:` line (judge `missing_principles_line` by `first_line`). Treat it as an intervention signal.
 - False positive: the phrase matched but the reply was fine. Propose a tighter pattern in `hooks/reply_hygiene.py` of the repo that deploys the hook, with a test case in `hooks/test_reply_hygiene.py`.
 - `transcript_unreadable` or `no_reply_found`: the hook failed. Propose a fix to the hook.
 
-When most hits are real and the hook runs without `REPLY_HYGIENE_MODE=block`, propose setting it. Each proposal is an action under Output.
+When most blocked hits are false positives, tighten the pattern and add a test case. When most `missing_principles_line` hits are real, propose adding it to REPLY_HYGIENE_BLOCK. Each proposal is an action under Output.
 
 ## Layers
 

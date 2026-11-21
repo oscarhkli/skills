@@ -145,6 +145,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want, run it.",
             "If you want me to push it I'll do it",
             "Say if you want it run.",
+            "I can update the README if you want.",
+            "I can also refactor it if you want.",
+            "I can create the file if you want.",
         ]:
             with self.subTest(text=text):
                 got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]

@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
-"""Stop hook for Claude Code and Copilot CLI: flag hedged or unfinished final replies.
-
-Every hit is appended to a JSONL log with a `blocked` flag. A hit of a blocking check also asks the
-agent to redo the reply, once per turn (stop_hook_active ends the loop).
-Blocking by default: hedge, offer_question. missing_principles_line only logs.
-REPLY_HYGIENE_BLOCK=<comma list of check names> replaces that default; empty blocks nothing.
-REPLY_HYGIENE_MODE=log forces log-only for every check, block blocks every check (both win over BLOCK).
-REPLY_HYGIENE_LOG overrides the log path.
-The payload's last_assistant_message is preferred over the transcript, which can lag the Stop event.
-"""
+"""Stop hook: flag hedged or unfinished final replies, log each hit, and block the blocking checks once per turn.
+Env: REPLY_HYGIENE_BLOCK, REPLY_HYGIENE_MODE, REPLY_HYGIENE_LOG; defaults live in DEFAULT_BLOCKING."""
 from __future__ import annotations
 
 import json
@@ -20,8 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HEDGES = [
-    r"(?<=[\w`\"'\u2019,]\s)if you want\b(?=\s+me to\b|[^.?!\n]*\b(?:run|ran|test|check|verify|confirm|fix|commit|push|open|write|add|do|start|investigate|watch)(?:s|ed|d|ing)?\b)",
-    r"\b(?:run|test|check|verify|confirm|fix|commit|push|open|write|add|do|start|investigate|watch)\b[^.?!\n]*?(?<=[\w`\"'\u2019,]\s)if you want\b",
+    r"(?<=[\w`\"'\u2019,]\s)if you want\b(?=\s+me to\b|[^.?!\n]*\b(?:run|ran|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)(?:s|ed|d|ing)?\b)",
+    r"\b(?:run|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)\b[^.?!\n]*?(?<=[\w`\"'\u2019,]\s)if you want\b",
     r"\bif you want\b(?:(?!\b(?:what|why|how|who|when|where|which|whether|that)\b)[^.?!\n])*?[, \t](?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
     r"\bif you want\b[^.?!\n]*?,\s*say\b",
     r"\bif you want\s*,",
