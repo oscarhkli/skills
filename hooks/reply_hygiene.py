@@ -31,7 +31,7 @@ HEDGES = [
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
-    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)(?![^.?!\n]*\b(?:because|since|needs?|requires?)\b)",
+    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)(?![^.?!\n]*\b(?:because|since|needs?|requires?)\b[^.?!\n]*\b(?:credentials?|secrets?|tokens?|passwords?|api keys?|production|prod|costs?|billing|paid|human|approval|your (?:call|decision))\b)",
     r"would you like me to",
     r"let me know if",
     r"\bwhich (?:one )?do you want\b",
@@ -58,8 +58,9 @@ CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 DEFAULT_BLOCKING = frozenset({"hedge", "offer_question"})
 BLOCK_REASON = (
     "Who is blocking you? Do the action or the check now, or name the one decision only the human can make. "
-    "A real decision for the human: state the decision, the options with pros and cons, and your pick. "
-    "A check you cannot run: say it was not verified and why (for example, it needs credentials). "
+    "Ending with \"I haven't tested/checked/run/verified X\" or \"want me to X\" for reversible, in-scope work means do X before replying. "
+    "Allowed: \"I haven't X\" only when you cannot do X (it needs credentials, a human decision, or cost or production access) and the reply names why. "
+    "Allowed: \"Decision for you: ...\" for a materially different scope or an irreversible action, with the options, pros and cons, and your pick. "
     "In theta mode, end with a `Principles applied:` line."
 )
 SNIPPET_MAX = 160

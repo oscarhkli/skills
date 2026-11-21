@@ -811,11 +811,38 @@ class ReplyHygieneTest(unittest.TestCase):
             "Done.\n\nDecision for you: A keeps the route, B drops it. I'd pick B.",
             "Done.\n\nStill unverified: that the payload carries the field.",
             "Done.\n\nI haven't run the e2e suite because it needs credentials.",
-            "Done.\n\nI have not verified the deploy: it requires production access.",
+            "Done.\n\nI have not verified the deploy because it requires production access.",
+            "Done.\n\nI haven't confirmed the vendor plan since it needs a human decision on cost.",
         ]:
             with self.subTest(text=text):
                 env, out = self.stop_with(text)
                 self.assertEqual((out, env.records()), ((0, ""), []))
+
+    def test_the_frustrating_phrases_block_end_to_end(self):
+        for text in [
+            "Done.\n\nWant me to add a test?",
+            "Done.\n\nDo you want me to add a test?",
+            "Done.\n\nShall I add a test?",
+            "Done.\n\nWould you like me to add a test?",
+            "Done.\n\nI can run the suite if you want.",
+            "Done.\n\nI can do the rename if you want it.",
+            "Done.\n\nI haven't tested it.",
+            "Done.\n\nI haven't checked the other callers.",
+            "Done.\n\nI haven't run the suite.",
+            "Done.\n\nI haven't verified the output.",
+            "Done.\n\nI haven't confirmed the version.",
+            "Done.\n\nI haven't run the suite because it is slow.",
+            "Done.\n\nI haven't tested it because I ran out of time.",
+        ]:
+            with self.subTest(text=text):
+                env, (_, out) = self.stop_with(text)
+                self.assertEqual(json.loads(out)["decision"], "block")
+                self.assertEqual([r["blocked"] for r in env.records()], [True])
+
+    def test_block_reason_tells_the_agent_to_do_the_work_and_names_the_allowances(self):
+        for part in ["do X before replying", "needs credentials, a human decision, or cost or production access", "Decision for you:"]:
+            with self.subTest(part=part):
+                self.assertIn(part, rh.BLOCK_REASON)
 
     def test_block_reason_leads_with_the_blocker_question(self):
         self.assertTrue(rh.BLOCK_REASON.startswith(
