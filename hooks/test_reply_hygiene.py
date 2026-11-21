@@ -125,7 +125,7 @@ class ReplyHygieneTest(unittest.TestCase):
             ("I can do that now if you like.", "I can do that now if you"),
             ("I can run it if you prefer.", "I can run it if you"),
             ("Say so if needed.", "Say so if"),
-            ("Do it if you want.", "if you want"),
+            ("Do it if you want.", "Do it if you want"),
             ("Which do you want?", "Which do you want"),
             ("Which one do you want first?", "Which one do you want"),
         ]
@@ -144,6 +144,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want X I'll do it.",
             "If you want, run it.",
             "If you want me to push it I'll do it",
+            "Say if you want it run.",
         ]:
             with self.subTest(text=text):
                 got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
@@ -159,6 +160,8 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want to know what I can do, read the README.",
             "If you want to know why I will not, see the log.",
             "If you want X\nI can see why.",
+            "Say if you want them cut.",
+            "I can pull TD-072 earlier if you want.",
         ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
