@@ -16,7 +16,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 
 - Give each section one line of intent. State each fact once, in the section that owns it.
 - Every line must change what the implementer does. Findings that repeat the backlog, measured numbers, rejected alternatives and decision history go to the backlog entry or nowhere.
-- Start here: repo, base branch, the files to read first and the terms the plan uses, each defined in plain words. A fresh agent starts from this section alone.
+- Start here: repo, base branch, and the files to read first. A fresh agent starts from this section alone. No Terms list: define a term only when the code, the backlog and `docs/design.md` cannot show it, in one clause, inline where it is first used.
 - Goal: what and why, at most 10 lines.
 - Context: the current state, with file paths and symbols checked against the code. No line numbers in stories or plans: another change in flight shifts them.
 - Approach: the chosen design only, not the alternatives.
