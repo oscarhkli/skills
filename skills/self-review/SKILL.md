@@ -23,12 +23,13 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 
 Prompt skeletons: [references/reviewer-brief.md](references/reviewer-brief.md).
 
-1. Full review, once. Start all reviewers in parallel, each on the whole change, with a different lens:
+1. Full review, once. Start all reviewers in parallel, each on the whole change, with a different lens.:
    - Lens 1: requirements and correctness.
    - Lens 2: tests prove their claims, edge cases, user paths.
    - With one reviewer, that reviewer gets both lenses in one brief.
    - A reviewer that finds a build or test failure reports it as a finding. The coordinator decides what to do with it.
    - A reviewer that cannot complete stops the run as REVIEW FAILED. Do not treat the other review as enough.
+   - Every brief (reviewer, verifier, fixer) holds the absolute paths of `theta-mode/SKILL.md` and of every principle whose Roles cell lists its role: `reviewer` for reviewers and verifiers, `implementer` for fixers. This holds however the agents are spawned.
 2. A fresh agent verifies every finding against the source and marks it ACCEPTED, REJECTED or PARTIAL, with one line of evidence. The coordinator reads no source itself. It records the verdicts and does not ask the human.
 3. A fresh fixer fixes every major finding and the cheap minor ones, then builds and runs the tests. It lists the rest with what blocks each.
 4. A fresh verifier gets every finding, major and minor, and the diff. It checks the fix to each finding and the changed lines, and nothing else. If it finds a major issue, repeat 3 and 4 once.

@@ -2,6 +2,7 @@
 
 ## Reviewer
 
+- Read `<theta-mode SKILL.md>` and every principle whose Roles cell lists `reviewer` there, in full, first. The brief gives their absolute paths.
 - Read-only. Do not edit files, commit, push, or write to PRs or issue trackers.
 - Review the whole change at `<path or branch>` against `<requirements>`. Lens: `<lens>`.
 - Verify each claim in the code before raising it.
