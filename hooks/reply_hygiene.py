@@ -16,7 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HEDGES = [
-    r"if you want",
+    r"(?<=[\w`\"'\u2019,]\s)if you want\b",
+    r"\bif you want\b[^.?!]*?,\s*(?:I(?:['\u2019]ll| will| can| could)|tell me|say)\b",
     r"say so if",
     r"(?<!nothing )(?<!nothing was )(?<!nothing is )\bleft for you\b",
     r"I can (?:do|run) .* if you",

@@ -129,6 +129,29 @@ class ReplyHygieneTest(unittest.TestCase):
                 got = [phrase.lower() for _, phrase, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, [want.lower()])
 
+    def test_if_you_want_offers_are_flagged(self):
+        for text in [
+            "Say if you want me to make it.",
+            "I'll run it now, if you want, to find out which.",
+            "If you want a PR from this branch, say so and I'll open one.",
+            "If you want its content kept, I can recover it from git history.",
+            "The roadmap item could be dropped, or take it now if you want story 7 watched.",
+        ]:
+            with self.subTest(text=text):
+                got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, ["hedge"])
+
+    def test_if_you_want_tradeoff_asides_are_not_flagged(self):
+        for text in [
+            "If you want one word for both, the table needs a decision, and that is your call.",
+            "I'd pick option 2. If you want a package that others maintain, I'd pick option 1.",
+            "If you want fewer items to track, the alternative is one plan with two PRs.",
+            "If you want a fourth option, `WithRoomIDGenerator` would be the natural one.",
+            "- **Possible gap:** if you want agents in other repos to find the backlog, add a line.",
+        ]:
+            with self.subTest(text=text):
+                self.assertEqual(rh.check_hedges("Result.\n" + text), [])
+
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
