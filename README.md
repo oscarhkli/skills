@@ -30,34 +30,12 @@ Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwr
 - Set `AGENTS_HOOKS_DIR` to install somewhere else.
 - Registering a hook in `~/.claude/settings.json` or `~/.copilot/hooks/` is manual.
 - Run the tests with `python3 -I -m unittest discover -s hooks`.
-
-`hooks/reply_hygiene.py` is a Stop hook. It checks the final reply of each turn and logs hits.
-
-- Checks:
-  - `hedge`: the last two lines offer work instead of doing it ("if you want", "let me know if").
-    - "I haven't tested/checked/run/verified X" also counts.
-    - It passes when the same line says why X cannot be done (credentials, human decision, cost).
-  - `offer_question`: the last paragraph has a sentence that starts with "Want me to" or similar, such as "Done. Want me to push?". It is skipped when `hedge` already hit.
-  - `missing_principles_line`: a theta-mode reply over 3 lines, after tool use, lacks a `Principles applied:` line and its first line claims a change ("pushed", "fixed", "merged").
-- Blocking by default:
-  - `hedge` and `offer_question` block.
-  - `missing_principles_line` only logs.
-- Environment variables:
-  - `REPLY_HYGIENE_BLOCK`: comma-separated check names that block. It replaces the default list.
-    - Empty blocks nothing.
-  - `REPLY_HYGIENE_MODE=log`: every check only logs.
-  - `REPLY_HYGIENE_MODE=block`: every check blocks.
-    - Both modes win over `REPLY_HYGIENE_BLOCK`.
-  - `REPLY_HYGIENE_LOG`: log file path.
-- A block:
-  - Asks the agent to do the action or name the one decision only the human can make.
-  - Fires once per turn: the hook does nothing when `stop_hook_active` is set.
-  - Never fires for `transcript_unreadable` or `no_reply_found`, which are logged only.
-- The log is `~/.agents/hooks/logs/reply_hygiene.jsonl`, one JSON record per hit, never rotated.
-  - Fields: `ts`, `tool`, `session`, `check`, `phrase`, `snippet`, `blocked`.
-  - `snippet` is the matched line, cut to 160 characters.
-  - `missing_principles_line` adds `first_line`.
-  - `transcript_unreadable` and `no_reply_found` add `payload_keys`.
+- `hooks/reply_hygiene.py` is a Stop hook that checks each final reply:
+  - `hedge`, `offer_question`, `missing_principles_line`.
+  - It blocks `hedge` and `offer_question` by default. `missing_principles_line` only logs.
+  - `REPLY_HYGIENE_BLOCK`: comma-separated checks that block (empty blocks nothing).
+  - `REPLY_HYGIENE_MODE=log` or `block` overrides it for every check.
+  - The log is `~/.agents/hooks/logs/reply_hygiene.jsonl` (override with `REPLY_HYGIENE_LOG`).
 
 Register it in Claude Code, in `~/.claude/settings.json` (on Windows the command runs in Git Bash):
 

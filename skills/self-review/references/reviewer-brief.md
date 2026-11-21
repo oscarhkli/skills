@@ -2,9 +2,9 @@
 
 ## Reviewer
 
-- Read `<theta-mode SKILL.md>` and every principle whose Roles cell lists `reviewer` there, in full, first. The brief gives their absolute paths.
+- Read `../../principle-lazy-senior-dev/SKILL.md`, `../../principle-prove-it-works/SKILL.md`, `../../principle-agent-can-say-no/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first.
 - Read-only. Do not edit files, commit, push, or write to PRs or issue trackers.
-- Review the whole change at `<path or branch>` against `<requirements>`. Lens: `<lens>`. For lens 3, read `principle-lazy-senior-dev`.
+- Review the whole change at `<path or branch>` against `<requirements>`. Lens: `<lens>`.
 - Verify each claim in the code before raising it.
 - Return findings as: severity (major or minor), location, problem, impact, correction.
 - Major: wrong thing built, a test passes without proving its claim, two parts contradict.

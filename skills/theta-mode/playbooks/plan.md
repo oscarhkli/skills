@@ -5,7 +5,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 ## Before drafting
 
 - The coordinator, not the drafting delegate, reads `../interview/SKILL.md` (relative to `theta-mode`'s base directory) and follows it, because a delegate cannot ask the human. It passes the answers verbatim in the drafting brief. Skip the interview only when the request already settles scope and constraints.
-- A plan is a design question. The coordinator reads the principles whose Roles cell lists `planner` in `theta-mode`'s `SKILL.md` and puts their paths in the drafting brief, so the delegate reads them too. Choose the design by root cause, language idiom and the highest trust layer first, then size the diff and the stories. A smaller diff or a quicker fix is not a reason to pick a design.
+- A plan is a design question. The coordinator reads `../principle-redesign-from-scratch/SKILL.md` and `../principle-agent-trust-pyramid/SKILL.md` (relative to `theta-mode`'s base directory) and puts both paths in the drafting brief, so the delegate reads them too. Choose the design by root cause, language idiom and the highest trust layer first, then size the diff and the stories. A smaller diff or a quicker fix is not a reason to pick a design.
 - Read the repo's existing plan docs, such as `docs/plans/`, and match their shape. Use the structure below where they are silent.
 - When the first test needs a spec, write a stub spec first.
 - If a design question is open, read `prototype.md` and run it before choosing.
@@ -20,12 +20,10 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 - Goal: what and why, at most 10 lines.
 - Context: the current state, with file paths and symbols checked against the code. No line numbers in stories or plans: another change in flight shifts them.
 - Approach: the chosen design only, not the alternatives. Decisions the plan can default go here, not in Open items.
-- Critical files: path and what is added, changed or deleted.
 - Reuse: existing functions, helpers and test fixtures to use instead of writing new ones.
-- Tasks: what to do, roughly where, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
+- Tasks: what to do, roughly where, naming the files each task touches, tests first (tdd). Each task carries a one-line why. A task of a different kind than the slice's headline, such as a benchmark or Go tests in an e2e slice, says why it belongs in this slice.
 - Verification: how the problem is shown solved, with the exact commands and expected output. It also holds what counts as success. Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser; a layer that fits none of them, such as scene tests with mocks, goes with the nearest one)? A layer left out says why. Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
 - Review gate: who or what checks before the PR is ready. For a code PR the gate names the review: a fresh `theta-agent` runs `/code-review high` on the branch, and a separate `theta-agent` evaluates each finding and fixes the ones that hold. The PR's Verification section lists what was fixed and what was skipped. Name the review only when the plan's author wants it; it is not a default for every PR.
-- PR handling: ready for review unless the human asks for a draft; never merge. Plans do not name branches or worktrees; the implementing session creates them with the `create-worktree` skill.
 - Open items: only a human decision that blocks a task, naming the task. No Appendix.
 
 ## Writing and checking
@@ -53,4 +51,4 @@ Major means a delegate would build the wrong thing, a test passes without provin
 
 If the second step 4 still finds a major issue, stop and skip step 5. Plan an alternative: slice the work, or build a prototype (`prototype.md`) to test the claim against real code. Report both to the human.
 
-Size gate, before step 2: apply the size rule in `slice.md`. If the plan outgrows one reviewable change, slice first. As a signal, not a limit, when Critical files lists more than about 8 production files that change behaviour, check that rule before planning further. Mechanical edits, such as renames and signature additions or removals that only propagate, do not count.
+Size gate, before step 2: apply the size rule in `slice.md`. If the plan outgrows one reviewable change, slice first. As a signal, not a limit, when Tasks touch more than about 8 production files that change behaviour, check that rule before planning further. Mechanical edits, such as renames and signature additions or removals that only propagate, do not count.

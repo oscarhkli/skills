@@ -26,17 +26,15 @@ Read the matching row's `../<name>/SKILL.md` before starting work, including rea
 
 Each read costs context, so read only the principles in this table whose row matches the task. Match this table's rows again whenever the task changes kind, such as from research or planning to editing, and read each newly matching principle before continuing.
 
-Roles: `coordinator` talks to the human and writes briefs. A delegate's role is its model role: `planner` is `plan`, `researcher` is `research`, `reviewer` is `review`, and `implementer` is `code`, `test` or `text`. `all` means every role. A role reads the principles whose Roles cell lists it, and any other row whose Applies when matches its task.
-
-| Principle | Roles | Applies when |
-| --- | --- | --- |
-| `principle-agent-can-say-no` | all | You are about to build on a claim from outside you: the human's proposal, correction, "drop X" or instruction, or a story, spec, plan, note, README, doc or skill you were given or read. |
-| `principle-agent-trust-pyramid` | coordinator, planner, implementer, reviewer | Planning or developing a change, proposing a rule, check or skill, or deciding where a correction lands. |
-| `principle-guard-context-window` | coordinator | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
-| `principle-lazy-senior-dev` | planner, implementer, reviewer | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, reviewing a diff for needless code or changed behaviour, or about to ask the human "should I do X?". |
-| `principle-never-block-on-the-human` | coordinator, planner, implementer | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
-| `principle-prove-it-works` | coordinator, planner, implementer, reviewer, researcher | Any task that changes code, reports a finding or answers a question of fact: read it at the start, and again before reporting a change complete or giving the answer. |
-| `principle-redesign-from-scratch` | coordinator, planner, implementer | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
+| Principle | Applies when |
+| --- | --- |
+| `principle-agent-can-say-no` | You are about to build on a claim from outside you: the human's proposal, correction, "drop X" or instruction, or a story, spec, plan, note, README, doc or skill you were given or read. |
+| `principle-agent-trust-pyramid` | Planning or developing a change, proposing a rule, check or skill, or deciding where a correction lands. |
+| `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
+| `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
+| `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
+| `principle-prove-it-works` | Any task that changes code, reports a finding or answers a question of fact: read it at the start, and again before reporting a change complete or giving the answer. |
+| `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
 
 ## Other skills
 
@@ -80,7 +78,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 
 The brief holds:
 
-- This file's absolute path, then the absolute path of every principle whose Roles cell lists the delegate's role, plus any other row that matches its task, and of every other selected skill. It reads each with the file tool before starting, since it has no other way to know the rules.
+- This file's absolute path, then the absolute path of every selected principle and other skill. A delegate that reports a finding or answers a fact gets `principle-prove-it-works`; one given a human claim or a document to build on gets `principle-agent-can-say-no`; one that edits gets `principle-lazy-senior-dev`. It reads each with the file tool before starting, since it has no other way to know the rules.
 - The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
