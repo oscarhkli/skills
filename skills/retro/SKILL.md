@@ -72,7 +72,7 @@ Each action has:
 - Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
 - Layer: 1-5.
-- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, branch and PR, not directly in the installed skills directory.
+- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, one branch and one PR per repo, not directly in the installed skills directory.
 - Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
 
@@ -83,3 +83,5 @@ Order actions by layer, top first, and mark the quick wins. Drop one-offs that n
 The `interview` skill is manual-only, so read `../interview/SKILL.md` (relative to this file) and follow it. What the transcript and instructions already answer is not a question. Ask only what the human decides: which interventions mattered and which were one-offs, the priority order, and global or project scope. Attach your best answer to each as the default. Keep notes only if the human names a directory.
 
 After approval, execute the approved actions, or write them up as tasks if they are too large for this session.
+
+All approved changes to one repo land in one branch and one pull request, with one commit per action and each action named in the PR description's sections. Never open one PR per action: many small PRs are hard for the human to review. Changes to different repos get one PR per repo. An action that cannot be reviewed with the rest ships alone, and the plan says why (for example, a hook that blocks replies needs deploying separately).
