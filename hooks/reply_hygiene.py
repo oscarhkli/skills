@@ -12,8 +12,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HEDGES = [
-    r"(?<=[\w`\"'\u2019,]\s)if you want\b(?=\s+me to\b|[^.?!\n]*\b(?:run|ran|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)(?:s|ed|d|ing)?\b)",
-    r"\b(?:run|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)\b[^.?!\n]*?(?<=[\w`\"'\u2019,]\s)if you want\b",
+    r"(?<=[\w`\"'\u2019,]\s)if you want\b(?!\s+to\b)(?=\s+me to\b|[^.?!\n]*\b(?:run|ran|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)(?:s|ed|d|ing)?\b)",
+    r"\b(?:run|test|check|verify|confirm|fix|commit|push|open|write|add|do|update|refactor|create|start|investigate|watch)\b[^.?!\n]*?(?<=[\w`\"'\u2019,]\s)if you want\b(?=[ \t]*(?:[.,;?!\n]|$)|\s+(?:that|it|me)\b)",
     r"\bif you want\b(?:(?!\b(?:what|why|how|who|when|where|which|whether|that)\b)[^.?!\n])*?[, \t](?:I(?:['\u2019]ll| will| can| could)|tell me)\b",
     r"\bif you want\b[^.?!\n]*?,\s*say\b",
     r"\bif you want\s*,",

@@ -165,6 +165,9 @@ class ReplyHygieneTest(unittest.TestCase):
             "If you want X\nI can see why.",
             "Say if you want them cut.",
             "I can pull TD-072 earlier if you want.",
+            "I can update my view if you want to know why.",
+            "Use refactor if you want speed.",
+            "I can check the docs if you want to know more.",
         ]:
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
