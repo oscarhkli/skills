@@ -37,10 +37,8 @@ Each `hooks/*.py` (except `test_*.py`) is copied into `~/.agents/hooks/`, overwr
   - `hedge`: the last two lines offer work instead of doing it ("if you want", "let me know if").
     - "I haven't tested/checked/run/verified X" also counts.
     - It passes when the same line says why X cannot be done (credentials, human decision, cost).
-  - `offer_question`: the last paragraph has a sentence that starts with "Want me to" or similar,
-    such as "Done. Want me to push?". It is skipped when `hedge` already hit.
-  - `missing_principles_line`: a theta-mode reply over 3 lines, after tool use, lacks a
-    `Principles applied:` line and its first line claims a change ("pushed", "fixed", "merged").
+  - `offer_question`: the last paragraph has a sentence that starts with "Want me to" or similar, such as "Done. Want me to push?". It is skipped when `hedge` already hit.
+  - `missing_principles_line`: a theta-mode reply over 3 lines, after tool use, lacks a `Principles applied:` line and its first line claims a change ("pushed", "fixed", "merged").
 - Blocking by default:
   - `hedge` and `offer_question` block.
   - `missing_principles_line` only logs.
@@ -78,8 +76,7 @@ Register it in Copilot CLI, in `~/.copilot/hooks/reply-hygiene.json` (on Windows
 Write `$HOME`, not `~`, because Windows PowerShell 5.1 does not expand `~`.
 
 - On Windows, `python3` can be the Microsoft Store stub. Use `python` or `py -3` then.
-- PowerShell has no `VAR=x cmd` form. To override a default, set the variable first:
-  `"powershell": "$env:REPLY_HYGIENE_BLOCK='hedge'; python \"$HOME/.agents/hooks/reply_hygiene.py\""`
+- PowerShell has no `VAR=x cmd` form. To override a default, set the variable first: `"powershell": "$env:REPLY_HYGIENE_BLOCK='hedge'; python \"$HOME/.agents/hooks/reply_hygiene.py\""`
 - A hook that fails to start fails open in both tools, so check that the log file appears.
 
 ## Layout
