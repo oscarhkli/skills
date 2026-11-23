@@ -2,7 +2,9 @@
 
 python3 fixture.py install      copy fixture/eval-fixture to ~/.agents/playbooks/eval-fixture
 python3 fixture.py remove       delete that copy
-python3 fixture.py repo <name>  create ./<name>, a git repo whose branch feat/add-grid has one commit
+python3 fixture.py repo <name> [--callers N]
+                                create ./<name>, a git repo on branch feat/add-grid;
+                                --callers N adds N modules that each call grid.draw
 
 The fixture rows match only repos named eval-*, so real playbook sources on the machine never collide with it.
 """
@@ -22,7 +24,7 @@ def git(repo, *args):
     )
 
 
-def repo(name):
+def repo(name, callers=0):
     root = Path(name)
     root.mkdir()
     git(root, "init", "-b", "main")
@@ -36,6 +38,11 @@ def repo(name):
     )
     git(root, "add", "grid.py")
     git(root, "commit", "-m", "feat(grid): add a grid builder")
+    if callers:
+        for i in range(callers):
+            (root / f"caller_{i}.py").write_text(f"from grid import draw\n\n\ndef show_{i}(cells):\n    return draw(cells)\n")
+        git(root, "add", "-A")
+        git(root, "commit", "-m", f"feat(grid): add {callers} callers of draw")
 
 
 command = sys.argv[1] if len(sys.argv) > 1 else ""
@@ -46,5 +53,7 @@ elif command == "remove":
     shutil.rmtree(DEST, ignore_errors=True)
 elif command == "repo" and len(sys.argv) == 3:
     repo(sys.argv[2])
+elif command == "repo" and len(sys.argv) == 5 and sys.argv[3] == "--callers":
+    repo(sys.argv[2], int(sys.argv[4]))
 else:
     sys.exit(__doc__)

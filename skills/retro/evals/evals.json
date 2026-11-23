@@ -43,6 +43,24 @@
         "Every action has a Tradeoffs part naming at least one con or pitfall",
         "No file was created or modified"
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "/retro check the sessions 'Release notes draft' and 'Hotfix notes'. You are running in the session 3333cccc-retro. Transcripts are in evals/files/projects/demo/, project instructions are evals/files/CLAUDE.md. Both sessions show two separate fixes that belong in the same repo, a skill change and a playbook change. I'm not available to answer questions: reply with the action plan only and edit nothing.",
+      "files": [
+        "evals/files/projects/demo/1111aaaa-release-notes.jsonl",
+        "evals/files/projects/demo/2222bbbb-hotfix-notes.jsonl",
+        "evals/files/projects/demo/3333cccc-retro.jsonl",
+        "evals/files/CLAUDE.md"
+      ],
+      "expected_output": "Two actions in the same repo land in one branch and one pull request, with one commit per action, each named in the PR description. The plan does not propose one PR per action.",
+      "expectations": [
+        "The plan proposes one branch and one pull request for the two actions in the same repo",
+        "The plan proposes one commit per action",
+        "The plan names each action in the pull request description's sections",
+        "The plan does not propose a separate pull request for each action",
+        "No file was created or modified"
+      ]
     }
   ]
 }
