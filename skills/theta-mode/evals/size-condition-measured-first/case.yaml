@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: size-condition-measured-first
+expected_outcome: |
+  When the human says "if it's small, also do X", the run measures the size with git diff --stat or a delegate size report before any edit.
+context:
+  scaffold_script: place-files.sh

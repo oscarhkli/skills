@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: slice-keeps-mechanical-rename-in-one-pr
+expected_outcome: |
+  The run reads slice.md before plan.md and keeps the 12-file rename of grid.draw in one story instead of splitting it by file group, and the brief lists the files that carry the behaviour for the PR description.
+context:
+  scaffold_script: place-files.sh
