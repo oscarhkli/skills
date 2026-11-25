@@ -24,12 +24,17 @@ HEDGES = [
     r"^[\s*\-#]*(?:and\s+)?want me to",
     r"\bshall I\b",
     r"should I (?:push|merge|open|proceed|go ahead|start|run|commit|try|add|test|check|edit|update)",
-    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)(?![^.?!\n]*\b(?:because|since|needs?|requires?)\b[^.?!\n]*\b(?:credentials?|secrets?|tokens?|passwords?|api keys?|production|prod|costs?|billing|paid|human|approval|your (?:call|decision))\b)",
+    r"\bI (?:haven['\u2019]t|have not) (?:tested|checked(?! in\b)|run(?! into\b)|verified|confirmed)(?![^.?!\n]*\b(?:because|since|needs?|requires?)\b[^.?!\n]*\b(?:credentials?|secrets?|tokens?|passwords?|api keys?|production|prod|costs?|billing|paid|human|approval|your (?:call|decision))\b|[^.?!\n]*\b(?:needs?|requires?)\s+(?:an? |the |your )?(?:\w+\s+)?(?:logins?|clicks?\s+in\s+the\s+GUI)\b)",
     r"would you like me to",
     r"let me know if",
     r"\bwhich (?:one )?do you want\b",
 ]
 HEDGE_RE = re.compile("|".join(f"(?:{p})" for p in HEDGES), re.IGNORECASE)
+HUMAN_OWNED_VERBS = r"(?:approve|post|merge|label|push)"
+OFFERED_ACTION_RE = re.compile(
+    rf"\bsay\s+[\"\u201c`']?{HUMAN_OWNED_VERBS}\b|\bI(?:['\u2019]ll| will| can| could)\s+(?:then\s+)?{HUMAN_OWNED_VERBS}\b",
+    re.IGNORECASE,
+)
 OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
@@ -196,10 +201,17 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
         lines.pop()
     hits = []
     for line in lines[-2:]:
-        match = HEDGE_RE.search(line)
+        match = next((m for m in HEDGE_RE.finditer(line) if not offers_human_action(line, m)), None)
         if match:
             hits.append(("hedge", match.group(0), line.strip()))
     return hits
+
+
+def offers_human_action(line: str, match: re.Match[str]) -> bool:
+    if "if you want" not in match.group(0).lower():
+        return False
+    sentence = next(s for s in re.finditer(r"[^.?!]+[.?!]*", line) if s.end() > match.start())
+    return bool(OFFERED_ACTION_RE.search(sentence.group(0)))
 
 
 def last_paragraph(reply: str) -> list[str]:

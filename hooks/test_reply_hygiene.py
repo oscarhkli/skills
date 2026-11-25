@@ -172,6 +172,28 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertEqual(rh.check_hedges("Result.\n" + text), [])
 
+    def test_if_you_want_offers_where_the_verb_is_a_human_owned_action_are_not_flagged(self):
+        for text in [
+            "I can merge it if you want.",
+            "I can push the branch if you want.",
+            "If you want the comments posted, say \"post\" and I'll do it.",
+            "If you want that, say \"approve #12\" and I'll submit it.",
+            "If you want, I'll label the PR.",
+        ]:
+            with self.subTest(text=text):
+                self.assertEqual(rh.check_hedges("Result.\n" + text), [])
+
+    def test_human_owned_words_elsewhere_in_the_sentence_do_not_exempt_an_offer(self):
+        for text in [
+            "I can run the label checks if you want.",
+            "If you want, I'll post the results of the tests I haven't run.",
+            "If you want, I'll run the tests; the PR is merged.",
+            "The merge is done. I can run the suite if you want.",
+        ]:
+            with self.subTest(text=text):
+                got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, ["hedge"])
+
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
@@ -822,6 +844,8 @@ class ReplyHygieneTest(unittest.TestCase):
             "Done.\n\nI haven't run the e2e suite because it needs credentials.",
             "Done.\n\nI have not verified the deploy because it requires production access.",
             "Done.\n\nI haven't confirmed the vendor plan since it needs a human decision on cost.",
+            "Done.\n\nI haven't checked the query plan, because it needs the database login.",
+            "Done.\n\nI haven't confirmed the service picks the build up, because that needs a click in the GUI.",
         ]:
             with self.subTest(text=text):
                 env, out = self.stop_with(text)
@@ -842,6 +866,7 @@ class ReplyHygieneTest(unittest.TestCase):
             "Done.\n\nI haven't confirmed the version.",
             "Done.\n\nI haven't run the suite because it is slow.",
             "Done.\n\nI haven't tested it because I ran out of time.",
+            "Done.\n\nI haven't verified it, since the logins table is large.",
         ]:
             with self.subTest(text=text):
                 env, (_, out) = self.stop_with(text)

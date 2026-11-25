@@ -5,3 +5,8 @@
 {"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Drafted. Should I fix the typo 'recieve' in the title too, or leave it?"}]}}
 {"type": "user", "message": {"role": "user", "content": "Obviously fix the typo, don't ask me that. And again: no line numbers."}}
 {"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Fixed the typo and removed the line number."}]}}
+{"type": "attachment", "attachment": {"type": "queued_command", "prompt": "<task-notification>Agent finished</task-notification>", "origin": {"kind": "task-notification"}}}
+{"type": "attachment", "attachment": {"type": "queued_command", "prompt": "Also drop the Known issues section.", "origin": {"kind": "human"}}}
+{"type": "attachment", "attachment": {"type": "queued_command", "prompt": "Keep the Owners section.", "origin": {"kind": "human"}}}
+{"type": "attachment", "attachment": {"type": "queued_command", "prompt": "Unmarked queued message."}}
+{"type": "attachment", "attachment": {"type": "queued_command", "prompt": [{"type": "text", "text": "block prompt"}], "origin": {"kind": "human"}}}

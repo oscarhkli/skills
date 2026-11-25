@@ -33,7 +33,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 - Tell the delegate to apply the `unslop` skill to the plan files before it reports, to remove line-number references (`:123`, `L123`, "line 123") from every file it writes, design docs and backlog entries included, and to paste the Goal section into its report word for word.
 - Path check: a `theta-agent` checks every path, symbol, count and command against the code before you present the plan. It runs each count, status and command and does not read it off the plan.
 - User-path check: a fresh `theta-agent` lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
-- Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on, as a delete candidate, and every term it had to guess.
+- Cold read: a fresh `theta-agent` reads the plan cold, with only the plan and the repo. It reports every step it could not act on as a delete candidate. It reports every line it did not need as a delete candidate. It also reports every term it had to guess.
 - The three checks run once per plan, under the Budget, and all three always run, even when the delegate ran its own path check or the human said not to ask questions: the coordinator launches the cold read with the other two.
 - Present the plan as its path, the Goal copied word for word from the delegate's report, and `Say go to implement.` Add no summary, no list of checks run or skipped, and no question. Do not edit code until the human says so.
 
