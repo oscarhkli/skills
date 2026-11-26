@@ -13,7 +13,8 @@
 ## Fixer
 
 - Fix every major finding and the cheap minor ones in `<findings>`. Skip the rest and list each with what blocks it.
-- Read `../../principle-never-block-on-the-human/SKILL.md` first. Resolve reversible, in-scope blocks yourself and state the assumption.
+- Read `../../principle-never-block-on-the-human/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first. Resolve reversible, in-scope blocks yourself and state the assumption.
+- Name the pyramid layer of each fix. A new test needs one line on why no higher layer works.
 - Keep the diff minimal. Build and run the affected tests. Report the result.
 
 ## Verifier
