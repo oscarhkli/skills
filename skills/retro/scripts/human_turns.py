@@ -17,6 +17,12 @@ def text_of(event):
         if "agentId" in event:
             return ""
         return event.get("data", {}).get("content", "")
+    if event.get("type") == "attachment":
+        attachment = event.get("attachment", {})
+        if attachment.get("type") == "queued_command" and attachment.get("origin", {}).get("kind") == "human":
+            prompt = attachment.get("prompt")
+            return prompt.strip() if isinstance(prompt, str) else ""
+        return ""
     if event.get("type") != "user" or event.get("isMeta") or event.get("toolUseResult") is not None:
         return ""
     content = event.get("message", {}).get("content")
@@ -43,7 +49,7 @@ def print_turns(path, full):
     turn = 0
     last_reply = ""
     with open(path, encoding="utf-8") as f:
-        for line_no, line in enumerate(f):
+        for line_no, line in enumerate(f, 1):
             try:
                 event = json.loads(line)
             except json.JSONDecodeError:
