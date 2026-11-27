@@ -36,6 +36,7 @@ OFFERED_ACTION_RE = re.compile(
     re.IGNORECASE,
 )
 OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
+DESTRUCTIVE_RE = re.compile(r"\b(?:delet\w*|remov\w*|clean[ -]?up\w*)\b", re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
@@ -197,17 +198,26 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
         lines.pop()
     hits = []
     for line in lines[-2:]:
-        match = next((m for m in HEDGE_RE.finditer(line) if not offers_human_action(line, m)), None)
+        match = next((m for m in HEDGE_RE.finditer(line) if not offers_human_action(line, m) and not awaits_destructive_approval(line, m)), None)
         if match:
             hits.append(("hedge", match.group(0), line.strip()))
     return hits
 
 
+def sentence_of(line: str, match: re.Match[str]) -> str:
+    return next(s for s in re.finditer(r"[^.?!]+[.?!]*", line) if s.end() > match.start()).group(0)
+
+
 def offers_human_action(line: str, match: re.Match[str]) -> bool:
     if "if you want" not in match.group(0).lower():
         return False
-    sentence = next(s for s in re.finditer(r"[^.?!]+[.?!]*", line) if s.end() > match.start())
-    return bool(OFFERED_ACTION_RE.search(sentence.group(0)))
+    return bool(OFFERED_ACTION_RE.search(sentence_of(line, match)))
+
+
+def awaits_destructive_approval(line: str, match: re.Match[str]) -> bool:
+    if not re.match(r"I (?:haven|have not)", match.group(0), re.IGNORECASE):
+        return False
+    return bool(DESTRUCTIVE_RE.search(sentence_of(line, match)))
 
 
 def last_paragraph(reply: str) -> list[str]:
