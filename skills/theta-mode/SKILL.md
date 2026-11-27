@@ -43,7 +43,7 @@ Also manual-only. Read the file, do not invoke it. Read each on its own trigger,
 | Skill | Read when |
 | --- | --- |
 | `../no-comments/SKILL.md` | About to write or change a comment, or before pushing a diff that touches comments. |
-| `../self-review/SKILL.md` | The coordinator, once at the last stage, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
+| `../self-review/SKILL.md` | The coordinator, once at the last stage (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
 | `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
 
 ## Playbooks
@@ -71,7 +71,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 - The delegate that edits also commits, drafts the PR title and description, pushes the feature branch and opens the PR without asking, except as the next bullet says. The coordinator may push a reviewed commit itself.
 - When a diff touches comments, the delegate commits locally and does not push. The coordinator runs the `no-comments` audit, meaning the `comment-hater` run, not a grep or its own reading of the diff, then pushes or has a fresh delegate push. Run it again on any later commit that changes a comment.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
-- Pass every delegate a `model` for its role: `research`, `plan`, `review`, `code`, `test` or `text`. Read `models.<role>` in `~/.agents/project-brain/settings.yaml` (shape: `models:` then an indented `code: sonnet`). If the role has no entry, use `opus` for `research`, `plan` and `review`, and `sonnet` for the rest. If `settings.yaml` does not exist, skip it and create nothing. Omit `model` if the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode. Never ask the human about models.
+- Pass every delegate a `model` for its role: `research`, `plan`, `review`, `code`, `test` or `text`. Read `models.<role>` in `~/.agents/project-brain/settings.yaml` (read only; skip if absent). If the role has no entry, use `opus` for `research`, `plan` and `review`, and `sonnet` for the rest. Omit `model` if the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode. Never ask the human about models.
 - Do not start a delegate's edits that depend on a question you are asking the human.
 - When the human says "if small, do X" (or any size condition), measure first: `git diff --stat` on a draft, or have the delegate report sizes per item before editing. An item over `playbooks/slice.md`'s reviewable rule becomes its own item, not part of the open PR.
 - Write any message that asks the human to decide as `references/human-brief.md` says.
@@ -83,12 +83,12 @@ The brief holds:
 - The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
-- A read-only brief reads a ref with `git show origin/main:<path>` or in a scratchpad worktree, and never runs `git checkout` or `git switch` in a main checkout.
+- A read-only delegate reads other refs with `git show <ref>:<path>`, never `git checkout` or `git switch`.
+- A research brief says that a library, tool or generator it names comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one.
 - For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (when project-brain is a git repo, edit it only in a worktree and PR), and the rule to update the plan to match what shipped after a PR merges, without asking.
 - For an editing delegate: stop and report before changing observable behaviour or adding exported API, unless the human already approved it. The report lists every behaviour change.
-- Never install a tool globally (brew, `go install`, `npm -g`, pip) without the coordinator's approval. The repo's own build, test and `make` targets are allowed. If one step makes no progress for 10 minutes, stop it and report where you are.
-- An editing delegate commits once per fix round, split by logical change per `git-commit`.
-- Commit the round first, then run mutation checks in place and restore with `git checkout -- <path>`. Use a throwaway worktree only when another agent edits the same one.
+- If one step makes no progress for 10 minutes, stop it and report where you are.
+- An editing delegate commits each fix round before handing back, and before any mutation check, so `git restore <path>` brings back the fix. Mutate in place; use a throwaway worktree only when another agent edits the same one.
 - The delegate's `model` and its role.
 
 The report lists, by absolute path, every skill, principle and playbook file the delegate read, and names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.

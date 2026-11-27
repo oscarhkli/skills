@@ -3,11 +3,11 @@
 A message that asks the human to decide has four parts, in this order:
 
 1. The situation, in plain business words with named actors.
-2. One question.
+2. The question. With several decisions, number them and give each its own pick and reply.
 3. Your pick, with its cost.
-4. The exact reply you expect, or "no reply needed, I proceed with the pick".
+4. The exact reply you expect.
 
-Define a term in a clause the first time you use it. Never end a reversible, in-scope step with "say go", except the plan gate in `playbooks/plan.md` and the index in `playbooks/slice.md`. Act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply.
+Define a term in a clause the first time you use it. A trivial, reversible pick needs no message: act and report. For other reversible picks, act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply. Never end a reversible, in-scope step with "say go", except the plan and the slice index, which wait for approval.
 
 ## Sample
 
@@ -29,4 +29,4 @@ The nightly export job sometimes cannot get a database lock, because another job
 >
 > My pick: give up after 5 tries. A stuck export then shows up as a failed run the same morning, where retrying forever hides it until someone notices the missing file. The cost: on a bad night the export does not run.
 >
-> Reply "5" to accept, or a different number. No reply needed if you agree, I proceed with 5.
+> Reply "5" to accept, or a different number. I proceed with 5 meanwhile.
