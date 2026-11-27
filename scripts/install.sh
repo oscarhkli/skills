@@ -61,6 +61,9 @@ for skill in "$src"/*/; do
   esac
 done
 
+settings="$HOME/.agents/project-brain/settings.yaml"
+[ -f "$settings" ] || echo "warning: $settings is missing; theta-mode delegates will run on the coordinator's model" >&2
+
 agents_src="$(dirname "$src")/agents"
 if [ -d "$agents_src" ]; then
   for agent_dst in "${CLAUDE_AGENTS_DIR:-$HOME/.claude/agents}" "${COPILOT_AGENTS_DIR:-$HOME/.copilot/agents}"; do

@@ -25,6 +25,19 @@ scripts/install.sh -y     # replace without asking
 
 Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
 
+## Settings
+
+theta-mode and self-review read `~/.agents/project-brain/settings.yaml`, which lives in the project-brain repo, not here. `models.<role>` sets the delegate model for each role (research, plan, review, code, test, text), and `self-review.mode` names a mode in `skills/self-review/modes.yaml`.
+
+```yaml
+self-review:
+  mode: light
+models:
+  code: sonnet
+```
+
+Without the file, theta-mode says so and delegates run on the coordinator's model. `scripts/install.sh` warns when the file is missing.
+
 ## Layout
 
 ```
