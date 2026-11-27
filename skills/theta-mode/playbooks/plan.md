@@ -15,7 +15,7 @@ A plan is the how for one PR, written when that story is next to start, so a fre
 ## Structure
 
 - Give each section one line of intent. State each fact once, in the section that owns it.
-- Write markdown as nested bullets: one claim per bullet, children for detail, no line over about 150 characters. A project whose prettier sets `proseWrap` never joins wrapped lines, so split by bullet, not by wrapping.
+- Write markdown as nested bullets: one claim per bullet, children for detail, no line over about 150 characters. A project whose prettier sets `proseWrap: never` joins wrapped lines into one, so split by bullet, not by wrapping.
 - Every line must change what the implementer does. Findings that repeat the backlog, measured numbers, rejected alternatives and decision history go to the backlog entry or nowhere.
 - Start here: repo, base branch, branch name and the check command. List a file only if no task names it. A fresh agent starts from this section alone. No Terms list: define a term only when the code, the backlog and `docs/design.md` cannot show it, in one clause, inline where it is first used.
 - Goal: what and why, at most 10 lines.
