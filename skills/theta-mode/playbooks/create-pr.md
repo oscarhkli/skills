@@ -13,10 +13,9 @@ Use it when about to open or rewrite a pull request description. The text is for
 ## Rules
 
 - Write the description as an elevator pitch. A reviewer gets the important points in 60 seconds, and the code change holds the details. Keep each section to a few lines, with no file-by-file tour.
-- Title the PR in Conventional Commit style, `type(scope): summary`, with the types from the `git-commit` skill.
+- Title the PR in Conventional Commit style, `type(scope): summary`.
 - Open the PR ready for review, never as a draft unless the human says so. Never merge it.
 - After later commits or findings, rewrite Scope and Verification so the description matches the final diff.
-- Apply `../unslop/SKILL.md` before posting: no review-round history, no em dashes.
 - End the description with the PR attribution line the session instructs.
 - Never include a `Claude-Session:` link.
 - After opening the PR, follow `watch-pr.md`.
