@@ -48,7 +48,7 @@ One README next to the briefs and plans holds:
 - The merge order, and why each dependency exists.
 - Shared files and the story that owns each edit.
 - Counts that must reconcile, such as findings per story summing to the total.
-- Kickoff: the one-line prompt that starts a story, so the human does not retype context. Each story plan's Start here supplies the rest once it is written.
+- Kickoff: the one-line prompt that starts a story, so the human does not retype context. Each story plan's Context supplies the rest once it is written.
 
 ## Dependencies and concurrency
 
