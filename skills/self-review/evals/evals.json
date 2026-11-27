@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Self-review my branch change. The pull request's GitHub Actions checks have passed. Use the light mode.",
-      "expected_output": "One full review with no findings, then stop with CLEAN. Fixture: git repo whose branch holds one small, correct, tested change with a pull request whose checks passed.",
+      "prompt": "Self-review my branch change. Use the light mode.",
+      "expected_output": "One full review with no findings, then stop with CLEAN. Fixture: git repo whose branch holds one small, correct, tested change.",
       "expectations": [
         "Exactly one reviewer agent is started (light mode), on the whole change",
         "When the reviewer returns CLEAN, no finding-verifier, fixer or verifier agent is started",
@@ -15,12 +15,12 @@
     },
     {
       "id": 2,
-      "prompt": "Self-review my branch. Use the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns two minor findings (a poor variable name, a request to reword the error text users see, which needs the human to choose the wording) and no major finding; the fixer fixes the poor variable name only and reports tests pass; the finding check accepts both; the verifier returns CLEAN once CI passes on the fix push.",
+      "prompt": "Self-review my branch. Use the light mode. HARNESS: dry run. Do not start real agents and do not edit files. For each agent you would start, print one line `LAUNCH <role> model=<model> brief=<one-line summary of the brief you would send>` and continue as if it returned the canned report. Canned: the reviewer returns two minor findings (a poor variable name, a request to reword the error text users see, which needs the human to choose the wording) and no major finding; the fixer fixes the poor variable name only and reports tests pass; the finding check accepts both; the verifier returns CLEAN.",
       "expected_output": "Cheap minor findings fixed once, one verification, no extra round.",
       "expectations": [
         "Each finding gets ACCEPTED, REJECTED or PARTIAL from a fresh agent, with one line of evidence, and the coordinator reads no source itself",
         "One LAUNCH fixer line follows the review, and the fixer is told to build and run the tests",
-        "One LAUNCH fix-and-verify verifier line follows the fix, its brief names only the findings and the diff, and it starts after CI passes on the fix push",
+        "One LAUNCH fix-and-verify verifier line follows the fix, and its brief names only the findings and the diff",
         "No minor pass, second fixer or second reviewer LAUNCH line appears",
         "The unfixed minor finding (error text rewording) is listed under Open items with its blocker, the human's choice of user-visible wording",
         "The final status line is OPEN ITEMS"
@@ -53,12 +53,11 @@
     {
       "id": 5,
       "prompt": "Self-review my plan document plan.md before I share it.",
-      "expected_output": "No reviewers run, and the agent points to the plan.md Budget. Fixture: git repo whose only change is a new plan.md.",
+      "expected_output": "The agent runs the loop with the three plan.md reviewers, not the code lenses. Fixture: git repo whose only change is a new plan.md.",
       "expectations": [
-        "The agent stops because the change has no code diff",
-        "The reply contains the pointer only: no status line and no findings table",
-        "No agent of any kind is started",
-        "The reply names theta-mode/playbooks/plan.md and its Budget as the way to review a plan"
+        "The agent reads theta-mode/playbooks/plan.md because the change has no code diff",
+        "Three reviewers run in parallel: path check, user-path check and cold read",
+        "No reviewer is given the code lenses (requirements and correctness, tests prove their claims)"
       ]
     },
     {
