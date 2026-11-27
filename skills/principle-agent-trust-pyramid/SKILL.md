@@ -1,6 +1,6 @@
 ---
 name: principle-agent-trust-pyramid
-description: Principle for planning or building a change, proposing a rule, check or skill, and deciding where a correction of the agent lands. Put it in the highest layer that works, from codebase down to human review, because a higher layer is cheaper and lasts.
+description: Put a change, rule or correction in the highest layer that works, from codebase down to human review.
 disable-model-invocation: true
 ---
 

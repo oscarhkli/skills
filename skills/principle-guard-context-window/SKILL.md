@@ -1,6 +1,6 @@
 ---
 name: principle-guard-context-window
-description: Principle for the main agent that talks to the human and orchestrates subagents. When a task needs many file reads, large command output or long searches, delegate it and keep only the summary in the main context.
+description: Coordinator only. Delegate heavy reads and keep only the summary in the main context.
 disable-model-invocation: true
 ---
 
@@ -10,19 +10,11 @@ Accumulated context degrades reasoning quality. The main agent's context is for 
 
 This applies to the coordinator only. A delegate does the heavy work itself and never delegates further.
 
-## When to delegate
+## Probe before reading
 
-- About 1,000 lines of tool output already sit in the main context, whoever asked for them. Small reads add up over a back-and-forth, so count the session, not the task. Delegate every further exploratory read.
-- A single read or command is likely to return over about 300 lines, such as a large file, test logs, diffs or listings.
-- The work is heavy and independent of the conversation, so a self-contained brief can describe it. A small task is cheaper to do yourself than to brief.
+What to delegate follows `theta-mode`'s Subagents section.
 
-Treat an unknown size as large and probe it first. Check a file's length (`wc -l`) or a diff's size (`git diff --stat`) before reading it, and count a search's matches (`grep -c`) before listing them, narrowing the pattern if the count is high.
-
-A small read that the very next decision depends on stays in the main agent. Once a file's content has been read, carry its summary forward instead of reading it again.
-
-## Brief
-
-Give the delegate the goal, absolute paths and the shape of the answer wanted. It has none of this conversation, so anything left out is lost.
+Treat an unknown size as large and probe it first. Check a file's length (`wc -l`) or a diff's size (`git diff --stat`) before reading it, and count a search's matches (`grep -c`) before listing them, narrowing the pattern if the count is high. Once a file's content has been read, carry its summary forward instead of reading it again.
 
 ## Result
 

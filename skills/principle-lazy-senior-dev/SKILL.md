@@ -1,6 +1,6 @@
 ---
 name: principle-lazy-senior-dev
-description: Principle for writing and changing code. When adding a feature, refactoring, extracting a function or class, or sizing a diff, take the simplest and smallest solution that works and solve problems by removing code before adding it.
+description: Take the simplest, smallest solution that works, and remove code before adding it.
 disable-model-invocation: true
 ---
 
