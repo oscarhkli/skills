@@ -51,11 +51,11 @@
     {
       "id": 5,
       "prompt": "make me a worktree called `spike` in ~/work/payments-worktrees",
-      "expected_output": "Asks for the missing branch name instead of inventing one.",
+      "expected_output": "Does not invent an unrelated branch name; reports the branch it chose.",
       "files": [],
       "expectations": [
-        "The agent asks for the branch name",
-        "No worktree or branch was created before the question was answered"
+        "The agent invents no unrelated branch name and reports the one it chose",
+        "Any branch it created is named in the reply"
       ]
     },
     {

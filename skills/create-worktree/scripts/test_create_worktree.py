@@ -95,9 +95,24 @@ class CreateWorktreeTest(unittest.TestCase):
         self.assertTrue((parent / "fix").is_dir())
 
     def test_parent_without_worktrees_suffix_is_refused(self):
-        result = self.run_script("fix", "feat/fix", "--parent", str(self.root / "trees"))
+        result = self.run_script("fix", "feat/fix", "--parent", str(self.app))
         self.assertNotEqual(result.returncode, 0)
-        self.assertFalse((self.root / "trees").exists())
+        self.assertFalse((self.app / "fix").exists())
+
+    def test_submodule_without_parent_is_refused(self):
+        lib = self.root / "lib"
+        lib.mkdir()
+        git(lib, "init", "-q")
+        commit(lib, "lib")
+        subprocess.run(
+            ["git", *GIT_ENV, "-c", "protocol.file.allow=always", "-C", str(self.app),
+             "submodule", "add", "-q", str(lib), "sub"],
+            check=True, capture_output=True,
+        )
+        sub = self.app / "sub"
+        result = self.run_script("fix", "feat/fix", cwd=sub)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("--parent", result.stderr)
 
     def test_existing_local_branch_is_reused(self):
         git(self.app, "branch", "feat/old")

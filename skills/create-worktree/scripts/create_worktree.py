@@ -29,7 +29,10 @@ else:
     common = run_git(".", "rev-parse", "--path-format=absolute", "--git-common-dir")
     if common.returncode != 0:
         sys.exit(common.stderr.strip())
-    repo = Path(common.stdout.strip()).parent
+    common_dir = Path(common.stdout.strip())
+    if common_dir.name != ".git":
+        sys.exit(f"Cannot derive the worktree parent from {common_dir} (a submodule?). Pass --parent.")
+    repo = common_dir.parent
     parent = repo.with_name(repo.name + "-worktrees")
 
 target = parent / name

@@ -20,4 +20,4 @@ Run it inside the repo. Without `--parent`, the parent is `<repo toplevel>-workt
 python3 "<skill-directory>/scripts/create_worktree.py" "<worktree-name>" "<branch-name>" [--parent "<worktree-parent-directory>"]
 ```
 
-Report the script's output lines verbatim. They give the worktree path, the branch and how the branch was made, plus a `warning:` line when a new branch could not start from a fresh `origin/<base>`. On failure the script exits with Git's error.
+Report the script's output lines verbatim. They give the worktree path, the branch and how the branch was made, plus a `warning:` line when the fetch of `origin/<base>` fails. On failure the script exits with Git's error.
