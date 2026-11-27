@@ -5,6 +5,7 @@
 - Read `../../principle-lazy-senior-dev/SKILL.md`, `../../principle-prove-it-works/SKILL.md`, `../../principle-agent-can-say-no/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first.
 - Read-only. Do not edit files, commit, push, or write to PRs or issue trackers.
 - Review the whole change at `<path or branch>` against `<requirements>`. Lens: `<lens>`.
+- Lens 1 also: list every new public, protected or internal member in the diff and say whether the human approved it.
 - Verify each claim in the code before raising it.
 - Return findings as: severity (major or minor), location, problem, impact, correction.
 - Major: wrong thing built, a test passes without proving its claim, two parts contradict.

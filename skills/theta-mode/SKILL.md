@@ -74,6 +74,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 - Pass every delegate a `model` for its role: `research`, `plan`, `review`, `code`, `test` or `text`. Read `models.<role>` in `~/.agents/project-brain/settings.yaml` (shape: `models:` then an indented `code: sonnet`). If the role has no entry, use `opus` for `research`, `plan` and `review`, and `sonnet` for the rest. If `settings.yaml` does not exist, skip it and create nothing. Omit `model` if the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode. Never ask the human about models.
 - Do not start a delegate's edits that depend on a question you are asking the human.
 - When the human says "if small, do X" (or any size condition), measure first: `git diff --stat` on a draft, or have the delegate report sizes per item before editing. An item over `playbooks/slice.md`'s reviewable rule becomes its own item, not part of the open PR.
+- A message that asks the human to decide has four parts: the situation in plain business words with named actors (Worker A, Worker B, a person using the portal), one question, your pick with its cost, and the exact reply you expect or "no reply needed, I proceed with the pick". Define a term in a clause the first time. Never end a reversible, in-scope step with "say go". Worked sample: `references/human-brief.md`.
 - Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.
 
 The brief holds:
@@ -85,6 +86,9 @@ The brief holds:
 - A read-only brief reads a ref with `git show origin/main:<path>` or in a scratchpad worktree, and never runs `git checkout` or `git switch` in a main checkout.
 - For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (when project-brain is a git repo, edit it only in a worktree and PR), and the rule to update the plan to match what shipped after a PR merges, without asking.
 - For an editing delegate: stop and report before changing observable behaviour or adding exported API, unless the human already approved it. The report lists every behaviour change.
+- A time box: report after 10 minutes with where you are, and never install tools or build dependencies from source without asking.
+- One commit per round.
+- Run mutation checks in place and restore with `git checkout`; use a throwaway worktree only when another agent edits the same one.
 - The delegate's `model` and its role.
 
 The report lists, by absolute path, every skill, principle and playbook file the delegate read, and names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.
