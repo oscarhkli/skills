@@ -29,7 +29,7 @@ Read each entry's `../<name>/SKILL.md` before starting work, including read-only
 - `principle-lazy-senior-dev`: doing more than the request names or deciding whether to, refactoring, extracting code or sizing a diff.
 - `principle-never-block-on-the-human`: any task that writes, reviews or changes code, including planning. Read it first.
 - `principle-prove-it-works`: changing code, reporting a finding, answering a question of fact, or about to build on a claim from the human or a document. Read it at the start and again before reporting.
-- `principle-redesign-from-scratch`: adding a feature to an existing design, or asked how to design, plan or refactor.
+- `principle-redesign-from-scratch`: adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design.
 
 ## Other skills
 
@@ -37,7 +37,7 @@ Read each on its own trigger, whatever the cost in context.
 
 - `../no-comments/SKILL.md`: before writing, changing or pushing a comment.
 - `../self-review/SKILL.md`: the coordinator, once at the last stage, or when asked for an adversarial or self review of work made in this session. Not for others' work, which is `playbooks/review-others.md`.
-- `../unslop/SKILL.md`: before the first text another person reads, once per session and after compaction. In a file, apply it to the changed lines only.
+- `../unslop/SKILL.md`: before the first text another person or a delegate reads, once per session and after compaction. In a file, apply it to the changed lines only.
 
 ## Playbooks
 
@@ -50,7 +50,7 @@ Read each on its own trigger, whatever the cost in context.
 
 ### Extra playbooks
 
-Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` list in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` with the file tool and treat its entries as entries of the Playbooks list. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. If none exist, skip this.
+Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` of `name: when` entries (a list or a two-column table). At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` with the file tool and treat its entries as entries of the Playbooks list. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. If none exist, skip this.
 
 ## Subagents
 
@@ -61,7 +61,7 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 - The delegate that edits also commits, drafts the PR title and description, pushes the feature branch and opens the PR without asking, except as the next bullet says. The coordinator may push a reviewed commit itself.
 - When a diff touches comments, the delegate commits locally and does not push. The coordinator follows `../no-comments/SKILL.md`, then pushes or has a fresh delegate push. Follow it again on any later commit that changes a comment.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
-- Pass every delegate a `model` for its role (`research`, `plan`, `review`, `code`, `test` or `text`) from `models.<role>` in `~/.agents/project-brain/settings.yaml`. If the file or the role's entry is missing, say so once in the reply, omit `model` (the delegate runs on your model) and carry on. Omit it too when the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode.
+- Pass every delegate a `model` for its role (`research`, `plan`, `review`, `code`, `test` or `text`) from `models.<role>` in `~/.agents/project-brain/settings.yaml`. If the file or the role's entry is missing, say so once per session, omit `model` (the delegate runs on your model) and carry on. Omit it too when the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode.
 - When the human says "if small, do X" (or any size condition), measure first: `git diff --stat` on a draft, or have the delegate report sizes per item before editing. An item over `playbooks/slice.md`'s reviewable rule becomes its own item, not part of the open PR.
 - Write any message that asks the human to decide as `references/human-brief.md` says.
 - Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.

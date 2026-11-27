@@ -1,6 +1,6 @@
 ---
 name: principle-redesign-from-scratch
-description: Design as if the codebase were empty and the feature existed from day one.
+description: Design as if the codebase were empty and the feature existed from day one, or for the best or idiomatic design.
 disable-model-invocation: true
 ---
 

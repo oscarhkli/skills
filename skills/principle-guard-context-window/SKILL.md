@@ -8,11 +8,9 @@ disable-model-invocation: true
 
 Accumulated context degrades reasoning quality. The main agent's context is for the conversation with the human, decisions and review. Raw payloads and exploration narratives crowd those out.
 
-This applies to the coordinator only. A delegate does the heavy work itself and never delegates further.
+This applies to the coordinator only. A delegate does the heavy work itself and never delegates further. What to delegate follows `theta-mode`'s Subagents section.
 
 ## Probe before reading
-
-What to delegate follows `theta-mode`'s Subagents section.
 
 Treat an unknown size as large and probe it first. Check a file's length (`wc -l`) or a diff's size (`git diff --stat`) before reading it, and count a search's matches (`grep -c`) before listing them, narrowing the pattern if the count is high. Once a file's content has been read, carry its summary forward instead of reading it again.
 
@@ -20,7 +18,7 @@ Treat an unknown size as large and probe it first. Check a file's length (`wc -l
 
 Ask for a summary of about 30 lines or fewer, with file paths and line numbers, not raw dumps or step-by-step narration. Write it the way `unslop` would: conclusion first, no narration, no restated task, no recap. Apply that standard without loading the skill, since loading it costs the context this principle protects.
 
-Read a cited file yourself only to verify a claim that matters.
+Have a delegate check a cited claim that matters.
 
 ## While waiting
 
