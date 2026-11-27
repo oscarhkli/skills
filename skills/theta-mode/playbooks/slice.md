@@ -35,7 +35,7 @@ A brief says what and why. It adds a how only for a non-obvious technical constr
 
 ## Just in time
 
-- Write a story's implementation plan (owned by `plan.md`) when that story is next to start, after the stories it depends on have merged. Stories with no dependency on each other may start together. Later stories stay briefs.
+- Write a story's implementation plan (owned by `plan.md`) when that story is next to start, after the stories it depends on have merged. Later stories stay briefs.
 - After each merge, re-read the remaining briefs against what shipped. Fix their assumptions before planning the next story.
 
 ## Index (README)
@@ -55,7 +55,7 @@ One README next to the briefs and plans holds:
 - Before presenting stories, list the backlog items and open PRs that touch the same files, and put the resulting order in the index.
 - A plan that closes more than one backlog item is an initiative with its own ID (`IN-NNN` in project-brain), made at the first draft.
 - A story starts from the default branch plus the stories it depends on. Say which, by name.
-- Stories with no dependency between them run concurrently.
+- Stories with no dependency between them run concurrently. Each agent builds its story in its own worktree and edits only the files the story owns.
 - When a dependency merges after a story has started, rebase and rerun the story's verification.
 - Each story's verification passes on its own branch, without the other stories.
 
@@ -63,6 +63,8 @@ One README next to the briefs and plans holds:
 
 - When a story changes something its dependents rely on, such as a name, a signature, a file owner or a decision, spawn one `theta-agent` per affected dependent. Each updates that story's brief, or its plan if one exists, and its row in the index. Then rerun the index check.
 - When a story merges, refresh the deferred and decision sections of every remaining story's PR. Delete the ones that are now settled.
+- A PR comment lists open deferred items and open decisions only. Fixed gaps go in the PR summary.
+- Update a branch only for the story the human reviews next, since each update reruns CI.
 
 ## Checking
 

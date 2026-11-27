@@ -2,7 +2,6 @@
 
 - A plan is the how for one PR, written when its story is next, so a fresh `theta-agent` can build it without this conversation.
   - Write one only when the code does not show the how. A small item needs only its backlog paragraph.
-  - For work across several PRs, read `slice.md` first.
 
 ## Before drafting
 
@@ -38,9 +37,7 @@
 
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Tell the delegate to remove line-number references (`:123`, `L123`, "line 123") from every file it writes, design docs and backlog entries included, and to paste the Goal section into its report word for word.
-- Size gate, before the review: apply the size rule in `slice.md`.
-  - If the plan outgrows one reviewable change, slice first.
-  - As a signal, not a limit, when the steps touch more than about 8 production files that change behaviour, check that rule before planning further. Mechanical edits, such as renames and signature additions or removals that only propagate, do not count.
+- Size gate, before the review: apply the size rule in `slice.md`. If the plan outgrows one reviewable change, slice first.
 
 ## Review
 
