@@ -66,7 +66,7 @@ Then run these steps. Do not start a new full review.
 
 ## Open items
 
-Every item states what blocks it. When the block is a reversible, in-scope choice (a reasonable default, a local code or doc change, running tests), the fixer resolves it and acts instead of parking the item, and the report states the assumption. An item stays open only when the block is a decision that is the human's: a destructive or hard-to-reverse action, publishing outside the machine, cost, security or credentials, or materially different scope or user-visible behaviour. The fixer and the escalation agent read `../principle-never-block-on-the-human/SKILL.md` first.
+Every item states what blocks it. When the block is a reversible, in-scope choice (a reasonable default, a local code or doc change, running tests), the fixer resolves it and acts instead of parking the item, and the report states the assumption. An item stays open only when the block is a decision that is the human's: a destructive or hard-to-reverse action, publishing outside the task's own repo, cost, security or credentials, or materially different scope or user-visible behaviour. The fixer and the escalation agent read `../principle-never-block-on-the-human/SKILL.md` first.
 
 ## Report
 

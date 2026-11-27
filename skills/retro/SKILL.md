@@ -74,4 +74,4 @@ The `interview` skill is manual-only, so read `../interview/SKILL.md` (relative 
 
 After approval, execute the approved actions, or write them up as tasks if they are too large for this session.
 
-All approved changes to one repo land in one branch and one pull request, with one commit per action and each action named in the PR description's sections. Never open one PR per action: many small PRs are hard for the human to review. Changes to different repos get one PR per repo. An action that cannot be reviewed with the rest ships alone, and the plan says why (for example, a hook that blocks replies needs deploying separately).
+All approved changes to one repo land in one branch and one pull request, with one commit per action and each action named in the PR description's sections. Never open one PR per action: many small PRs are hard for the human to review. Changes to different repos get one PR per repo. An action that cannot be reviewed with the rest ships alone, and the plan says why (for example, a hook needs deploying separately).

@@ -17,7 +17,7 @@ Severity follows the playbook or reviewer skill in use. Present nitpick-level fi
 
 An absolute word such as all, every, never or none needs the count it rests on.
 
-Give each open decision for the human the same **Code** and **Ask** parts, with `path:line` and the quoted source.
+Give each open decision for the human the same **Code** and **Ask** parts, with `path:line` and the quoted source, and end it with your pick and the reply you expect, per `../references/human-brief.md`.
 
 Open each finding and open decision with one or two plain lines: what this code does in the product, and what goes wrong without the change. Define each term of the area at first use. When the Ask cites a precedent, show its lines next to the PR's lines, so the reader can see the shapes match.
 

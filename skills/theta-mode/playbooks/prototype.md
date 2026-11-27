@@ -59,7 +59,7 @@ Only what the decision needs, no fixed length:
 
 Each prototype writes a `PROTOTYPE.md` to `~/.agents/project-brain/<project>/`, not into its worktree. When the prototype serves a plan, it writes `PROTOTYPE-<topic>.md` into that plan's directory instead (an existing `plans/<item>/` directory, or the directory the human named). `<project>` is the name that `~/.agents/project-brain/README.md` gives the project; if the README does not name it, the code repo's name; if there is no repo, a short meaningful name you choose. If `~/.agents/project-brain/<project>/` does not exist, create it and any missing parent directories, then continue. Glob tools skip linked directories, so list that directory with `ls` or `view`. The file holds the same text the subagent reports in chat: each candidate's result with the path of its evidence, the recommendation, the references found and what was not tested.
 
-If the decision is still open, say what is open and offer the human the next options. Do not decide for them.
+If the decision is still open, say what is open and give the next options with your pick, per `../references/human-brief.md`.
 
 ## After the report
 

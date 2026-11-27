@@ -40,6 +40,6 @@ Report:
 - Absolute worktree path
 - Branch name
 - Whether the branch was created from `main`, created from `master`, reused, or tracked from origin
-- Any `warning:` line, verbatim (the base was not updated; the user decides whether to pull and rebase)
+- Any `warning:` line, verbatim (for the new branch, run `git fetch origin` and rebase onto `origin/<base>`, then report it)
 
 Do not commit or push.

@@ -7,7 +7,7 @@ A message that asks the human to decide has four parts, in this order:
 3. Your pick, with its cost.
 4. The exact reply you expect, or "no reply needed, I proceed with the pick".
 
-Define a term in a clause the first time you use it. Never end a reversible, in-scope step with "say go", except the plan gate in `playbooks/plan.md`. Act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply.
+Define a term in a clause the first time you use it. Never end a reversible, in-scope step with "say go", except the plan gate in `playbooks/plan.md` and the index in `playbooks/slice.md`. Act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply.
 
 ## Sample
 
