@@ -2,7 +2,7 @@
 
 My personal agent skills, written once and usable across Claude Code, GitHub Copilot, and Cursor. Each skill is a folder with a `SKILL.md` (the open Agent Skills format) under `skills/`.
 
-The `principle-*` skills are manual-only (`disable-model-invocation: true`). They are also meant to be quoted from `CLAUDE.md` or equivalent instruction files, so agents read them when making decisions.
+All `principle-*` skills except `principle-never-block-on-the-human` are manual-only (`disable-model-invocation: true`). They are also meant to be quoted from `CLAUDE.md` or equivalent instruction files, so agents read them when making decisions.
 
 ## Install (deploy)
 
@@ -21,6 +21,7 @@ scripts/install.sh -y     # replace without asking
 - The replaced copy is moved to `~/.agents/.skills-backup/<timestamp>/` (outside the skills dir, so it is not loaded twice).
 - `evals/` folders are dev-only and never deployed.
 - Skills that aren't in this repo are never touched.
+- The installer never deletes files removed from the repo. Delete a removed skill folder by hand, such as `~/.agents/skills/principle-agent-can-say-no/`.
 - Set `AGENTS_SKILLS_DIR` to deploy somewhere else.
 
 Each `agents/<name>.md` is also copied into `~/.claude/agents/` and `~/.copilot/agents/`, where Claude Code and Copilot CLI look for custom agents (neither finds them inside a skill folder). A changed agent is overwritten without asking. Override the targets with `CLAUDE_AGENTS_DIR` and `COPILOT_AGENTS_DIR`.
@@ -33,10 +34,15 @@ theta-mode and self-review read `~/.agents/project-brain/settings.yaml`, which l
 self-review:
   mode: light
 models:
+  research: opus
+  plan: opus
+  review: opus
   code: sonnet
+  test: sonnet
+  text: sonnet
 ```
 
-Without the file, theta-mode says so and delegates run on the coordinator's model. `scripts/install.sh` warns when the file is missing.
+Without the file or a role's entry, theta-mode says so once and that delegate runs on the coordinator's model. `scripts/install.sh` warns when the file is missing.
 
 ## Layout
 
