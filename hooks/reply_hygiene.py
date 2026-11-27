@@ -48,10 +48,6 @@ WORK_CLAIM_RE = re.compile(
     r"\b(?:fixed|found|edited|added|removed|ran|passed|failed|changed|created|deleted|merged|pushed|committed)\b",
     re.IGNORECASE,
 )
-CHANGE_CLAIM_RE = re.compile(
-    r"\b(?:pushed|committed|implemented|drafted)\b|(?<!is )(?<!was )(?<!are )\b(?:fixed|added|updated|removed|wrote|created|edited|renamed|merged)\b|\bopened (?:an? |the )?PR\b|\bopen as (?:\w+ )?PR\b|\bPR\b.{0,24}\bis open\b|\bcommits? `[0-9a-f]{7,40}`|\bPR #\d+ now has\b",
-    re.IGNORECASE,
-)
 CLAUDE_THETA_MARKER = "<command-name>/theta-mode</command-name>"
 DEFAULT_BLOCKING = frozenset({"hedge", "offer_question"})
 BLOCK_REASON = (
@@ -257,7 +253,7 @@ def check_principles(reply: str, owed: bool) -> list[tuple[str, str, str]]:
         return []
     if any(ln.lstrip().startswith("Principles applied:") for ln in lines):
         return []
-    if announces_pending_delegate(lines) or not CHANGE_CLAIM_RE.search(lines[0]):
+    if announces_pending_delegate(lines):
         return []
     return [("missing_principles_line", "Principles applied:", lines[-1].strip())]
 
