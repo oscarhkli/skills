@@ -512,25 +512,32 @@ class ReplyHygieneTest(unittest.TestCase):
             with self.subTest(first=first):
                 self.assertEqual(self.principles_checks(first + "\n- one\n- two\n\nDone."), ["missing_principles_line"])
 
-    def test_first_line_without_a_change_claim_does_not_owe_the_principles_line(self):
+    def test_first_line_without_a_change_claim_owes_the_principles_line(self):
         firsts = [
             "PR #17 is merged, main is pulled and the worktree is removed",
             "My recommendation: merge stories 4, 5 and 6 first",
             "#1 What server/openapi_wire_test.go is about",
             "The check is back and story 2 fails",
             "I opened the file and the lock is shared",
+            "Partly. The hook covers the first case",
+            "Things to know",
         ]
         for first in firsts:
             with self.subTest(first=first):
-                self.assertEqual(self.principles_checks(first + "\n- one\n- two\n\nDone."), [])
+                self.assertEqual(self.principles_checks(first + "\n- one\n- two\n\nDone."), ["missing_principles_line"])
+
+    def test_long_answer_with_the_principles_line_is_clean(self):
+        text = "Partly. The hook covers the first case.\n- one\n- two\n\nPrinciples applied: none"
+        self.assertEqual(self.principles_checks(text), [])
+
+    def test_two_line_delegate_wait_is_clean(self):
+        text = "I delegated the check to a subagent.\nI'll report when it finishes."
+        self.assertEqual(self.principles_checks(text), [])
 
     def test_change_claim_with_the_principles_line_is_never_flagged(self):
         text = "Both fixes are pushed to PR #17 as `9f01b93`\n- one\n- two\n\nPrinciples applied: none"
         self.assertEqual(self.principles_checks(text), [])
 
-    def test_change_claim_on_a_later_line_does_not_owe_the_principles_line(self):
-        text = "Here is the status.\n- one\n- two\n\nBoth fixes are pushed to PR #17."
-        self.assertEqual(self.principles_checks(text), [])
 
     def test_pending_delegate_reply_with_a_blocking_ask_is_still_a_hedge(self):
         text = "Two delegates are running and the fix is pushed.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
