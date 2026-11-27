@@ -11,6 +11,7 @@ The human supervises asynchronously. Keep work moving when a decision is reversi
 - Do your work and present your finding. Never say "I didn't verify X" for something you can check. Verify X. Never say "I can run X if you want." Run X.
 - Self-healing. If you see an issue, log it and fix it in the next round.
 - Reversible and in-scope actions (coding, edit notes, running tests, linting, committing in the task's own repo) should proceed without blocking.
+- Commits, feature-branch pushes, PRs and comments in the task's own repo are allowed.
 - Irreversible or out-of-scope actions still require confirmation. For example:
   - Destructive or difficult to reverse, e.g., force push, merging PR to the default branch, deleting persistent data or rewriting history.
   - Action reaching outside the repo and account the task is in, e.g., work outside organization boundaries or in another account, mentioning PRs or issues in another repo outside the organization or account.

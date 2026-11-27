@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Use when the user wants to commit or create a commit. Formats the message as a Conventional Commit.
+description: Use when the user wants to commit or create a commit, and also use before any commit made as part of a larger task. Formats the message as a Conventional Commit.
 ---
 
 # Conventional Commits
@@ -13,5 +13,6 @@ Format every commit message per **Conventional Commits 1.0.0**.
   - Exception: the throwaway `proto/<topic>` branch from the prototype playbook, never pushed.
 - Stage only the files of this one logical change, by explicit path. Never `git add -A`, `git add .` or `git add -f`.
   - If the user already staged files, commit exactly those.
+  - Mention unrelated changes you left unstaged in the reply.
 - Footer: when an AI agent authored or materially contributed to the change, end with a `Co-Authored-By:` line, one blank line after any body.
   - Use the attribution line supplied in the session context verbatim. If none: `Co-Authored-By: <your model name> <noreply address of your vendor>`.
