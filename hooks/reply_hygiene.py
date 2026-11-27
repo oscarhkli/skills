@@ -38,6 +38,7 @@ OFFERED_ACTION_RE = re.compile(
 OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
+DECISION_PREFIX = "Decision for you:"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
 PENDING_DELEGATE_RE = re.compile(
     r"^(?:[\w-]+\s+){0,3}(?:delegates?|subagents?|agents?)\s+(?:is|are)\s+(?:(?:now|still|currently|also|both|all)\s+)?\w+ing\b",
@@ -196,7 +197,9 @@ def check_hedges(reply: str) -> list[tuple[str, str, str]]:
     while lines and lines[-1].strip().startswith(TRAILER_PREFIXES):
         lines.pop()
     hits = []
-    for line in lines[-2:]:
+    for line in lines[-1:]:
+        if line.strip().startswith(DECISION_PREFIX):
+            continue
         match = next((m for m in HEDGE_RE.finditer(line) if not offers_human_action(line, m)), None)
         if match:
             hits.append(("hedge", match.group(0), line.strip()))

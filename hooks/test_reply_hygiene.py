@@ -298,11 +298,28 @@ class ReplyHygieneTest(unittest.TestCase):
         got = rh.check_hedges("Do you want me to push?\nline two\nline three")
         self.assertEqual(got, [])
 
-    def test_hedge_on_second_to_last_line_after_trailers_are_dropped(self):
-        got = [phrase for _, phrase, _ in rh.check_hedges("Say so if x.\nDone.")]
-        self.assertEqual(got, ["Say so if"])
-        got = [phrase for _, phrase, _ in rh.check_hedges("Say so if x.\nDone.\nPrinciples applied: y")]
-        self.assertEqual(got, ["Say so if"])
+    def test_hedge_on_closing_line_is_found_past_trailers(self):
+        for reply in ("Done.\nSay so if x.", "Done.\nSay so if x.\nPrinciples applied: y\nPlaybooks read: z"):
+            with self.subTest(reply=reply):
+                got = [phrase for _, phrase, _ in rh.check_hedges(reply)]
+                self.assertEqual(got, ["Say so if"])
+
+    def test_hedge_before_the_closing_line_is_ignored(self):
+        got = rh.check_hedges("Say so if x.\nDone.\nPrinciples applied: y")
+        self.assertEqual(got, [])
+
+    def test_quoted_hedge_mid_reply_is_ignored(self):
+        replies = [
+            'The hook blocks "want me to" asks.\nIt now reads only the closing line.',
+            "The hook blocks `if you want` asks.\nIt now reads only the closing line.\nPrinciples applied: x",
+        ]
+        for reply in replies:
+            with self.subTest(reply=reply):
+                self.assertEqual(rh.check_hedges(reply), [])
+
+    def test_decision_for_you_closing_line_is_exempt(self):
+        reply = "Two options.\nDecision for you: should I push now or wait? Say so if you disagree."
+        self.assertEqual(rh.check_hedges(reply), [])
 
     def test_hedge_before_trailing_theta_lines_is_logged(self):
         reply = "Fixed.\nSay so if you want it fixed.\nPrinciples applied: x\nPlaybooks read: none"
@@ -540,7 +557,7 @@ class ReplyHygieneTest(unittest.TestCase):
 
 
     def test_pending_delegate_reply_with_a_blocking_ask_is_still_a_hedge(self):
-        text = "Two delegates are running and the fix is pushed.\n- **A:** builds it.\n- **B:** checks it.\n\nDecision for you: should I add it to the plan?"
+        text = "Two delegates are running and the fix is pushed.\n- **A:** builds it.\n- **B:** checks it.\n\nShould I add it to the plan?"
         self.assertEqual(self.principles_checks(text), ["hedge", "missing_principles_line"])
 
     def test_non_theta_long_reply_is_clean(self):
@@ -813,7 +830,7 @@ class ReplyHygieneTest(unittest.TestCase):
         self.assertEqual([r["blocked"] for r in env.records()], [True])
 
     def test_only_blocking_hits_are_marked_blocked(self):
-        text = "Two delegates are running and the fix is pushed.\n- one\n- two\n\nDecision for you: should I add it to the plan?"
+        text = "Two delegates are running and the fix is pushed.\n- one\n- two\n\nShould I add it to the plan?"
         entries = [THETA_USER, CLAUDE_TOOL_ONLY, CLAUDE_TOOL_RESULT_USER, claude_reply(text)]
         env, (_, out) = self.stop_with("", entries=entries)
         self.assertEqual(json.loads(out)["decision"], "block")
