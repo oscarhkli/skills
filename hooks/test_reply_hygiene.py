@@ -194,13 +194,24 @@ class ReplyHygieneTest(unittest.TestCase):
                 got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
                 self.assertEqual(got, ["hedge"])
 
+    def test_hedges_beside_a_deletion_word_without_approval_wording_are_flagged(self):
+        for text in [
+            "I removed the dead code and I haven't run the tests.",
+            "I haven't run the tests, and I removed the fixture.",
+            "I haven't verified the output after the cleanup.",
+            "I haven't run a self-review here. I'll remove its worktree afterwards.",
+        ]:
+            with self.subTest(text=text):
+                got = [c for c, _, _ in rh.check_hedges("Result.\n" + text)]
+                self.assertEqual(got, ["hedge"])
+
     def test_reports_of_fact_and_open_decisions_are_not_flagged(self):
         for text in [
             "Still unverified: that the payload carries the field.",
             "I haven't run into problems.",
             "I have not run into problems.",
             "I haven't checked in the change.",
-            "The cleanup skill removes merged ones, and I haven't run it.",
+            "The cleanup skill removes merged ones, and I haven't run it until you confirm.",
             "I haven't run it: deleting the local worktrees needs your yes.",
             "I tested it and it passes.",
             "The fix is not yet verified.",

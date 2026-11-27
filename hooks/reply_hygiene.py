@@ -37,6 +37,10 @@ OFFERED_ACTION_RE = re.compile(
 )
 OFFER_RE = re.compile(r"^[\s*\-#]*(?:and\s+)?(?:want me to|should I|do you want me to|shall I|would you like me to)\b", re.IGNORECASE)
 DESTRUCTIVE_RE = re.compile(r"\b(?:delet\w*|remov\w*|clean[ -]?up\w*)\b", re.IGNORECASE)
+APPROVAL_RE = re.compile(
+    r"\bneeds? your (?:yes|ok|okay|approval)\b|\bawaits? your\b|\bwaiting (?:for|on) your (?:yes|ok|okay|approval)\b|\buntil you (?:say|confirm|approve)\b",
+    re.IGNORECASE,
+)
 HARNESS_PROMPT_START = "Another Claude session sent a message"
 HARNESS_PROMPT_TAG = "<task-notification>"
 TRAILER_PREFIXES = ("Principles applied:", "Playbooks read:")
@@ -217,7 +221,8 @@ def offers_human_action(line: str, match: re.Match[str]) -> bool:
 def awaits_destructive_approval(line: str, match: re.Match[str]) -> bool:
     if not re.match(r"I (?:haven|have not)", match.group(0), re.IGNORECASE):
         return False
-    return bool(DESTRUCTIVE_RE.search(sentence_of(line, match)))
+    sentence = sentence_of(line, match)
+    return bool(DESTRUCTIVE_RE.search(sentence) and APPROVAL_RE.search(sentence))
 
 
 def last_paragraph(reply: str) -> list[str]:
