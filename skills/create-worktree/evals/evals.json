@@ -83,13 +83,13 @@
     {
       "id": 8,
       "prompt": "Scratch setup: in a fresh temp dir, make a bare repo `origin.git` and clone it as `ledger` (branch `main`, pushed). Add a second commit to origin/main from another clone, run `git fetch` in `ledger` but do not merge, so local main is one commit behind origin/main. Make an empty sibling dir `ledger-worktrees`. Create a worktree `report` on new branch `feat/report`.",
-      "expected_output": "Branch created from the stale local main, with a visible warning that main is behind origin/main; nothing was pulled.",
+      "expected_output": "Branch created from the fetched origin/main, so it holds the second commit; local main is untouched.",
       "files": [],
       "expectations": [
-        "feat/report points at the local main commit, not origin/main",
+        "feat/report points at the origin/main commit, which is the second commit",
         "Local main was not fast-forwarded or reset",
-        "The reply repeats the warning that main is 1 commit behind origin/main",
-        "No git pull or fetch was run by the skill"
+        "The reply says the branch was created from origin/main",
+        "The bundled script was used, and no hand-run git pull"
       ]
     }
   ]
