@@ -48,5 +48,4 @@
   - Path check: checks every path, symbol, count and command against the code. It runs each count, status and command and does not read it off the plan.
   - User-path check: lists every path a user can take to the changed code and the testing pyramid layer whose test proves it. Each uncovered path becomes a test in Verification or an accepted risk with a reason.
   - Cold read: reads the plan with only the plan and the repo. It reports every step it could not act on and every line it did not need as delete candidates, and every term it had to guess.
-- Text-only fixes land directly.
 - Present the plan path and the Goal, copied word for word from the delegate's report. Add no summary, no list of checks run or skipped, and no question. Do not edit code until the human approves.

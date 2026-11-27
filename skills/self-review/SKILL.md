@@ -1,7 +1,7 @@
 ---
 name: self-review
 disable-model-invocation: true
-description: Adversarial review of code changed in this session: one full review, bounded fix-and-verify rounds, then a report.
+description: Adversarial review of code or plan changed in this session: one full review, bounded fix-and-verify rounds, then a report.
 ---
 
 # Self review
@@ -10,7 +10,7 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 
 ## Setup
 
-- A plan or design has no code diff: run the same loop with the reviewers `theta-mode/playbooks/plan.md` names instead of the two lenses.
+- A plan or design has no code diff: run the same loop with the reviewers `theta-mode/playbooks/plan.md` names instead of the two lenses. Always three reviewers, whatever the mode's count, each on the mode's first `reviewers` model. For a plan, major means a delegate would build the wrong thing, and the fixer runs no tests.
 - Mode: the caller's, else `self-review.mode` in `~/.agents/project-brain/settings.yaml` (read only; skip if absent), else an extra playbook's, else the `default` in `modes.yaml` in this directory.
 - One reviewer per `reviewers` entry, using that model. A model this tool lacks: run `standard`; a `standard` model it lacks: use `fixer`. The fixer and verifiers use `fixer`.
 

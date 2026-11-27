@@ -7,7 +7,7 @@ A message that asks the human to decide has four parts, in this order:
 3. Your pick, with its cost.
 4. The exact reply you expect.
 
-Define a term in a clause the first time you use it. A trivial, reversible pick needs no message: act and report. For other reversible picks, act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply. Never end a reversible, in-scope step with "say go", except the plan and the slice index, which wait for approval.
+Define a term in a clause the first time you use it. A trivial, reversible pick needs no message: act and report. For other reversible picks, act on the pick in the same turn; the message lets the human overrule. An irreversible pick waits for the reply. Never end a reversible, in-scope step with "say go". The plan and the slice index wait for approval.
 
 ## Sample
 

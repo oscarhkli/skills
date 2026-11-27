@@ -54,8 +54,7 @@ Code comments: apply the style patterns only. Never delete or judge a comment (`
 ## Write instead
 
 - Lead with the conclusion in one sentence.
-- One idea per sentence. Break an enumeration into nested bullets.
-- Write markdown notes as nested bullets: one claim per bullet, children for detail.
+- One idea per sentence. Write markdown notes and enumerations as nested bullets: one claim per bullet, children for detail.
 - Use numbers, facts, pros/cons and trade-offs.
 
 ## Plain English (prefer, not enforced)
