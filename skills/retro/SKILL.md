@@ -23,8 +23,7 @@ A retro covers the current session, or one or more other sessions the human name
 
 Read the instructions the session ran with, so you can tell a rule that was ignored from a missing one. An ignored rule needs enforcement at layer 1 or 2, or one line on why none is possible. A missing rule needs a new or changed line. If an instruction file is unreadable, say so and continue.
 
-- Claude Code: global `~/.claude/CLAUDE.md`, and the project's `CLAUDE.md` and `.claude/CLAUDE.md`, including nested ones along the paths touched.
-- Copilot CLI: global `~/.copilot/copilot-instructions.md` and `~/.copilot/instructions/**/*.instructions.md`. Project `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `CLAUDE.md` and `.claude/CLAUDE.md`. Copilot combines them with no precedence, so conflicting lines across files are themselves a finding.
+- Claude Code: global and project `CLAUDE.md` files and everything they import, such as `@AGENTS.md`.
 
 Check whether the rule reached the agent that broke it. A delegate loads neither memory nor the parent's skills, so it sees a skill, playbook or reference only when its brief names the path. A rule the delegate never saw is missing, not ignored.
 
@@ -62,7 +61,7 @@ Each action has:
 - Removes: the interventions it should prevent, each with its session, turn and a quote. The human may not remember a long session, so a change with several parts, such as lint checks or config keys, cites evidence per part.
 - Cause: why the agent needed the human.
 - Layer: 1-5.
-- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, one branch and one PR per repo, not directly in the installed skills directory.
+- Change: the exact artifact and edit, with its scope (global or project) and file path, such as a lint rule, hook, test, CI step, script, skill, a `CLAUDE.md` line to add or delete, or a refactoring step. Include the draft text or config. A change to a skill, playbook or principle is made in the skill's source repo through a worktree, not directly in the installed skills directory.
 - Tradeoffs: pros, cons and pitfalls, such as false positives, cost per session, scope creep or a perverse incentive.
 - Check: how the next sessions show it worked, such as the intervention no longer appearing in the transcript.
 
@@ -74,4 +73,4 @@ The `interview` skill is manual-only, so read `../interview/SKILL.md` (relative 
 
 After approval, execute the approved actions, or write them up as tasks if they are too large for this session.
 
-All approved changes to one repo land in one branch and one pull request, with one commit per action and each action named in the PR description's sections. Never open one PR per action: many small PRs are hard for the human to review. Changes to different repos get one PR per repo. An action that cannot be reviewed with the rest ships alone, and the plan says why (for example, a hook needs deploying separately).
+All approved changes to one repo land in one branch and one pull request. Changes to different repos get one PR per repo. An action that cannot ship with the rest gets its own PR, and the plan says why.
