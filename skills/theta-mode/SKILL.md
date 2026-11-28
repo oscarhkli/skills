@@ -41,12 +41,14 @@ Read each on its own trigger, whatever the cost in context.
 
 ## Playbooks
 
-- `playbooks/plan.md`: asked for a plan. Read it before drafting.
-- `playbooks/slice.md`: asked to split an initiative or large goal into stories, or the work spans more than one PR or phase. Read it before `plan.md`.
-- `playbooks/prototype.md`: a design question or claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer.
-- `playbooks/create-pr.md`: about to open a pull request, or write or rewrite its title or description.
-- `playbooks/watch-pr.md`: after opening a PR or pushing any commit to an open PR, before reporting the PR ready.
-- `playbooks/review-others.md`: drafting review comments the human will post on someone else's document or code.
+These files live in `playbooks/` beside this file.
+
+- `plan.md`: asked for a plan. Read it before drafting.
+- `slice.md`: asked to split an initiative or large goal into stories, or the work spans more than one PR or phase. Read it before `plan.md`.
+- `prototype.md`: a design question or claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer.
+- `create-pr.md`: about to open a pull request, or write or rewrite its title or description.
+- `watch-pr.md`: after opening a PR or pushing any commit to an open PR, before reporting the PR ready.
+- `review-others.md`: drafting review comments the human will post on someone else's document or code.
 
 ### Extra playbooks
 
