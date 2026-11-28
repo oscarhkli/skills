@@ -1,7 +1,7 @@
 ---
 name: self-review
 disable-model-invocation: true
-description: Adversarial review of code written or generated in this session, by the agent, a delegate or the human, run after the pull request's GitHub Actions checks pass. Use for self-review or adversarial review of own changes. One full review, at most two fix-and-verify rounds, one minor pass and one escalation round, then stop with a report. Code only: a plan or design is reviewed with the `theta-mode/playbooks/plan.md` Budget. Not for others' work, which is `theta-mode/playbooks/review-others.md`.
+description: Adversarial review of code or plan changed in this session: one full review, bounded fix-and-verify rounds, then a report.
 ---
 
 # Self review
@@ -10,14 +10,9 @@ The coordinator orchestrates and adjudicates. It never reviews the change itself
 
 ## Setup
 
-- Start after the pull request's GitHub Actions checks pass. Fixes land afterwards as new commits. Every verifier, including the minor pass and escalation verifiers, starts after CI passes on the fix push. A project or company playbook may change this trigger and this default.
-- Stop if the change has no code diff. A plan or design is reviewed with the `theta-mode/playbooks/plan.md` Budget. The reply is that pointer only, with no status line and no findings table; do not review the document.
-- Read `modes.yaml` in this directory. Use the mode the caller names, else `mode` under `self-review:` in `~/.agents/project-brain/settings.yaml` (shape: `self-review:` then an indented `mode: standard`), else the mode an extra playbook names for this tool, else `default` in `modes.yaml`.
-- If `settings.yaml` does not exist, skip it. This use only reads; create nothing.
-- Reviewer count is the number of `reviewers` entries. Pass each entry as that agent's model.
-- If any reviewer model of the chosen mode is not in this tool's model list, run the `standard` mode instead. If `standard` itself has such a model, that entry uses the mode's `fixer` model.
-- The fixer and the verifier use the mode's `fixer` model.
-- Never ask the human about models.
+- A plan or design has no code diff: run the same loop with the reviewers `theta-mode/playbooks/plan.md` names instead of the two lenses. Always three reviewers, whatever the mode's count, each on the mode's first `reviewers` model. For a plan, major means a delegate would build the wrong thing, and the fixer runs no tests.
+- Mode: the caller's, else `self-review.mode` in `~/.agents/project-brain/settings.yaml`, else an extra playbook's, else the `default` in `modes.yaml` in this directory.
+- One reviewer per `reviewers` entry, using that model. A model this tool lacks: run `standard`; a `standard` model it lacks: use `fixer`. The fixer and verifiers use `fixer`.
 
 ## Loop
 
@@ -29,6 +24,7 @@ Prompt skeletons: [references/reviewer-brief.md](references/reviewer-brief.md).
    - With one reviewer, that reviewer gets both lenses in one brief.
    - A reviewer that finds a build or test failure reports it as a finding. The coordinator decides what to do with it.
    - A reviewer that cannot complete stops the run as REVIEW FAILED. Do not treat the other review as enough.
+   - The brief carries the human-approved API list from the editing brief, or "none".
 2. A fresh agent verifies every finding against the source and marks it ACCEPTED, REJECTED or PARTIAL, with one line of evidence. The coordinator reads no source itself. It records the verdicts and does not ask the human.
 3. A fresh fixer fixes every major finding and the cheap minor ones, then builds and runs the tests. It lists the rest with what blocks each.
 4. A fresh verifier gets every finding, major and minor, and the diff. It checks the fix to each finding and the changed lines, and nothing else. If it finds a major issue, repeat 3 and 4 once.
@@ -66,7 +62,7 @@ Then run these steps. Do not start a new full review.
 
 ## Open items
 
-Every item states what blocks it. When the block is a reversible, in-scope choice (a reasonable default, a local code or doc change, running tests), the fixer resolves it and acts instead of parking the item, and the report states the assumption. An item stays open only when the block is a decision that is the human's: a destructive or hard-to-reverse action, publishing outside the machine, cost, security or credentials, or materially different scope or user-visible behaviour. The fixer and the escalation agent read `../principle-never-block-on-the-human/SKILL.md` first.
+An item stays open only when `../principle-never-block-on-the-human/SKILL.md` makes it the human's decision, or the fix changes user-visible behaviour. The escalation agent reads that principle first, as the fixer brief does.
 
 ## Report
 

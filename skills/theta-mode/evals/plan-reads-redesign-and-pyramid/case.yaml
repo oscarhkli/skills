@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: plan-reads-redesign-and-pyramid
 expected_outcome: |
-  The coordinator reads principle-redesign-from-scratch and principle-agent-trust-pyramid with the file tool before the plan is drafted, the plan names the trust-pyramid layers its checks sit in, and the final reply is the plan path, the Goal and the line Say go to implement. only.
+  The coordinator reads principle-redesign-from-scratch and principle-agent-trust-pyramid with the file tool before the plan is drafted, the plan names the trust-pyramid layers its checks sit in, and the final reply is the plan path and the Goal only, and no code is edited before the human approves.
 context:
   scaffold_script: place-files.sh

@@ -1,34 +1,19 @@
 ---
 name: principle-never-block-on-the-human
-description: Principle for autonomy. Read for any task that writes, reviews or changes code. Make a reasonable decision on reversible, in-scope work, act, verify, and present the result for correction instead of asking permission. Never a bypass for destructive, external, costly, production, security-sensitive, or genuinely ambiguous decisions.
+description: Apply when tempted to ask "should I do X?" on reversible, in-scope actions. Never bypass for destructive, external, costly, production, security-sensitive decisions.
 ---
 
 # Never Block on the Human
 
 The human supervises asynchronously. Keep work moving when a decision is reversible and reviewable.
 
-Project and global instructions (CLAUDE.md and equivalents) win over this principle. It only fills gaps: where an instruction says to confirm, forbids something, or grants no permission, follow the instruction.
-
-## Act without confirmation
-
-- Read, search, inspect, or diagnose within the stated scope.
-- Make a local code or documentation change when the requirement and implementation are clear.
-- Run tests, builds, linters, formatters, or other non-destructive validation.
-- Create or update temporary and generated artifacts needed to complete the task.
-- Choose a conventional, low-impact default when alternatives do not materially change behavior.
-
-State any material assumption in the result. Prefer inspect, act, and verify over asking whether to begin.
-
-Self-check: if you are about to ask "shall I start / investigate / proceed?" for something on this list, do it instead.
-
-Also: ending a reply with "I haven't checked X" or "I can run X if you want" for something on this list means do X before replying.
-
-## Ask before acting
-
-- The action is destructive or difficult to reverse, such as deleting persistent data or rewriting history.
-- The action reaches outside the repo and account the task is in (another account, another org, a repo you were not asked to work in), or cannot be undone: merging into the default branch, pushing to it, force-pushing, rewriting pushed history. Commits, feature-branch pushes, PRs and comments inside the task's own repo are allowed, so do them.
-- The action affects production, incurs meaningful cost, changes access or security controls, or handles credentials or sensitive data.
-- Multiple reasonable choices would produce materially different user-visible behavior or scope.
-- The user or governing workflow explicitly requires confirmation.
-
-Do not turn a required decision into a guessed default. When confirmation is required, complete every independent reversible step first, then ask only for the unresolved decision.
+- Proceed, then present the result. Never ask "should I do X?" Do X and explain why.
+- Do your work and present your finding. Never say "I didn't verify X" for something you can check. Verify X. Never say "I can run X if you want." Run X.
+- Self-healing. If you see an issue, log it and fix it in the next round.
+- Reversible, in-scope actions proceed without blocking: coding, edit notes, running tests, linting, commits, feature-branch pushes, PRs and comments in the task's own repo.
+- Irreversible or out-of-scope actions still require confirmation. For example:
+  - Destructive or difficult to reverse, e.g., force push, merging PR to the default branch, deleting persistent data or rewriting history.
+  - Action reaching outside the repo and account the task is in, e.g., work outside organization boundaries or in another account, mentioning PRs or issues in another repo outside the organization or account.
+  - A choice with materially different scope or user-visible behaviour is the human's call.
+  - Action affecting production, overspending tokens, or handling access, security controls, credentials or sensitive data.
+- Never turn a required decision into a guessed default. When confirmation is required, complete every independent reversible step first, then ask only for the unresolved decision.

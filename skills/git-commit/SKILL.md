@@ -1,33 +1,18 @@
 ---
 name: git-commit
-description: Use when the user wants to commit, git commit, commit changes, commit staged changes, commit files, or create a commit. Also invoke proactively before running any git commit command as part of a larger task. Formats the message as a Conventional Commit and stages only the files belonging to the change.
+description: Use when the user wants to commit or create a commit, and also use before any commit made as part of a larger task. Formats the message as a Conventional Commit.
 ---
 
 # Conventional Commits
 
-Format every commit message per **Conventional Commits 1.0.0**. The agent may commit, push a feature branch and open a ready-for-review PR without asking, titled in Conventional Commit style. It never pushes to the default branch or force-pushes unless the user says so.
+Format every commit message per **Conventional Commits 1.0.0**.
 
-## Rules
-
-- The scope is optional: a noun for the affected section of the codebase, as in `feat(parser)` or `fix(auth)`. When a change spans several sections, name the broader area that contains them.
-- The subject is a short imperative summary: lowercase, no trailing period, 72 characters or fewer on the first line.
-- Add a body only when the subject is not self-evident. Keep it to 1-3 lines and explain why, not how.
-- Apply `../unslop/SKILL.md` to the subject and body before committing.
-
-## Branch names
-
-Name a new branch `<type>/<short-kebab-summary>`, with the same types as commits (`feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `build`, `ci`, `style`, `revert`). Never use `sync/` or another prefix outside this list. The one exception is the throwaway `proto/<topic>` branch from the prototype playbook, which is never pushed.
-
-## Staging
-
-- Stage only the files of this one logical change, by explicit path, so each commit stays small and focused. Never use `git add -A`, `git add .` or `git add -f`: they sweep in unrelated edits, scratch files, secrets and ignored files.
-- Run `git status` first. Leave unrelated changes unstaged and mention them in your reply.
-- If the user already staged files, commit exactly those and do not restage.
-
-## Authorship footer
-
-If an AI agent authored or materially contributed to the change, credit it with a `Co-Authored-By:` footer, one blank line after any body:
-
-- Use the attribution line supplied in the session context verbatim when there is one.
-- Otherwise write `Co-Authored-By: <your model name> <noreply address of your vendor>`.
-- Omit the footer only when the user wrote or edited the whole diff themselves.
+- Subject: short imperative summary. Lowercase, no trailing period, 72 characters or fewer.
+- Body: only when the subject is not self-evident. 1-3 lines, why not how.
+- New branch: `<type>/<short-kebab-summary>`, same types as commits.
+  - Exception: the throwaway `proto/<topic>` branch from the prototype playbook, never pushed.
+- Stage only the files of this one logical change, by explicit path. Never `git add -A`, `git add .` or `git add -f`.
+  - If the user already staged files, commit exactly those.
+  - Mention unrelated changes you left unstaged in the reply.
+- Footer: when an AI agent authored or materially contributed to the change, end with a `Co-Authored-By:` line, one blank line after any body.
+  - Use the attribution line supplied in the session context verbatim. If none: `Co-Authored-By: <your model name> <noreply address of your vendor>`.

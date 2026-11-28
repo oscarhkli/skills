@@ -38,7 +38,12 @@ Contents:
 - **Open items**, each marked blocking or parked.
 - **Next step.**
 
-Keep an `index.md` that links every file and states the goal in a sentence, so a new session reads one file first. Edit entries in place to the current state. Keep no old values or "changed from" notes, even in parentheses. The checked date is enough.
+Fewer, shorter files beat many, because the human is overwhelmed by many files.
+
+- The home of the notes directory holds `index.md` plus at most four notes the human will actually read, such as the latest status or an explainer. `index.md` links every file and states the goal in a sentence, so a new session reads one file first.
+- Briefs, debriefs, reviews and logs go under `agent/`.
+
+Edit entries in place. Verified facts, answers, decisions, open items and the next step live in `index.md` or one status note. Keep no old values or "changed from" notes, even in parentheses. The checked date is enough.
 
 The directory the user names wins. Otherwise use `~/.agents/project-brain/<project>/`. `<project>` is the name that `~/.agents/project-brain/README.md` gives the project; if the README does not name it, the code repo's name; if there is no repo, a short meaningful name you choose. If `~/.agents/project-brain/<project>/` does not exist, create it and any missing parent directories, then continue.
 

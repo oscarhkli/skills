@@ -1,6 +1,6 @@
 ---
 name: principle-redesign-from-scratch
-description: Principle for design work. When adding a feature to an existing design, or answering "How should we design/refactor this?" or "What is the best/idiomatic/industry-standard design?", design as if the codebase were empty and the feature existed from day one, instead of gluing it onto the current architecture.
+description: When adding a feature or asked for the best or idiomatic design, design as if the codebase were empty and the feature had existed from day one.
 disable-model-invocation: true
 ---
 

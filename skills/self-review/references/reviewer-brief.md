@@ -2,9 +2,10 @@
 
 ## Reviewer
 
-- Read `../../principle-lazy-senior-dev/SKILL.md`, `../../principle-prove-it-works/SKILL.md`, `../../principle-agent-can-say-no/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first.
+- Read `../../principle-lazy-senior-dev/SKILL.md`, `../../principle-prove-it-works/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first.
 - Read-only. Do not edit files, commit, push, or write to PRs or issue trackers.
 - Review the whole change at `<path or branch>` against `<requirements>`. Lens: `<lens>`.
+- Lens 1 also: list each new exported identifier or public API, and flag any not in `<approved API>`.
 - Verify each claim in the code before raising it.
 - Return findings as: severity (major or minor), location, problem, impact, correction.
 - Major: wrong thing built, a test passes without proving its claim, two parts contradict.
@@ -13,7 +14,8 @@
 ## Fixer
 
 - Fix every major finding and the cheap minor ones in `<findings>`. Skip the rest and list each with what blocks it.
-- Read `../../principle-never-block-on-the-human/SKILL.md` first. Resolve reversible, in-scope blocks yourself and state the assumption.
+- Read `../../principle-never-block-on-the-human/SKILL.md` and `../../principle-agent-trust-pyramid/SKILL.md` first. Resolve reversible, in-scope blocks yourself and state the assumption.
+- Name the pyramid layer of each fix. A new test needs one line on why no higher layer works.
 - Keep the diff minimal. Build and run the affected tests. Report the result.
 
 ## Verifier

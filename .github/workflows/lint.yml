@@ -12,3 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npx --yes prettier@3.9.10 --check .
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for dir in skills/*/scripts; do
+            ls "$dir"/test_*.py > /dev/null 2>&1 || continue
+            (cd "$dir" && python3 -I -m unittest discover)
+          done

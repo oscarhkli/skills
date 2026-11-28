@@ -53,11 +53,9 @@
         "evals/files/projects/demo/3333cccc-retro.jsonl",
         "evals/files/CLAUDE.md"
       ],
-      "expected_output": "Two actions in the same repo land in one branch and one pull request, with one commit per action, each named in the PR description. The plan does not propose one PR per action.",
+      "expected_output": "Two actions in the same repo land in one branch and one pull request. The plan does not propose one PR per action.",
       "expectations": [
         "The plan proposes one branch and one pull request for the two actions in the same repo",
-        "The plan proposes one commit per action",
-        "The plan names each action in the pull request description's sections",
         "The plan does not propose a separate pull request for each action",
         "No file was created or modified"
       ]

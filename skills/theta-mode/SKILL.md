@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 - When a principle shaped a decision, end the reply with one line: `Principles applied: principle-<name> (<what it changed>)`.
 
-- Cite only principles whose file you read this session, and state what actually changed: the decision, edit or check it altered. For `principle-agent-can-say-no`, name the outside claim you checked and what the check showed; if you checked none, cite nothing for it, and cite `principle-prove-it-works` only if you read it. Write `Principles applied: none` only when you read none.
+- Cite only principles whose file you read this session, and state what actually changed: the decision, edit or check it altered. For a claim from outside the agent, name the claim you checked and what the check showed. Write `Principles applied: none` only when you read none.
 
 - When you or a delegate read a playbook, add a second line: `Playbooks read: <absolute path>, ...`. An extra playbook source's `index.md` is not a playbook, so leave it off.
 
@@ -22,45 +22,37 @@ disable-model-invocation: true
 
 ## Principles
 
-Read the matching row's `../<name>/SKILL.md` before starting work, including read-only analysis and planning. Most principles are manual-only, so read the file instead of invoking the skill.
+Read each entry's `../<name>/SKILL.md` before starting work, including read-only analysis and planning. Each read costs context, so read only the entries that match the task. Match again whenever the task changes kind, such as from research or planning to editing, and read each newly matching principle before continuing.
 
-Each read costs context, so read only the principles in this table whose row matches the task. Match this table's rows again whenever the task changes kind, such as from research or planning to editing, and read each newly matching principle before continuing.
-
-| Principle | Applies when |
-| --- | --- |
-| `principle-agent-can-say-no` | You are about to build on a claim from outside you: the human's proposal, correction, "drop X" or instruction, or a story, spec, plan, note, README, doc or skill you were given or read. |
-| `principle-agent-trust-pyramid` | Planning or developing a change, proposing a rule, check or skill, or deciding where a correction lands. |
-| `principle-guard-context-window` | You are the main agent talking to the human, on any task including questions. Coordinator only; delegates skip it. |
-| `principle-lazy-senior-dev` | Doing more than the request names, or deciding whether to: adding a feature, test, file, tool or PR, planning or slicing work, refactoring, extracting code, sizing a diff, or about to ask the human "should I do X?". |
-| `principle-never-block-on-the-human` | Any task that writes, reviews or changes code, including planning. Read it first: the urge to ask "want me to do X?" on reversible, in-scope work is hard to notice in the moment. |
-| `principle-prove-it-works` | Any task that changes code, reports a finding or answers a question of fact: read it at the start, and again before reporting a change complete or giving the answer. |
-| `principle-redesign-from-scratch` | Adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design. |
+- `principle-agent-trust-pyramid`: planning or building a change, proposing a rule, check or skill, or placing a correction.
+- `principle-guard-context-window`: coordinator only, on every task.
+- `principle-lazy-senior-dev`: doing more than the request names or deciding whether to, refactoring, extracting code or sizing a diff.
+- `principle-never-block-on-the-human`: any task that writes, reviews or changes code, including planning. Read it first.
+- `principle-prove-it-works`: changing code, reporting a finding, answering a question of fact, or about to build on a claim from the human or a document. Read it at the start and again before reporting.
+- `principle-redesign-from-scratch`: adding a feature to an existing design, or asked how to design, plan or refactor, or what the best or idiomatic design is.
 
 ## Other skills
 
-Also manual-only. Read the file, do not invoke it. Read each on its own trigger, whatever the cost in context.
+Read each on its own trigger, whatever the cost in context.
 
-| Skill | Read when |
-| --- | --- |
-| `../no-comments/SKILL.md` | About to write or change a comment, or before pushing a diff that touches comments. |
-| `../self-review/SKILL.md` | The coordinator, once at the last stage, after the pull request's GitHub Actions checks pass (default; a project or company playbook may change it), or when asked for an adversarial or self review of code written or generated in the session, by the agent, a delegate or the human. Not for others' work, which is `playbooks/review-others.md`. Delegates never run it, since they cannot spawn agents. |
-| `../unslop/SKILL.md` | Before writing any text, including chat replies, plans, docs, commit and PR text, delegate briefs, and comments or messages inside code. Read it once per session before the first such text, and again after compaction. Put its path in every brief that writes text. In a file, apply it to the changed lines only. |
+- `../no-comments/SKILL.md`: before writing, changing or pushing a comment.
+- `../self-review/SKILL.md`: the coordinator, once at the last stage, or when asked for an adversarial or self review of work made in this session. Not for others' work, which is `playbooks/review-others.md`.
+- `../unslop/SKILL.md`: in a file, apply it to the changed lines only.
 
 ## Playbooks
 
-| Playbook | Read it when |
-| --- | --- |
-| `playbooks/plan.md` | Asked for a plan. Read it before drafting. |
-| `playbooks/slice.md` | Asked to split an initiative or large goal into stories, to choose how to slice, or when the work spans more than one PR or phase. Read it before `plan.md`. |
-| `playbooks/plan-multi.md` | Agents will build stories in parallel, or PR comments for a multi-PR set are being written. Read it after `slice.md`. |
-| `playbooks/prototype.md` | A design question or a claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer. |
-| `playbooks/create-pr.md` | About to open a pull request, or write or rewrite its title or description. |
-| `playbooks/watch-pr.md` | After opening a PR or pushing any commit to an open PR, before reporting the PR ready. |
-| `playbooks/review-others.md` | Drafting review comments the human will post on someone else's document or code. Not for reviewing an agent's own PR. |
+These files live in `playbooks/` beside this file.
+
+- `plan.md`: asked for a plan. Read it before drafting.
+- `slice.md`: asked to split an initiative or large goal into stories, or the work spans more than one PR or phase. Read it before `plan.md`.
+- `prototype.md`: a design question or claim that reading cannot settle, or two reports contradict. Read it before drafting a plan that depends on the answer.
+- `create-pr.md`: about to open a pull request, or write or rewrite its title or description.
+- `watch-pr.md`: after opening a PR or pushing any commit to an open PR, before reporting the PR ready.
+- `review-others.md`: drafting review comments the human will post on someone else's document or code.
 
 ### Extra playbooks
 
-Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` table in the same shape as the one above. At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` with the file tool and treat its rows as rows of this table. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. A delegate gets and reads both kinds: every playbook whose row matches its task. If none exist, skip this.
+Other sources can add playbooks under `~/.agents/playbooks/<source>/`, each with an `index.md` of `name: when` entries (a list or a two-column table). At the start of a task, list `~/.agents/playbooks/` with `view` in Copilot CLI or `ls` in Claude Code, because glob tools skip linked directories. Read each `<source>/index.md` with the file tool and treat its entries as entries of the Playbooks list. An extra playbook can add to a playbook above or replace its output document; keep that playbook's "Before drafting" steps. Read the general playbooks first, then the extra ones. When they conflict, the extra playbook overrides the general one. If none exist, skip this.
 
 ## Subagents
 
@@ -69,21 +61,25 @@ The coordinator talks to the human, writes briefs, reviews and decides. Only the
 - Spawn a `theta-agent` for every edit outside the coordinator's scratchpad, however small, and for every read or search that finds or verifies facts. The coordinator edits its scratchpad files itself. The scratchpad is the temp directory the harness names for this session, never a path under a repo or worktree.
 - The coordinator reads only this skill's principle, playbook and skill files, its scratchpad files, and the reports and diffs it reviews.
 - The delegate that edits also commits, drafts the PR title and description, pushes the feature branch and opens the PR without asking, except as the next bullet says. The coordinator may push a reviewed commit itself.
-- When a diff touches comments, the delegate commits locally and does not push. The coordinator runs the `no-comments` audit, meaning the `comment-hater` run, not a grep or its own reading of the diff, then pushes or has a fresh delegate push. Run it again on any later commit that changes a comment.
+- When a diff touches comments, the delegate commits locally and does not push. The coordinator follows `../no-comments/SKILL.md`, then pushes or has a fresh delegate push. Follow it again on any later commit that changes a comment.
 - Spawn a fresh delegate for each follow-up, fix round or retry, briefed with the original brief, every later correction and the previous report. Resume one (`SendMessage` in Claude Code, `write_agent` in Copilot CLI) only for state that lives in it, such as uncommitted changes or a running process.
-- Pass every delegate a `model` for its role: `research`, `plan`, `review`, `code`, `test` or `text`. Read `models.<role>` in `~/.agents/project-brain/settings.yaml` (shape: `models:` then an indented `code: sonnet`). If the role has no entry, use `opus` for `research`, `plan` and `review`, and `sonnet` for the rest. If `settings.yaml` does not exist, skip it and create nothing. Omit `model` if the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode. Never ask the human about models.
-- Do not start a delegate's edits that depend on a question you are asking the human.
+- Pass every delegate a `model` for its role (`research`, `plan`, `review`, `code`, `test` or `text`) from `models.<role>` in `~/.agents/project-brain/settings.yaml`. If the file or the role's entry is missing, say so once per session, omit `model` (the delegate runs on your model) and carry on. Omit it too when the tool has no such model or no model parameter. `self-review` is the `review` role and picks its own models from its mode.
 - When the human says "if small, do X" (or any size condition), measure first: `git diff --stat` on a draft, or have the delegate report sizes per item before editing. An item over `playbooks/slice.md`'s reviewable rule becomes its own item, not part of the open PR.
+- Write any message that asks the human to decide as `references/human-brief.md` says.
 - Never use a delegate to run theta-mode itself. If the tool cannot spawn a subagent, do the work yourself.
 
 The brief holds:
 
-- This file's absolute path, then the absolute path of every selected principle and other skill. A delegate that reports a finding or answers a fact gets `principle-prove-it-works`; one given a human claim or a document to build on gets `principle-agent-can-say-no`; one that edits gets `principle-lazy-senior-dev`. It reads each with the file tool before starting, since it has no other way to know the rules.
-- The absolute path of each playbook whose row matches its task, extra playbook rows included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
+- This file's absolute path, then the absolute path of every principle and other skill whose entry matches the delegate's task. An editing delegate always gets `principle-lazy-senior-dev`.
+- The absolute path of each playbook whose entry matches its task, extra playbook entries included, in the order set under Extra playbooks. It reads each before the step it covers, such as `playbooks/create-pr.md` before writing a PR title or body.
 - The human's goal in their own words, and every source path, URL, correction, settled decision and applicable user preference, verbatim.
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
+- A read-only delegate reads other refs with `git show <ref>:<path>`, never `git checkout` or `git switch`.
+- A research brief says that a library, tool or generator it names comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one.
 - For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (when project-brain is a git repo, edit it only in a worktree and PR), and the rule to update the plan to match what shipped after a PR merges, without asking.
 - For an editing delegate: stop and report before changing observable behaviour or adding exported API, unless the human already approved it. The report lists every behaviour change.
+- If one step makes no progress for 10 minutes, stop it and report where you are.
+- An editing delegate commits each fix round before handing back, and before any mutation check, so `git restore <path>` brings back the fix. Mutate in place; use a throwaway worktree only when another agent edits the same one.
 - The delegate's `model` and its role.
 
-The report lists, by absolute path, every skill, principle and playbook file the delegate read, and names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.
+The report names the choice each principle changed. The coordinator reviews the diff and writes its own summary, the `Principles applied:` line and the `Playbooks read:` line from those reports and its own reads.

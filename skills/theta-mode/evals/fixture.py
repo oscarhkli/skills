@@ -6,7 +6,7 @@ python3 fixture.py repo <name> [--callers N]
                                 create ./<name>, a git repo on branch feat/add-grid;
                                 --callers N adds N modules that each call grid.draw
 
-The fixture rows match only repos named eval-*, so real playbook sources on the machine never collide with it.
+The fixture entries match only repos named eval-*, so real playbook sources on the machine never collide with it.
 """
 import shutil
 import subprocess
