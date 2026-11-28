@@ -16,7 +16,7 @@ Treat an unknown size as large and probe it first. Check a file's length (`wc -l
 
 ## Result
 
-Ask for a summary of about 30 lines or fewer, with file paths and line numbers, not raw dumps or step-by-step narration. Write it the way `unslop` would: conclusion first, no narration, no restated task, no recap. Apply that standard without loading the skill, since loading it costs the context this principle protects.
+Ask for a summary of about 30 lines or fewer, with file paths and line numbers, not raw dumps or step-by-step narration. Write it the way `unslop` would: conclusion first, no narration, no restated task, no recap.
 
 Have a delegate check a cited claim that matters.
 
