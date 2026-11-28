@@ -76,7 +76,7 @@ The brief holds:
 - The evidence that proves the work is done, the paths it may write, and the actions it must not take.
 - A read-only delegate reads other refs with `git show <ref>:<path>`, never `git checkout` or `git switch`.
 - A research brief says that a library, tool or generator it names comes with its link, GitHub stars, weekly downloads or dependents, last release date and number of maintainers. Rank the mainstream pick first and give a reason for a niche one.
-- For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (when project-brain is a git repo, edit it only in a worktree and PR), and the rule to update the plan to match what shipped after a PR merges, without asking.
+- For project-brain work: the path of `~/.agents/project-brain/README.md`, the worktree path (when project-brain is a git repo, edit it only in a worktree and PR), and the rule to follow the initiative index's closing steps after a PR merges, without asking. A plan does not restate them.
 - For an editing delegate: stop and report before changing observable behaviour or adding exported API, unless the human already approved it. The report lists every behaviour change.
 - If one step makes no progress for 10 minutes, stop it and report where you are.
 - An editing delegate commits each fix round before handing back, and before any mutation check, so `git restore <path>` brings back the fix. Mutate in place; use a throwaway worktree only when another agent edits the same one.
