@@ -37,7 +37,7 @@ Read each on its own trigger, whatever the cost in context.
 
 - `../no-comments/SKILL.md`: before writing, changing or pushing a comment.
 - `../self-review/SKILL.md`: the coordinator, once at the last stage, or when asked for an adversarial or self review of work made in this session. Not for others' work, which is `playbooks/review-others.md`.
-- `../unslop/SKILL.md`: before the first text another person or a delegate reads, once per session and after compaction. In a file, apply it to the changed lines only.
+- `../unslop/SKILL.md`: in a file, apply it to the changed lines only.
 
 ## Playbooks
 
