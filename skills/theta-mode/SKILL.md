@@ -29,7 +29,7 @@ Read each entry's `../<name>/SKILL.md` before starting work, including read-only
 - `principle-lazy-senior-dev`: doing more than the request names or deciding whether to, refactoring, extracting code or sizing a diff.
 - `principle-never-block-on-the-human`: any task that writes, reviews or changes code, including planning. Read it first.
 - `principle-prove-it-works`: changing code, reporting a finding, answering a question of fact, or about to build on a claim from the human or a document. Read it at the start and again before reporting.
-- `principle-redesign-from-scratch`: adding a feature to an existing design, or asked how to design, plan or refactor, or for the best or idiomatic design.
+- `principle-redesign-from-scratch`: adding a feature to an existing design, or asked how to design, plan or refactor, or what the best or idiomatic design is.
 
 ## Other skills
 
