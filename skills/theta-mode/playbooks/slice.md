@@ -49,6 +49,7 @@ One README next to the briefs and plans holds:
 - Shared files and the story that owns each edit.
 - Counts that must reconcile, such as findings per story summing to the total.
 - Kickoff: the one-line prompt that starts a story, so the human does not retype context. Each story plan's Context supplies the rest once it is written.
+- Closing steps: what the agent does without asking after each PR merges and after the last one: status, backlog bookkeeping, index updates, and refreshing the deferred and decision sections of every remaining story's PR (delete the settled ones). Stories and plans link here instead of repeating it.
 
 ## Dependencies and concurrency
 
@@ -62,7 +63,6 @@ One README next to the briefs and plans holds:
 ## Keeping stories current
 
 - When a story changes something its dependents rely on, such as a name, a signature, a file owner or a decision, spawn one `theta-agent` per affected dependent. Each updates that story's brief, or its plan if one exists, and its row in the index. Then rerun the index check.
-- When a story merges, refresh the deferred and decision sections of every remaining story's PR. Delete the ones that are now settled.
 - A PR comment lists open deferred items and open decisions only. Fixed gaps go in the PR summary.
 - Update a branch only for the story the human reviews next, since each update reruns CI.
 

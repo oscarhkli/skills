@@ -1,6 +1,6 @@
 # Create PR playbook
 
-Use it when about to open or rewrite a pull request description. The text is for a reviewer who has not seen this session.
+Use it when about to open or rewrite a pull request description. The text is for a reviewer who has not seen this session. A PR body in any repo follows these sections.
 
 ## Sections
 

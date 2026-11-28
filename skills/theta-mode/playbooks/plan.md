@@ -18,6 +18,7 @@
 ## Structure
 
 - Give each section one line of intent. State each fact once, in the section that owns it.
+- A plan has only the sections below, and adds another only when absolutely necessary. Do not copy the shape of older plans in the same folder.
 - Every line must change what the implementer does.
   - Findings that repeat the backlog, measured numbers, rejected alternatives and decision history go to the backlog entry or nowhere.
 - Goal: what and why, at most 10 lines.
@@ -31,13 +32,13 @@
 - Verification: how the problem is shown solved, with the exact commands and expected output. It also holds what counts as success.
   - Can a test prove it at each layer of the testing pyramid (unit, handler or API, CLI, browser; a layer that fits none of them, such as scene tests with mocks, goes with the nearest one)? A layer left out says why.
   - Each path a user can take to the changed code (retry, reload, repeat, error) gets a check at the layer the user acts on (browser for web).
-- Open items: only decisions `../principle-never-block-on-the-human/SKILL.md` leaves to the human, each naming the task it blocks.
+- Open items: only decisions `../principle-never-block-on-the-human/SKILL.md` leaves to the human, each naming the task it blocks. Omit the section when there are none.
 
 ## Writing
 
 - Delegate drafting to `theta-agent`. The `Plan` agent type is read-only and cannot write the files.
 - Tell the delegate to remove line-number references (`:123`, `L123`, "line 123") from every file it writes, design docs and backlog entries included, and to paste the Goal section into its report word for word.
-- Size gate, before the review: apply the size rule in `slice.md`. If the plan outgrows one reviewable change, slice first.
+- Size gate, before the review: apply the size rule in `slice.md`, where reviewable is the reviewer's load and not a line count. Set no line-count threshold. If the plan outgrows one reviewable change, slice first.
 
 ## Review
 
